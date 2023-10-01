@@ -1,0 +1,62 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+
+        <main class="main">
+            <div class="container">
+                <div class="table-responsive" id="no-more-tables">
+                    <table class="table table-striped bg-white" id="myTable">
+                        <thead class="bg-dark text-light">
+                            <tr>
+                                <th style="font-size: 20px;" scope="col" class="sorting">Name</th>
+                                <th style="font-size: 20px;" scope="col" class="sorting">Email</th>
+                                <th style="font-size: 20px;" scope="col" class="sorting">Mobile</th>
+                                <th style="font-size: 20px;" scope="col">Action</th>
+                                <!--<th style="font-size: 20px;" scope="col">Actions</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if(users.length>0){
+                                for(let i=0;i<users.length;i++){ %>
+                                    <tr style="font-size: medium;">
+                                        <td data-title="Name">
+                                            <%= users[i].name %>
+                                        </td>
+                                        <td data-title="Email">
+                                            <%= users[i].email %>
+                                        </td>
+                                        <td data-title="Mobile">
+                                            <%= users[i].mobile %>
+                                        </td>
+                                        <td data-title="Actions">
+                                            <!-- <%if(users[i].block){%>
+                              <button type="button" class="btn btn-success" onclick="block('<%= users[i]._id %>' )">Unblock</button>
+                            <%}else{%>
+                              <button type="button" class="btn btn-danger" onclick="block('<%= users[i]._id %>')">Block</button>
+                            <%}                                                     
+                          %> -->
+                                            <button type="button" class="btn <%= users[i].block ? " btn-success"
+                                                : "btn-danger" %>"
+                                                onclick="block('<%= users[i]._id %>')" data-id="<%= users[i]._id %>">
+                                                        <%= users[i].block ? "Unblock" : "Block" %>
+                                            </button>
+
+
+                                        </td>
+                                    </tr>
+                                    <% } } else{ %>
+                                        <tr>
+                                            <td colspan="5">Users Not Found</td>
+                                        </tr>
+                                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <%- include('../layouts/footer.ejs') %>
