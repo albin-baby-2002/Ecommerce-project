@@ -6,7 +6,9 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
 
-    res.render('admin/usersList.ejs')
+
+
+    res.render('admin/adminLogin.ejs')
 
 
 })

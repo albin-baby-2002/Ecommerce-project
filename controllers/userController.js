@@ -237,7 +237,9 @@ const renderLoginPage = (req, res, next) => {
     }
 
 
-}
+};
+
+//login handler 
 
 
 const loginHandler = async (req, res, next) => {
@@ -276,16 +278,55 @@ const loginHandler = async (req, res, next) => {
 
         if (user) {
 
+
             if (await bcrypt.compare(password, user.password)) {
 
-                req.session.message = {
-                    type: 'success',
-                    message: ' You have successfully logged in '
+
+                if (user.verified === true) {
+
+                    req.session.message = {
+                        type: 'success',
+                        message: ' You have successfully logged in '
+                    }
+
+                    res.redirect('/');
+
+                } else {
+
+                    req.session.message = {
+                        type: 'danger',
+                        message: 'Email address is not verified',
+                        verification: true
+                    }
+
+
+                    if (!req.session.verificationToken) {
+
+                        req.session.verificationToken = user._id;
+
+                    }
+
+
+                    res.redirect('/user/login');
+
+                    return;
+
                 }
 
-                res.redirect('/');
+            } else {
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'You entered the wrong password'
+                }
+
+                res.redirect('/user/login');
+
+                return;
 
             }
+
+
 
         }
         else {
@@ -313,11 +354,27 @@ const loginHandler = async (req, res, next) => {
 }
 
 
+const verifyEmailHandler = async (req, res, next) => {
+
+    const existingOtpData = await OtpData.findOne({ userId: req.session.verificationToken });
+
+
+    if (existingOtpData) {
+
+        const deletedOldOtpData = await OtpData.deleteOne({ userId: req.session.verificationToken });
+
+        console.log(deletedOldOtpData)
+
+    }
+}
+
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
     signUpHandler,
     renderOtpVerificationPage,
     otpVerificationHandler,
-    loginHandler
+    loginHandler,
+    verifyEmailHandler
 }

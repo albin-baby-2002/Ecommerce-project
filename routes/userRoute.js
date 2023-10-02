@@ -8,6 +8,9 @@ const userController = require('../controllers/userController')
 //user home render 
 
 router.get('/', (req, res) => {
+
+    console.log(req.session.verificationToken);
+
     res.render('users/home.ejs')
 })
 
@@ -32,6 +35,12 @@ router.route('/user/login')
 router.route('/user/verifyOTP')
     .get(userController.renderOtpVerificationPage)
     .post(userController.otpVerificationHandler);
+
+
+// email verification page using otp if failed to verify during signUp
+
+router.route('/user/emailVerification')
+    .get(userController.verifyEmailHandler)
 
 
 
