@@ -1,0 +1,108 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Category List</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Category List</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <a class="btn btn-outline-success mb-3" href="/admin/addCategory">Add Category</a>
+
+                <div class="table-responsive" id="no-more-tables">
+                    <table class="table table-striped bg-white" id="myTable">
+                        <thead class=" ">
+                            <tr class="text-center">
+                                <th class="bg-dark text-white" style="font-size: 15px ; width: 300px;" scope="col"
+                                    class="sorting ">
+                                    Name</th>
+                                <th class="bg-dark text-white" style="font-size: 15px ; width: 400px" scope="col"
+                                    class="sorting">
+                                    Description</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px; width: 300px"
+                                    scope="col">Actions
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <% if(categories.length>0){ %>
+                                <% for(let i=0; i < categories.length ;i++) { %>
+
+
+                                    <tr data-id="<%= categories[i]._id%>" class="text-center"
+                                        style="font-size: medium;">
+                                        <td data-title="Name" style="width: 300px;">
+                                            <%= categories[i].name %>
+                                        </td>
+                                        <td data-title="Email" style="width: 400px;">
+                                            <%= categories[i].description %>
+                                        </td>
+
+                                        <td>
+
+
+                                            <a class="btn btn-outline-success btn-sm"
+                                                href="/admin/editCategory/<%=categories[i]._id %>""> Edit </a>
+
+
+
+                                            <button onclick=" deleteCategory('<%=categories[i]._id %>' )" class=" btn
+                                                btn-sm mx-4 btn-outline-danger">
+                                                Delete
+
+                                                </button>
+
+                                        </td>
+
+
+
+
+
+                                    </tr>
+
+                                    <% } %>
+                                        <% } else { %>
+
+                                            <tr>
+
+                                                <td class="text-danger" colspan="5">Categories Not Found</td>
+                                            </tr>
+
+                                            <% } %>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <%- include('../layouts/footer.ejs') %>

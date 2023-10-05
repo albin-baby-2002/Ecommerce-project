@@ -1,20 +1,27 @@
+// importing necessary libraries and files
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const User = require('../models/userModel');
 const OtpData = require('../models/otpDataModel');
+const Product = require('../models/productModel')
 
 const userVerificationHelper = require('../helpers/userVerificationHelpers')
 
 
 
+// !render Home page
 
-// signup page render 
-
-const renderSignUpPage = (req, res, next) => {
+const renderHomePage = async (req, res, next) => {
 
     try {
-        res.render('users/signUp.ejs')
+
+        const products = await Product.find({});
+
+        res.render('users/searchAndBuy.ejs', { products });
+
+        return;
     }
     catch (err) {
         next(err);
@@ -23,10 +30,38 @@ const renderSignUpPage = (req, res, next) => {
 
 }
 
-// signup validation 
+// !signup page render 
+
+const renderSignUpPage = (req, res, next) => {
+
+
+    // check whether the user is logged. If logged in redirect to home
+
+    if (req.session.userID) {
+
+        res.redirect('/');
+
+        return;
+    }
+
+    try {
+
+        res.render('users/signUp.ejs');
+
+        return;
+    }
+    catch (err) {
+        next(err);
+    }
+
+
+}
+
+//! signup validation 
 
 const signUpHandler = async (req, res, next) => {
 
+    //regex for checking name and email
 
     const nameRegex = /^[A-Za-z]+(?: [A-Za-z]+)?$/;
 
@@ -36,7 +71,7 @@ const signUpHandler = async (req, res, next) => {
 
         const { name, email, password, phone } = req.body;
 
-        // validating input data
+        // validating input data before creating the user
 
         if (!name || !email || !password || !phone) {
 
@@ -60,7 +95,7 @@ const signUpHandler = async (req, res, next) => {
             }
         }
 
-        // redirecting with error if data validation failed 
+        // redirecting with error message if data validation failed 
 
         if (req.session.message && req.session.message.type === 'danger') {
             res.redirect('/user/signUp');
@@ -71,7 +106,6 @@ const signUpHandler = async (req, res, next) => {
 
         const existingUser = await User.findOne({ email });
 
-        console.log(existingUser);
 
         if (existingUser) {
 
@@ -104,7 +138,21 @@ const signUpHandler = async (req, res, next) => {
                     const isOtpSend = userVerificationHelper.sendOtpEmail(user, res);
 
                     if (isOtpSend) {
-                        res.redirect('/user/verifyOTP')
+                        res.redirect('/user/verifyOTP');
+                        return;
+
+                    } else {
+
+                        req.session.message = {
+                            type: 'danger',
+                            message: 'verification failed : try verify your email using : ',
+                            verification: true
+                        };
+
+                        res.redirect('/user/signUp');
+                        return;
+
+
                     }
                 })
 
@@ -117,6 +165,8 @@ const signUpHandler = async (req, res, next) => {
                     };
 
                     res.redirect('/user/signUp.ejs');
+
+                    return;
                 })
 
 
@@ -129,16 +179,22 @@ const signUpHandler = async (req, res, next) => {
     }
 }
 
-
-
-//otp verification page render 
+// !otp verification page render 
 
 
 const renderOtpVerificationPage = async (req, res, next) => {
 
+
+    if (req.session.userID) {
+
+        res.redirect('/');
+        return;
+    }
+
     try {
 
-        res.render('users/verifyOtpPage.ejs')
+        res.render('users/verifyOtpPage.ejs');
+        return;
 
     }
 
@@ -147,15 +203,12 @@ const renderOtpVerificationPage = async (req, res, next) => {
     }
 }
 
-//otp verification handler
+//!otp verification handler
 
 const otpVerificationHandler = async (req, res, next) => {
 
 
     try {
-
-
-
 
         const { otp } = req.body;
 
@@ -176,17 +229,21 @@ const otpVerificationHandler = async (req, res, next) => {
                             message: 'otp verification completed now you can login'
                         }
 
-                        res.redirect('/user/login')
+                        res.redirect('/user/login');
+
+                        return;
                     }
                 }
                 else {
 
                     req.session.message = {
                         type: 'danger',
-                        message: 'otp verification failed enter the right otp'
+                        message: 'otp verification failed.enter the right otp'
                     }
 
-                    res.redirect('/user/verifyOTP')
+                    res.redirect('/user/verifyOTP');
+
+                    return;
 
 
 
@@ -196,10 +253,12 @@ const otpVerificationHandler = async (req, res, next) => {
 
                 req.session.message = {
                     type: 'danger',
-                    message: 'otp got expired try again '
+                    message: 'otp got expired try again ,try logging in we will give the option to verify your mail'
                 }
 
-                res.redirect('/user/verifyOTP')
+                res.redirect('/user/login');
+
+                return;
 
             }
 
@@ -209,10 +268,12 @@ const otpVerificationHandler = async (req, res, next) => {
 
             req.session.message = {
                 type: 'danger',
-                message: 'session time out : otp verification failed signUp again'
+                message: 'session time out : otp verification failed try logging in we will give the option to verify your mail'
             }
 
-            res.redirect('/user/verifyOTP')
+            res.redirect('/user/login');
+
+            return;
         }
 
 
@@ -225,12 +286,20 @@ const otpVerificationHandler = async (req, res, next) => {
 }
 
 
-//login page render
+//!login page render
 
 const renderLoginPage = (req, res, next) => {
 
+
+    if (req.session.userID) {
+
+        res.redirect('/');
+        return;
+    }
+
     try {
-        res.render('users/login.ejs')
+        res.render('users/login.ejs');
+        return;
     }
     catch (err) {
         next(err);
@@ -239,7 +308,7 @@ const renderLoginPage = (req, res, next) => {
 
 };
 
-//login handler 
+//!login handler 
 
 
 const loginHandler = async (req, res, next) => {
@@ -284,12 +353,33 @@ const loginHandler = async (req, res, next) => {
 
                 if (user.verified === true) {
 
-                    req.session.message = {
-                        type: 'success',
-                        message: ' You have successfully logged in '
+                    if (user.blocked) {
+
+                        req.session.message = {
+                            type: 'danger',
+                            message: 'You are blocked by the admin'
+                        }
+
+                        res.redirect('/user/login');
+
+                        return;
+
+
+                    } else {
+
+                        req.session.userID = user._id;
+
+                        req.session.message = {
+                            type: 'success',
+                            message: ' You have successfully logged in '
+                        }
+
+                        res.redirect('/');
+
+                        return;
                     }
 
-                    res.redirect('/');
+
 
                 } else {
 
@@ -353,19 +443,130 @@ const loginHandler = async (req, res, next) => {
 
 }
 
+//!logout handler 
+
+const logoutHandler = async (req, res, next) => {
+
+    try {
+
+        req.session.destroy();
+
+        res.redirect('/');
+
+        return;
+
+    }
+    catch (err) {
+        next(err)
+    }
+
+}
+
+
+// !To verify email by resending otp if signup otp verification failed
+
 
 const verifyEmailHandler = async (req, res, next) => {
 
     const existingOtpData = await OtpData.findOne({ userId: req.session.verificationToken });
 
+    const user = await User.findOne({ _id: req.session.verificationToken })
+
 
     if (existingOtpData) {
 
-        const deletedOldOtpData = await OtpData.deleteOne({ userId: req.session.verificationToken });
+        const deletedOldOtpData = await OtpData.deleteOne({ userId: user._id });
 
-        console.log(deletedOldOtpData)
+
+
+        if (deletedOldOtpData.deletedCount === 1) {
+
+            const otpIsSend = userVerificationHelper.sendOtpEmail(user, res);
+
+            if (otpIsSend) {
+
+                res.redirect('/user/verifyOTP');
+                return;
+
+            } else {
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'verification failed',
+                    verification: true
+                };
+
+                res.redirect('/user/login');
+                return;
+
+
+            }
+
+
+
+        } else {
+
+            if (user) {
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'Error verifying email : try again ',
+                    verification: true
+                }
+
+                res.redirect('/user/login');
+
+                return;
+
+            }
+            else {
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'Error verifying email : try again ',
+
+                }
+
+                res.redirect('/user/login');
+
+                return;
+
+            }
+
+
+
+        }
+
+    } else {
+
+        userVerificationHelper.sendOtpEmail(user, res);
+
+        return;
+
 
     }
+}
+
+//! render product details page 
+
+const renderProductDetailsPage = async (req, res, next) => {
+
+
+    try {
+
+        const productId = req.params.productId;
+
+        const product = await Product.findById(productId).lean();
+
+        res.render('users/productDetails.ejs', { product });
+
+        return;
+    }
+    catch (err) {
+        next(err);
+    }
+
+
 }
 
 
@@ -376,5 +577,8 @@ module.exports = {
     renderOtpVerificationPage,
     otpVerificationHandler,
     loginHandler,
-    verifyEmailHandler
+    verifyEmailHandler,
+    logoutHandler,
+    renderHomePage,
+    renderProductDetailsPage
 }

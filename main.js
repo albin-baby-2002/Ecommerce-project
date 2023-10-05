@@ -1,3 +1,4 @@
+// importing libraries, files and dependencies 
 
 const express = require("express");
 const session = require("express-session");
@@ -8,9 +9,10 @@ const mongoose = require("mongoose");
 const userRoute = require('./routes/userRoute');
 const adminRoute = require('./routes/adminRoute');
 
-const { notFound, errorHandler } = require('./middleware/errorHandling');
+const errorHandler = require('./middleware/errorHandling');
 
 
+// connecting to mongodb database using mongoose
 
 mongoose.connect(`mongodb+srv://albinbtg:${process.env.MONGODB_ATLAS_PASSWORD}@cluster0.9jzlkwx.mongodb.net/ecommerce?retryWrites=true&w=majority`)
     .then(() => {
@@ -22,8 +24,15 @@ mongoose.connect(`mongodb+srv://albinbtg:${process.env.MONGODB_ATLAS_PASSWORD}@c
     })
 
 
+// starting the express server application
 
 const app = express();
+
+
+//initialization of port for listening
+
+const PORT = process.env.PORT || 3000;
+
 
 //session initialization
 
@@ -38,6 +47,7 @@ app.use(session({
 
 app.use((req, res, next) => {
     res.locals.message = req.session.message;
+    res.locals.userID = req.session.userID;
     delete req.session.message;
     next();
 });
@@ -76,17 +86,19 @@ app.use('/', userRoute);
 app.use('/admin', adminRoute);
 
 
-//for 404 error
+// for 404 error admin route
 
-app.use('*', notFound);
-
-
-//for rendering error page for unknown / critical error
-
-app.use(errorHandler);
+app.use('/admin/*', errorHandler.adminPageNotFound);
 
 
-app.listen(2500, function () {
-    console.log("Server is running at PORT:2500");
+//for 404 error except for admin routes
+
+app.use('*', errorHandler.userPageNotFound);
+
+
+//server listening at port for requests
+
+app.listen(PORT, function () {
+    console.log("Server is running at PORT:" + PORT);
 });
 

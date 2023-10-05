@@ -73,7 +73,7 @@
             <div class="col-lg-6 col-md-6">
                 <nav class="header__menu mobile-menu">
                     <ul>
-                        <li class=""><a href="./index.html">Home</a></li>
+                        <li class=""><a href="/">Home</a></li>
                         <li><a href="./shop.html">Shop</a></li>
                         <li><a href="#">Pages</a>
                             <ul class="dropdown">
@@ -93,8 +93,15 @@
                 <div class="header__nav__option">
                     <a href="#" class="search-switch"><img src="/img/icon/search.png" alt=""></a>
                     <a href="#"><img src="/img/icon/heart.png" alt=""></a>
-                    <a class="font-weight-bolder text-dark" href="#">Sign in</a>
-                    <!-- <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
+
+                    <% if(userID) { %>
+
+                        <a class="font-weight-bolder text-dark" href="/user/logout">Logout</a>
+                        <%} else {%>
+                            <a class="font-weight-bolder text-dark" href="/user/login">Login</a>
+
+                            <% } %>
+                                <!-- <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
                     <div class="price">$0.00</div> -->
                 </div>
             </div>

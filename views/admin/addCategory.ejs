@@ -1,0 +1,58 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Add Category</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Add Category</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <form class="container  w-50 my-5" action="/admin/addCategory" method="post">
+
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <input type="text" id="category-name" class="form-control" name="name" />
+                        <label class="form-label" for="category-name">Category Name </label>
+                    </div>
+
+                    <!-- Password input -->
+                    <div class="form-outline mb-2">
+                        <textarea name="description" id="description" cols="49" rows="5"></textarea>
+                        <label class="form-label" for="description">Description</label>
+                    </div>
+
+
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-dark btn-block mb-4"> Add Category</button>
+
+
+                </form>
+
+
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <%- include('../layouts/footer.ejs') %>

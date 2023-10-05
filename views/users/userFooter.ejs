@@ -74,3 +74,53 @@
         </form>
     </div>
 </div>
+
+
+<script>
+
+
+
+    function a() {
+        window.alert('load')
+    }
+
+    function renderBg() {
+
+        const products = document.querySelectorAll('[data-id="bg-render"]');
+
+
+
+
+
+        products.forEach((product) => {
+
+            const imgUrl = product.getAttribute('data-for-bg');
+
+            product.style.backgroundImage = `url('${imgUrl}')`;
+
+        })
+
+    }
+
+    // Get the div element by its ID
+    const clickable_Divs = document.querySelectorAll('[click-id="productDetailsLink"]');
+
+    clickable_Divs.forEach((clickableDiv) => {
+        const productId = clickableDiv.getAttribute('product-id');
+
+        // Add a click event listener
+        clickableDiv.addEventListener('click', function () {
+            // This function will be executed when the div is clicked
+            window.location.href = '/user/productDetails/' + productId;
+        });
+    })
+
+
+
+
+    window.addEventListener('load', renderBg);
+
+
+
+
+</script>

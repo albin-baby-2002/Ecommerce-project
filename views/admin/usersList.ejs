@@ -3,6 +3,7 @@
     <%- include('../admin/adminHeader.ejs') %>
 
         <!-- Breadcrumb Section Begin -->
+
         <section class="breadcrumb-option">
             <div class="container">
                 <div class="row">
@@ -25,58 +26,81 @@
                 <div class="table-responsive" id="no-more-tables">
                     <table class="table table-striped bg-white" id="myTable">
                         <thead class=" ">
-                            <tr class="">
+                            <tr class="text-center">
                                 <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting ">
                                     Name</th>
                                 <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
                                     Email</th>
                                 <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
                                     Mobile</th>
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col">Actions</th>
+                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
+                                    Verified</th>
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">Actions
+                                </th>
 
                             </tr>
                         </thead>
                         <tbody>
 
+                            <% if(users.length>0){ %>
+                                <% for(let i=0; i < users.length ;i++) { %>
 
 
-                            <tr style="font-size: medium;">
-                                <td data-title="Name">
-                                    Rahul
-                                </td>
-                                <td data-title="Email">
-                                    rahul@gmail.com
-                                </td>
-                                <td data-title="Mobile">
-                                    965455131
-                                </td>
-                                <td data-title="Actions">
+                                    <tr class="text-center" style="font-size: medium;">
+                                        <td data-title="Name">
+                                            <%= users[i].name %>
+                                        </td>
+                                        <td data-title="Email">
+                                            <%= users[i].email %>
+                                        </td>
+                                        <td data-title="Mobile">
+                                            <%= users[i].phone %>
+                                        </td>
+                                        <td data-title="Mobile">
+                                            <%= users[i].verified %>
+                                        </td>
 
-                                    <a href=""></a>
 
-                                </td>
-                            </tr>
-                            <tr style="font-size: medium;">
-                                <td data-title="Name">
-                                    Rahul
-                                </td>
-                                <td data-title="Email">
-                                    rahul@gmail.com
-                                </td>
-                                <td data-title="Mobile">
-                                    965455131
-                                </td>
-                                <td data-title="Actions">
-                                    DELETE
+                                        <td data-title="Actions " class="d-flex justify-content-center "
+                                            style="font-size: 10px;">
 
-                                </td>
-                            </tr>
+                                            <button class="btn btn-sm 
+                                            <%= users[i].blocked ? 'btn-outline-success' :'btn-outline-danger' %>
+                                             mx-4" style="border-radius: 0;" onclick="block('<%= users[i]._id %>')"
+                                                data-id="<%= users[i]._id %>">
+
+                                                <%= users[i].blocked ? 'Un-block' :'Block' %>
+
+                                            </button>
+
+
+                                            <!-- <button class="btn  btn-sm btn-outline-danger" style="border-radius: 0;"
+                                                href="">remove</button> -->
+
+                                        </td>
+                                    </tr>
+
+                                    <% } %>
+                                        <% } else { %>
+
+                                            <tr>
+
+                                                <td class="text-danger" colspan="5">Users Not Found</td>
+                                            </tr>
+
+                                            <% } %>
+
+
+
+
 
                         </tbody>
                     </table>
                 </div>
             </div>
         </main>
+
+
 
 
         <%- include('../admin/adminFooter.ejs') %>

@@ -1,23 +1,20 @@
+// importing necessary libraries and dependencies
 
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController')
 
+const userController = require('../controllers/userController');
+const errorHandler = require('../middleware/errorHandling');
 
 
 //user home render 
 
-router.get('/', (req, res) => {
+router.get('/', userController.renderHomePage);
 
-    console.log(req.session.verificationToken);
-
-    res.render('users/home.ejs')
-})
 
 //signUp render and validation
 
 router.route('/user/signUp')
-
     .get(userController.renderSignUpPage)
     .post(userController.signUpHandler);
 
@@ -25,7 +22,6 @@ router.route('/user/signUp')
 //login render and validation
 
 router.route('/user/login')
-
     .get(userController.renderLoginPage)
     .post(userController.loginHandler);
 
@@ -42,9 +38,24 @@ router.route('/user/verifyOTP')
 router.route('/user/emailVerification')
     .get(userController.verifyEmailHandler)
 
+// render single product details page
+
+router.route('/user/productDetails/:productId')
+    .get(userController.renderProductDetailsPage)
+
+// user logout 
+
+router.get('/user/logout', userController.logoutHandler);
 
 
 
 
+
+//for rendering error page for unknown / critical error
+
+router.use(errorHandler.userErrorHandler);
+
+
+// exporting the user routes
 
 module.exports = router

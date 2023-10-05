@@ -1,6 +1,6 @@
 const dotenv = require('dotenv').config();
 const bcrypt = require('bcrypt');
-const OtpData = require('../models/otpDataModel');
+const otpData = require('../models/otpDataModel');
 const nodemailer = require('nodemailer');
 
 
@@ -26,21 +26,29 @@ const sendOtpEmail = async ({ _id, email }, res) => {
         from: 'sejibaby54@gmail.com',
         to: email,
         subject: 'For email verification from Male Fashion',
-        html: `<P> Your OTP for verification is ${otp} . Don't share your otp !</p> <p> The otp is only valid for one hour</p> `
+        html: `<P> Your OTP for verification is ${otp} . Don't share your otp !</p> <p> The otp is only valid for 30 minutes</p> `
     };
 
     const hashedOtp = await bcrypt.hash(otp, 10);
 
-    const otpData = new OtpData({
+    const existingOtpData = await otpData.findOne({ userId: _id });
+
+    if (existingOtpData) {
+
+        const deletedOldOtpData = await otpData.deleteOne({ userId: _id });
+
+    }
+
+    const otpdata = new otpData({
 
         userId: _id,
         otp: hashedOtp,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
+        expiresAt: Date.now() + 1800000,
 
     })
 
-    await otpData.save();
+    await otpdata.save();
 
 
 
@@ -52,6 +60,7 @@ const sendOtpEmail = async ({ _id, email }, res) => {
 
         } else {
             console.log('email has send ', info.response);
+
             return true;
         }
     })

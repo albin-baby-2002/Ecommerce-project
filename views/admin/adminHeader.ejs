@@ -74,8 +74,8 @@
                 <nav class="header__menu mobile-menu">
                     <ul>
                         <li class=""><a href="./index.html">Home</a></li>
-                        <li><a href="./shop.html">Users</a></li>
-                        <li><a href="#">Products</a>
+                        <li><a href="/admin/usersList">Users</a></li>
+                        <li><a href="/admin/productList">Products</a>
                             <!-- <ul class="dropdown"> -->
                             <!-- <li><a href="./about.html"></a></li>
                                 <li><a href="./shop-details.html">Shop Details</a></li>
@@ -85,7 +85,7 @@
                             </ul> -->
                         </li>
                         <!-- <li><a href="./blog.html">Blog</a></li> -->
-                        <li><a href="./contact.html">Categories</a></li>
+                        <li><a href="/admin/categoryList">Categories</a></li>
                     </ul>
                 </nav>
             </div>
@@ -93,7 +93,7 @@
                 <div class="header__nav__option fs-5">
 
                     <a href="#"><i class="fa-solid fa-user" style="color: #0d0d0d;"></i></a>
-                    <a class="font-weight-bolder text-dark" href="#">Logout</a>
+                    <a class="font-weight-bolder text-dark" href="/admin/logout">Logout</a>
                     <!-- <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
                     <div class="price">$0.00</div> -->
                 </div>
@@ -112,9 +112,9 @@
 
         <strong>
 
-            <p>
+            <div>
                 <%- message.message %>
-            </p>
+            </div>
 
         </strong>
     </div>
