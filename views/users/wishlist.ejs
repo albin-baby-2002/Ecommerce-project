@@ -40,54 +40,93 @@
                     <div class="row">
                         <div class="col-md-12 ftco-animate fadeInUp ftco-animated">
                             <div class="cart-list">
-                                <table class="table mt-4">
-                                    <thead class="thead-primary wishlist001">
-                                        <tr class="text-center">
-                                            <th></th>
-                                            <th>Image</th>
-                                            <th>Product</th>
-                                            <th>Price</th>
-                                            <th>Options</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="text-center border-bottom">
-
-                                            <td
-                                                class="d-flex align-items-center justify-content-center td-height-wishlist ">
-
-                                                <a href="#">
-                                                    <i class="fa-solid fa-2x fa-rectangle-xmark"
-                                                        style="color: #eac053;"></i></a>
 
 
-                                            </td>
+                                <% if(products.length>0){ %>
+
+                                    <table class="table mt-4">
+                                        <thead class="thead-primary wishlist001">
+                                            <tr class="text-center">
+                                                <th></th>
+                                                <th>Image</th>
+                                                <th>Product</th>
+                                                <th>Price</th>
+                                                <th>size</th>
+                                                <th>Quanity needed</th>
+                                                <th>Options</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <% for(let i=0; i<products.length; i++) { %>
+
+                                                <tr data-id="<%= products[i]._id %>" class="text-center border-bottom">
+
+                                                    <td
+                                                        class="d-flex align-items-center justify-content-center td-height-wishlist ">
 
 
-                                            <td class="td-height-wishlist ">
-                                                <img src="img/product/product-1.jpg" alt="" class="img-thumbnail mt-2">
-                                            </td>
 
-                                            <td class=" td-height-wishlist ">
-                                                <p>Nike Free RN 2019 iD</p>
-                                                <p>Far far away, behind the word mountains, far from the countries</p>
-                                            </td>
-
-                                            <td class="">
-                                                <p>23</p>
-                                            </td>
-
-                                            <td class="">
-                                                <p class="btn btn-outline-success">Add to Cart</p>
-                                            </td>
+                                                        <button class="nav-link"
+                                                            onclick="removeFromWishList('<%=products[i]._id %>')"><i
+                                                                class="fa-solid fa-2x fa-rectangle-xmark"
+                                                                style="color: #eac053;"></i></button>
 
 
-                                        </tr><!-- END TR-->
+
+                                                    </td>
 
 
-                                    </tbody>
-                                </table>
+                                                    <td class="td-height-wishlist ">
+                                                        <img src="/img/productImages/<%=products[i].images.find((img)=>{
+                                                    return img.toLowerCase().includes('mainimgthumbnail')
+                                                }) %>" alt="" class="img-thumbnail mt-2" style="height: 100px;">
+                                                    </td>
+
+                                                    <td class=" td-height-wishlist ">
+                                                        <p>
+                                                            <%=products[i].name%>
+                                                        </p>
+
+                                                    </td>
+
+                                                    <td class="">
+                                                        <p>
+                                                            <%=products[i].price%>
+                                                        </p>
+                                                    </td>
+
+                                                    <td class="">
+                                                        <p>
+                                                            <%=products[i].size%>
+                                                        </p>
+                                                    </td>
+
+                                                    <td class="">
+
+                                                        <input value="1" type="Number" class="mb-3">
+                                                    </td>
+
+                                                    <td class="">
+                                                        <p class="btn btn-outline-success">Add to Cart</p>
+                                                    </td>
+
+
+                                                </tr><!-- END TR-->
+
+                                                <% } %>
+
+
+                                        </tbody>
+                                    </table>
+
+                                    <% } else{ %>
+
+                                        <h3 class="mt-5 text-center">No Products In WishList</h3>
+
+                                        <% } %>
+
                             </div>
                         </div>
                     </div>
@@ -102,4 +141,6 @@
 
 
             <%- include('../users/userFooter.ejs') %>
+
+                <script src="/js/user/wishList.js"></script>
                 <%- include('../layouts/footer.ejs') %>

@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
 const Product = require('../models/productModel');
+const path = require('path');
+const fsPromises = require('fs').promises;
 
 //!render login page
 
@@ -229,17 +231,16 @@ const addCategoryHandler = async (req, res, next) => {
 
     try {
 
-
+        console.log(req.body)
 
         const { name, description } = req.body;
 
-        if (!name || !description) {
-            req.session.message = {
-                type: 'danger',
-                message: 'All Fields Are Mandatory'
-            }
 
-            res.redirect('/admin/addCategory');
+
+        if (!name || !description) {
+
+            res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" });
+
             return;
 
         }
@@ -250,12 +251,7 @@ const addCategoryHandler = async (req, res, next) => {
 
         if (existingCategory) {
 
-            req.session.message = {
-                type: 'danger',
-                message: 'The category already exist'
-            }
-
-            res.redirect('/admin/addCategory');
+            res.status(409).json({ "success": false, "message": "failed  to add the category already exists!" });
             return;
 
         } else {
@@ -266,23 +262,16 @@ const addCategoryHandler = async (req, res, next) => {
 
                 await newCategory.save();
 
-                req.session.message = {
-                    type: 'success',
-                    message: ' Success: category added '
-                }
+                res.status(201).json({ "success": true, "message": "New category created successfully !" });
 
-                res.redirect('/admin/addCategory');
                 return;
 
             }
             catch (err) {
-                req.session.message = {
-                    type: 'danger',
-                    message: 'Failed to Add Category ! Try again '
-                }
 
-                res.redirect('/admin/addCategory');
+                res.status(500).json({ "success": false, "message": "Failed to add the category try again ! Hint : facing issue while saving data to database" });
                 return;
+
             }
 
 
@@ -291,7 +280,8 @@ const addCategoryHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        next(err)
+        res.status(500).json({ "success": false, "message": "Failed to add the category try again Hint: server side issue!" });
+        return;
     }
 };
 
@@ -322,57 +312,50 @@ const addProductHandler = async (req, res, next) => {
 
         const files = req.files;
 
+        console.log(files);
+
         const listOfImageNames = Object.entries(files).map((arr) => arr[1][0].filename);
 
-        let { name, category, description, price, stock } = req.body;
+        let { name, groupingID, category, description, price, stock, size, color } = req.body;
 
         price = Number(price);
         stock = Number(stock);
+        groupingID = Number(groupingID)
 
 
-        if (!name || !category || !description || !price || !stock) {
+        if (!name || !category || !description || !price || !stock || !groupingID || !size || !color) {
 
-            req.session.message = {
-                type: 'danger',
-                message: 'All Fields Are Mandatory'
-            }
+            res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
 
-            res.redirect('/admin/addProduct');
             return;
 
-        } else if (stock === NaN || price === NaN) {
-            req.session.message = {
-                type: 'danger',
-                message: 'Price and Stock should be numerical value'
-            }
+        } else if (isNaN(groupingID) || groupingID < 1000) {
 
-            res.redirect('/admin/addProduct');
-            return;
+            res.status(400).json({ "success": false, "message": " Grouping ID should be a  numberical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
 
         }
+        else if (isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
 
-        const newProduct = new Product({ name, price, stock, category, description, images: listOfImageNames });
+            res.status(400).json({ "success": false, "message": " Price and stock value should be non negative numerical values. Try Again !" })
+
+            return;
+        }
+
+
+        const newProduct = new Product({ name, groupingID, price, stock, category, description, images: listOfImageNames, color: color.toLowerCase(), size: size.toLowerCase() });
 
         try {
 
             await newProduct.save();
-            req.session.message = {
-                type: 'success',
-                message: 'product added successfully'
-            }
 
-            res.redirect('/admin/addProduct');
+            res.status(201).json({ "success": true, "message": " New product successfully added " })
             return;
         }
         catch (err) {
 
             console.log(err);
-            req.session.message = {
-                type: 'danger',
-                message: 'failed to add the product try again'
-            }
 
-            res.redirect('/admin/addProduct');
+            res.status(500).json({ "success": false, "message": " Failed to add the product. Try again ! Hint: failed saving to database" })
             return;
 
 
@@ -384,7 +367,10 @@ const addProductHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        next(err)
+        console.log(err)
+
+        res.status(500).json({ "success": false, "message": " Failed to add the product. Try again ! Hint: server side error" })
+
     }
 };
 
@@ -473,10 +459,20 @@ const editProductHandler = async (req, res, next) => {
 
     try {
 
-        console.log(req.body);
+        console.log(req.files);
+
+        const files = req.files;
+
+        const infoOfUpdatedImgs = Object.entries(files).map((arr) => {
+            return [arr[1][0].fieldname, arr[1][0].filename]
+        });
+
+        console.log(infoOfUpdatedImgs);
 
 
-        let { name, category, price, stock, description, onSale } = req.body;
+        let { name, category, price, stock, description, onSale, groupingID, size, color } = req.body;
+
+        groupingID = Number(groupingID)
 
 
 
@@ -487,7 +483,7 @@ const editProductHandler = async (req, res, next) => {
         stock = Number(stock);
 
 
-        if (!name || !category || !description || !price || !stock || !onSale) {
+        if (!name || !category || !groupingID || !description || !price || !stock || !onSale || !size || !color) {
 
             req.session.message = {
                 type: 'danger',
@@ -497,7 +493,11 @@ const editProductHandler = async (req, res, next) => {
             res.redirect(`/admin/editProduct/${productId}`);
             return;
 
-        } else if (Number.isNaN(price) || Number.isNaN(stock)) {
+        } else if (isNaN(groupingID) || groupingID < 1000) {
+
+            res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
+
+        } else if (Number.isNaN(price) || Number.isNaN(stock) || price < 0 || stock < 0) {
             req.session.message = {
                 type: 'danger',
                 message: 'Price and Stock should be numerical value'
@@ -511,8 +511,64 @@ const editProductHandler = async (req, res, next) => {
         onSale = onSale === 'true' ? true : false;
 
 
+        const existingProductData = await Product.findById(productId).lean();
 
-        const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: { name: name, price: price, stock: stock, description: description, category: category, onSale: onSale } })
+
+        let images = existingProductData.images;
+
+        let oldImages = [];
+
+
+        infoOfUpdatedImgs.forEach((info) => {
+
+            let matchedImg = images.find((img) => {
+                return img.toLowerCase().includes(info[0].toLowerCase())
+            })
+
+            if (matchedImg) {
+
+                console.log(" \n matched" + matchedImg);
+
+
+                for (let i = 0; i < images.length; i++) {
+
+                    if (images[i].toLowerCase() === matchedImg.toLowerCase()) {
+
+                        console.log('ok inside \n \n');
+
+                        oldImages.push(images[i]);
+
+                        images[i] = info[1];
+                        break;
+                    }
+                }
+
+            } else {
+
+                console.log('image match not found');
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'failed to update the product'
+                }
+
+                res.redirect(`/admin/editProduct/${productId}`);
+                return;
+
+            }
+
+        })
+
+
+        console.log(images);
+
+        console.log(oldImages);
+
+
+
+
+
+        const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: { name: name, price: price, stock: stock, description: description, category: category, onSale: onSale, images: images, groupingID, size: size.toLowerCase(), color: color.toLowerCase() } })
 
 
         if (updatedProduct) {
@@ -523,9 +579,37 @@ const editProductHandler = async (req, res, next) => {
             }
 
             res.redirect(`/admin/editProduct/${productId}`);
+
+            oldImages.forEach(async (img) => {
+
+                try {
+                    await fsPromises.unlink(path.join(__dirname, '../public/img/productImages', img));
+
+                    console.log('deleted old images ');
+                }
+                catch (err) {
+
+                    console.log(err);
+                    console.log('failed deletion error');
+
+
+                    return;
+                }
+            })
             return;
 
         } else {
+
+            infoOfUpdatedImgs.forEach(async (info) => {
+
+                let imgPath = path.join(__dirname, '../public/img/productImages', info[1]);
+
+                await fsPromises.unlink(imgPath);
+
+                console.log('new images deleted due to failed update');
+
+            })
+
             req.session.message = {
                 type: 'danger',
                 message: 'failed to update the product'
@@ -555,9 +639,33 @@ const deleteProductHandler = async (req, res, next) => {
 
         const productId = req.params.productId;
 
-        const isDeleted = await Product.findByIdAndDelete(productId);
 
-        if (isDeleted) {
+
+        const Deleted = await Product.findByIdAndDelete(productId);
+
+        if (Deleted) {
+
+            const oldImages = Deleted.images;
+            console.log(oldImages);
+
+            oldImages.forEach(async (img) => {
+
+                try {
+                    await fsPromises.unlink(path.join(__dirname, '../public/img/productImages', img));
+
+                    console.log('deleted old images ');
+                }
+                catch (err) {
+
+                    console.log(err);
+                    console.log('failed deletion error');
+
+                    return;
+                }
+            })
+
+
+
 
             res.json({ 'success': true });
 

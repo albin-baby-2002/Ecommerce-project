@@ -115,6 +115,15 @@ ol {
 	margin: 0;
 }
 
+.add-hover:hover {
+	cursor: pointer;
+}
+
+.add-hover-opacity :hover {
+	opacity: .8;
+
+}
+
 /*---------------------
   Helper CSS
 -----------------------*/

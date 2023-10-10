@@ -6,6 +6,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    groupingID: {
+        type: Number,
+        required: true
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
@@ -23,6 +27,14 @@ const productSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: true,
+    },
+    size: {
+        type: String,
+        required: true
+    },
+    color: {
+        type: String,
+        required: true
     },
     stock: {
         type: Number,

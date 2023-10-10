@@ -62,7 +62,7 @@ router.route('/deleteCategory/:categoryId')
 
 router.route('/editProduct/:productId')
     .get(adminController.renderEditProductPage)
-    .post(adminController.editProductHandler);
+    .post(upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.editProductHandler);
 
 // delete product request handler
 
@@ -74,7 +74,7 @@ router.route('/deleteProduct/:productId')
 router.route('/addProduct')
     .get(adminController.renderAddProductPage)
 
-    .post(upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }, { name: 'fourthImg', maxCount: 1 }, { name: 'fourthImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.addProductHandler);
+    .post(upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.addProductHandler);
 
 
 

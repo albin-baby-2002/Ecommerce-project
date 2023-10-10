@@ -24,7 +24,7 @@
         <main class="main my-5">
             <div class="container">
 
-                <form class="container  w-50 my-5" action="/admin/addCategory" method="post">
+                <form id="addCategoryForm" class="container  w-50 my-5" action="/admin/addCategory" method="post">
 
                     <!-- Email input -->
                     <div class="form-outline mb-4">
@@ -54,5 +54,7 @@
 
 
         <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/addCategory.js"></script>
 
             <%- include('../layouts/footer.ejs') %>

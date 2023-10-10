@@ -78,19 +78,9 @@
 
 <script>
 
-
-
-    function a() {
-        window.alert('load')
-    }
-
     function renderBg() {
 
         const products = document.querySelectorAll('[data-id="bg-render"]');
-
-
-
-
 
         products.forEach((product) => {
 
@@ -100,18 +90,19 @@
 
         })
 
-    }
+    };
 
-    // Get the div element by its ID
+
+
     const clickable_Divs = document.querySelectorAll('[click-id="productDetailsLink"]');
 
     clickable_Divs.forEach((clickableDiv) => {
-        const productId = clickableDiv.getAttribute('product-id');
+        const groupID = clickableDiv.getAttribute('group-id');
+        const colorID = clickableDiv.getAttribute('color-id');
 
-        // Add a click event listener
         clickableDiv.addEventListener('click', function () {
-            // This function will be executed when the div is clicked
-            window.location.href = '/user/productDetails/' + productId;
+
+            window.location.href = `/user/productDetails/${groupID}/?color=${colorID}`;
         });
     })
 
@@ -124,3 +115,6 @@
 
 
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>

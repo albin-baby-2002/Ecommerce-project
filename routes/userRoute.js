@@ -32,6 +32,11 @@ router.route('/user/verifyOTP')
     .get(userController.renderOtpVerificationPage)
     .post(userController.otpVerificationHandler);
 
+// resend otp 
+
+router.route('/user/resendOTP')
+    .post(userController.resendOtpHandler);
+
 
 // email verification page using otp if failed to verify during signUp
 
@@ -40,15 +45,36 @@ router.route('/user/emailVerification')
 
 // render single product details page
 
-router.route('/user/productDetails/:productId')
+router.route('/user/productDetails/:groupingID')
     .get(userController.renderProductDetailsPage)
 
 // user logout 
 
 router.get('/user/logout', userController.logoutHandler);
 
+// render forgot password page
+
+router.route('/user/forgotPassword')
+    .get(userController.renderForgotPasswordPage)
+    .post(userController.forgotPasswordHandler);
+
+router.route('/user/forgotPassword/verifyOTP')
+    .post(userController.forgotPasswordVerifyOtpHandler)
 
 
+router.route('/user/resetPassword')
+    .get(userController.renderResetPasswordPage)
+    .post(userController.resetPasswordHandler)
+
+router.route('/user/addToWishList')
+    .post(userController.addToWishListHandler)
+
+router.route('/user/wishList')
+    .get(userController.renderWishListPage)
+    .delete(userController.removeFromWishListHandler);
+
+router.route('/user/addToCart')
+    .post(userController.addToCartHandler);
 
 
 //for rendering error page for unknown / critical error

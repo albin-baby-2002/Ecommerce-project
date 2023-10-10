@@ -14,6 +14,7 @@
                         </div>
                     </div>
                     <div class="row mt-3">
+
                         <div class="col-lg-2 col-md-3 d-flex align-items-md-center justify-content-center">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
@@ -49,7 +50,8 @@
                                         </div>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+
+                                <!-- <li class="nav-item">
                                     <a class="nav-link" data-toggle="tab" href="#tabs-4" role="tab">
                                         <div class="product__thumb__pic " data-id="bg-render"
                                             data-for-bg="/img/productImages/<%=product.images.find((img)=>img.toLowerCase().includes('fourthimg')) %>"
@@ -59,12 +61,15 @@
                                         height: 120px; width: 95px;">
                                         </div>
                                     </a>
-                                </li>
+                                </li> -->
+
                             </ul>
                         </div>
                         <div class="col-lg-8 col-md-9 d-flex align-items-center justify-content-center">
                             <div class="tab-content">
                                 <div class="tab-pane active" id="tabs-1" role="tabpanel">
+
+                                    <div class="productGroup" data-group="<%=product.groupingID%>"></div>
                                     <div class="product__details__pic__item d-flex align-items-center">
                                         <img src="/img/productImages/<%=product.images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
                                             style="height: 600px; " alt="">
@@ -84,14 +89,14 @@
 
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="tabs-4" role="tabpanel">
+                                <!-- <div class="tab-pane" id="tabs-4" role="tabpanel">
                                     <div class="product__details__pic__item">
                                         <img src="/img/productImages/<%=product.images.find((img)=>img.toLowerCase().includes('fourthimg')) %>"
                                             style="height: 600px; " alt="">
 
                                     </div>
 
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -101,7 +106,7 @@
                 <div class="container">
                     <div class="row d-flex justify-content-center">
                         <div class="col-lg-8">
-                            <div class="product__details__text">
+                            <div class="product__details__text" data-id="<%= product._id%>">
                                 <h4>
                                     <%=product.name%>
                                 </h4>
@@ -120,50 +125,68 @@
                                 <div class="product__details__option">
                                     <div class="product__details__option__size">
                                         <span>Size:</span>
-                                        <label for="xxl">xxl
-                                            <input type="radio" id="xxl">
-                                        </label>
-                                        <label class="active" for="xl">xl
-                                            <input type="radio" id="xl">
-                                        </label>
-                                        <label for="l">l
-                                            <input type="radio" id="l">
-                                        </label>
-                                        <label for="sm">s
-                                            <input type="radio" id="sm">
-                                        </label>
+
+                                        <% for(let i=0; i < variants.length ;i++) { %>
+
+                                            <% if(variants[i].color.toLowerCase()===currentColor.toLowerCase() ) {%>
+
+                                                <label
+                                                    class="size-button <% if(variants[i].size.toLowerCase() === currentSize.toLowerCase()){%> border-dark selected <%}%> "
+                                                    for="<%=variants[i].size %>" data-size="<%=variants[i].size %>">
+                                                    <%=variants[i].size %>
+                                                        <input class="size-radio" value="<%=variants[i].size %>"
+                                                            name="size" type="radio" id="<%=variants[i].size %>">
+                                                </label>
+
+                                                <% } %>
+
+                                                    <% }%>
+
                                     </div>
-                                    <div class="product__details__option__color">
+
+                                    <div class="product__details__option__size">
                                         <span>Color:</span>
-                                        <label class="c-1" for="sp-1">
-                                            <input type="radio" id="sp-1">
-                                        </label>
-                                        <label class="c-2" for="sp-2">
-                                            <input type="radio" id="sp-2">
-                                        </label>
-                                        <label class="c-3" for="sp-3">
-                                            <input type="radio" id="sp-3">
-                                        </label>
-                                        <label class="c-4" for="sp-4">
-                                            <input type="radio" id="sp-4">
-                                        </label>
-                                        <label class="c-9" for="sp-9">
-                                            <input type="radio" id="sp-9">
-                                        </label>
+
+
+                                        <% for(let i=0; i < colorList.length ;i++) { %>
+
+
+
+                                            <label
+                                                class="color-button <% if(colorList[i].toLowerCase() === currentColor.toLowerCase()){%> border-dark selected <%}%> "
+                                                for="<%=colorList[i]%>" data-color="<%=colorList[i]%>">
+                                                <%=colorList[i]%>
+                                                    <input class="color-radio" name="color" value="<%=colorList[i]%>"
+                                                        type="radio" id="<%=colorList[i]%>">
+                                            </label>
+
+                                            <% } %>
+
                                     </div>
+
                                 </div>
                                 <div class="product__details__cart__option">
                                     <div class="quantity">
                                         <div class="pro-qty">
-                                            <input type="text" value="1">
+                                            <input data-id="quantity" type="text" value="1">
                                         </div>
                                     </div>
-                                    <button href="#" class="primary-btn">add to cart</button>
+                                    <button onclick="addToCart('<%=product._id%>')" class="primary-btn">add to
+                                        cart</button>
                                 </div>
-                                <div class="product__details__btns__option">
-                                    <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
-                                    <a href="#"><i class="fa fa-exchange"></i> Add To Compare</a>
+
+                                <div class="product__details__btns__option d-flex justify-content-center">
+
+                                    <button onclick="addToWishList()" id="addToWishList"
+                                        class="nav-link add-hover-opacity" style="font-weight: bold;"><i
+                                            class="fa fa-heart"></i>
+                                        <span>ADD
+                                            TO WISHLIST</span>
+                                    </button>
+
+                                    <!-- <a href="#"><i class="fa fa-exchange"></i> Add To Compare</a> -->
                                 </div>
+
                                 <div class="product__details__last__option">
                                     <h5><span>Guaranteed Safe Checkout</span></h5>
                                     <img src="img/shop-details/details-payment.png" alt="">
@@ -489,5 +512,7 @@
 
 
         <%- include('../users/userFooter.ejs') %>
+
+            <script src="/js/user/productDetails.js"></script>
 
             <%- include('../layouts/footer.ejs') %>

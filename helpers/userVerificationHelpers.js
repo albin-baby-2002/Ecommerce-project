@@ -23,10 +23,11 @@ const sendOtpEmail = async ({ _id, email }, res) => {
 
 
     const mailOptions = {
+
         from: 'sejibaby54@gmail.com',
         to: email,
         subject: 'For email verification from Male Fashion',
-        html: `<P> Your OTP for verification is ${otp} . Don't share your otp !</p> <p> The otp is only valid for 30 minutes</p> `
+        html: `<P> Your OTP for verification is ${otp} . Don't share your otp !</p> <p> The otp is only valid for 5 minutes</p> `
     };
 
     const hashedOtp = await bcrypt.hash(otp, 10);
@@ -37,6 +38,9 @@ const sendOtpEmail = async ({ _id, email }, res) => {
 
         const deletedOldOtpData = await otpData.deleteOne({ userId: _id });
 
+
+        // redirect if deletion failed
+
     }
 
     const otpdata = new otpData({
@@ -44,7 +48,7 @@ const sendOtpEmail = async ({ _id, email }, res) => {
         userId: _id,
         otp: hashedOtp,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 1800000,
+        expiresAt: Date.now() + 300000,
 
     })
 
