@@ -105,11 +105,12 @@
 
                                                     <td class="">
 
-                                                        <input value="1" type="Number" class="mb-3">
+                                                        <input data-id="quantity" value="1" type="Number" class="mb-3">
                                                     </td>
 
                                                     <td class="">
-                                                        <p class="btn btn-outline-success">Add to Cart</p>
+                                                        <btn onclick="addToCart('<%=products[i]._id%>')"
+                                                            class="btn btn-outline-success">Add to Cart</btn>
                                                     </td>
 
 

@@ -143,7 +143,11 @@
                                                 <h6>
                                                     <%=products[i].name%>
                                                 </h6>
-                                                <a href="#" class="add-cart">+ Add To Cart</a>
+
+                                                <button class="nav-link" onclick="addToCart('<%=products[i]._id%>')"><a
+                                                        class="">+
+                                                        Add to cart</a></button>
+
                                                 <div class="rating">
                                                     <i class="fa fa-star-o"></i>
                                                     <i class="fa fa-star-o"></i>

@@ -107,6 +107,8 @@ function addToCart(id) {
 
     let cartData = { productID, quantity };
 
+    console.log(cartData);
+
     fetch('http://localhost:2500/user/addToCart', {
 
         method: 'POST',

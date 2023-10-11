@@ -8,6 +8,8 @@ const OtpData = require('../models/otpDataModel');
 const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 const WishList = require('../models/wishListModel');
+const Cart = require('../models/cartModel');
+const CartItem = require('../models/cartItemModel');
 
 const userVerificationHelper = require('../helpers/userVerificationHelpers')
 
@@ -1101,13 +1103,11 @@ const addToWishListHandler = async (req, res, next) => {
         });
 
 
-        console.log(productAlreadyInWishList);
 
-        console.log(product._id)
 
 
         if (productAlreadyInWishList) {
-            console.log('gfdgsdfgs');
+
 
 
             res.status(400).json({ "success": false, "message": "product already exists wishList!" });
@@ -1164,9 +1164,10 @@ const renderWishListPage = async (req, res, next) => {
 
         const userWishListID = userData.wishlist;
 
-        console.log(userWishListID)
 
         let productsInWishList;
+
+        let result;
 
         try {
 
@@ -1276,39 +1277,247 @@ const removeFromWishListHandler = async (req, res, next) => {
 const addToCartHandler = async (req, res, next) => {
 
 
-
     try {
 
         if (!req.session.userID) {
 
-            res.status(401).json({ "success": false, "message": "login to add product to wishlist" })
+            res.status(401).json({ "success": false, "message": "login to add product to cart" })
 
             return;
         }
 
 
-        const { productID, quantity } = req.body;
+        let { productID, quantity } = req.body;
 
-        if (!productID || !quantity) {
+        quantity = Number(quantity);
 
-            res.status(400).json({ "success": false, "message": "All fields not received. Try Again" });
+        if (!productID || !quantity || isNaN(quantity) || quantity <= 0) {
+
+            res.status(400).json({ "success": false, "message": "All fields not received and quantity should be a value greater than 0 . Try Again" });
+
+            return;
         }
 
-        const userID = req.session.userID;
 
-        const
+        let productData = await Product.findById(productID);
+        let stock = productData.stock;
 
-            res.status(200).json({ "success": true, "message": "good request" });
 
+        if (stock === 0) {
+
+            res.status(400).json({ "success": false, "message": " Product Out Of Stock" });
+
+            return;
+
+        } else if (stock < quantity) {
+
+
+            res.status(400).json({ "success": false, "message": `only ${stock} units left in stock.` });
+
+            return;
+        }
+
+
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+        const userData = await User.findById(userID);
+        let userCartID = userData.cart;
+
+
+        if (!userCartID) {
+
+            const newCart = new Cart({ userID });
+            await newCart.save();
+
+
+            const updatedUser = await User.findByIdAndUpdate(userID, { $set: { cart: newCart._id } }, { new: true });
+            userCartID = updatedUser.cart;
+
+
+            if (!userCartID) {
+
+                res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
+
+                return;
+
+            }
+        };
+
+
+
+        let existingItemsInCart = await Cart.aggregate([
+            {
+                $match: {
+                    userID: userID,
+                },
+            }, {
+                $lookup: {
+                    from: 'cartitems',
+                    localField: 'items',
+                    foreignField: '_id',
+                    as: 'cartItems',
+                }
+            }
+
+
+        ]).exec()
+
+
+
+        existingItemsInCart = existingItemsInCart[0].cartItems;
+
+        let ProductAlreadyInCart = existingItemsInCart.find((item) => {
+
+            return item.product.equals(productID);
+        })
+
+
+
+        if (ProductAlreadyInCart) {
+
+            const existingQuantityInCart = ProductAlreadyInCart.quantity;
+
+            if ((existingQuantityInCart + quantity) > stock) {
+
+
+                res.status(400).json({ "success": false, "message": `only ${stock} units left in stock and you already have ${existingQuantityInCart} of this in your cart ` });
+
+                return;
+            }
+
+
+
+            const QuantityIncrease = await CartItem.updateOne({ _id: ProductAlreadyInCart._id }, { $inc: { quantity: quantity } });
+
+            if (!QuantityIncrease) {
+                res.status(500).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
+
+                return;
+            }
+
+            res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
+
+            return;
+
+
+        }
+
+        const cartItem = new CartItem({ cartID: userCartID, product: productID, quantity, price: productData.price });
+
+        await cartItem.save();
+
+
+        const updatedCart = await Cart.findByIdAndUpdate(userCartID, { $push: { items: cartItem._id } })
+
+
+        if (!updatedCart) {
+            res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart updating Try Again" });
+
+            return;
+        }
+
+
+        res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
+
+        return;
 
 
     }
+
+
     catch (err) {
 
         console.log(err);
 
         res.status(500).json({ "success": false, "message": "failed try again Hint: server facing issues !" })
 
+    }
+
+
+}
+
+// ! render cart page 
+
+const renderCartPage = async (req, res, next) => {
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Login to view your cart '
+            }
+            res.redirect('/');
+
+            return;
+        }
+
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
+        const userData = await User.findById(userID);
+
+
+
+        let itemsInCart = await Cart.aggregate([
+            {
+                $match: {
+                    userID: userID,
+                },
+            }, {
+                $lookup: {
+                    from: 'cartitems',
+                    localField: 'items',
+                    foreignField: '_id',
+                    as: 'cartItems',
+                }
+            }, {
+
+                $unwind: "$cartItems"
+
+
+            }, {
+                $replaceRoot: {
+                    newRoot: '$cartItems'
+                }
+            }, {
+                $lookup: {
+                    from: 'products',
+                    localField: 'product',
+                    foreignField: '_id',
+                    as: 'cartProductData'
+
+                }
+            }, {
+                $replaceRoot: {
+                    newRoot: {
+                        $mergeObjects: [
+                            { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
+                            { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
+                        ]
+                    }
+                }
+            }
+
+
+
+        ]).exec()
+
+        console.log(itemsInCart)
+
+
+
+
+
+
+
+        res.render('users/shoppingCart.ejs', { itemsInCart });
+
+        return;
+
+    }
+    catch (err) {
+        next(err);
     }
 
 
@@ -1333,5 +1542,6 @@ module.exports = {
     addToWishListHandler,
     renderWishListPage,
     removeFromWishListHandler,
-    addToCartHandler
+    addToCartHandler,
+    renderCartPage
 }

@@ -69,12 +69,16 @@ router.route('/user/resetPassword')
 router.route('/user/addToWishList')
     .post(userController.addToWishListHandler)
 
+router.route('/user/addToCart')
+    .post(userController.addToCartHandler);
+
 router.route('/user/wishList')
     .get(userController.renderWishListPage)
     .delete(userController.removeFromWishListHandler);
 
-router.route('/user/addToCart')
-    .post(userController.addToCartHandler);
+router.route('/user/cart')
+    .get(userController.renderCartPage)
+
 
 
 //for rendering error page for unknown / critical error
