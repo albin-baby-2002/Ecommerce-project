@@ -89,3 +89,50 @@ function addToCart(id) {
 }
 
 
+function addToCart(id) {
+
+    const quantity = "1";
+
+    const productID = id;
+
+    let cartData = { productID, quantity };
+
+    console.log(cartData)
+
+    fetch('http://localhost:2500/user/addToCart', {
+
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cartData)
+    })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.success) {
+
+                console.log('success')
+
+                window.alert(data.message);
+
+            } else {
+
+                const errorMessage = data.message;
+                alert(`Error: ${errorMessage}`);
+            }
+        })
+        .catch(error => {
+
+            // alert('Failed to add to cart  due to local / network issues' + error);
+
+
+            // Handle network or other errors here
+            console.error('Error:', error);
+        });
+
+
+
+}
+
+

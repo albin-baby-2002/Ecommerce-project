@@ -1522,6 +1522,188 @@ const renderCartPage = async (req, res, next) => {
 
 
 }
+
+// ! delete cartItem from user cart
+
+const deleteItemFromCartHandler = async (req, res, next) => {
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({
+                "success": false,
+                "message": "session timedOut login to remove item from cart"
+            })
+
+            return;
+        }
+
+        const { cartItemID } = req.body;
+
+        const userID = req.session.userID;
+
+        if (!cartItemID || !userID) {
+
+            res.status(400).json({
+                "success": false,
+                "message": "server facing issues try again Hint failed to get cartItem data !"
+            })
+
+            return;
+        };
+
+        const cartItem = await CartItem.findById(cartItemID);
+
+        console.log('\n\n\n' + cartItem);
+
+        if (!cartItem) {
+
+            res.status(400).json({
+                "success": false,
+                "message": " Failed to deleted as item not found in cart !"
+            });
+            return;
+        };
+
+        const CartId = cartItem.cartID;
+
+        // this process removes the cartItem form list of items in cart but the cart item will not be deleted
+
+        const removedCartItemID = await Cart.findByIdAndUpdate(CartId, { $pull: { items: cartItemID } })
+
+
+        console.log('\n\n\n' + removedCartItemID);
+
+        if (!removedCartItemID) {
+
+            res.status(500).json({
+                "success": false,
+                "message": " server facing some issues try again !"
+            });
+
+            return;
+
+        }
+
+        const deletedCartItem = await CartItem.findByIdAndDelete(cartItemID);
+
+        if (deletedCartItem) {
+
+            res.status(200).json({
+                "success": true,
+                "message": " Item Removed from cart"
+            });
+
+            return;
+        }
+
+        res.status(500).json({
+            "success": false,
+            "message": " server facing some issues try again !"
+        });
+
+        return;
+
+
+    }
+    catch (err) {
+
+        console.log(err)
+
+        res.status(500).json({
+            "success": false,
+            "message": "server facing issues  try again"
+        })
+    }
+
+
+}
+
+// ! reduce quantity of item in cart 
+
+
+const reduceCartItemQuantityHandler = async (req, res, next) => {
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({
+                "success": false,
+                "message": "session timedOut login to reduce item quantity from cart"
+            })
+
+            return;
+        }
+
+        const { cartItemID } = req.body;
+
+        const userID = req.session.userID;
+
+        if (!cartItemID || !userID) {
+
+            res.status(400).json({
+                "success": false,
+                "message": "server facing issues try again Hint failed to get cartItem data !"
+            })
+
+            return;
+        };
+
+        const cartItem = await CartItem.findById(cartItemID);
+
+        console.log('\n\n\n' + cartItem);
+
+        if (!cartItem) {
+
+            res.status(400).json({
+                "success": false,
+                "message": " Failed to reduce quantity as item not found in cart !"
+            });
+            return;
+        };
+
+
+        if (cartItem.quantity === 1) {
+
+            res.status(400).json({
+                "success": false,
+                "message": " There is only one more quantity in cart. If you wish to remove it press delete button !"
+            });
+
+            return;
+
+        }
+
+        const updatedCartItem = await CartItem.findByIdAndUpdate(cartItemID, { $inc: { quantity: -1 } });
+
+        if (updatedCartItem) {
+
+            res.status(200).json({
+                "success": true,
+                "message": " removed one item!"
+            });
+
+        }
+
+
+    }
+    catch (err) {
+
+        console.log(err)
+
+        res.status(500).json({
+            "success": false,
+            "message": "server facing issues  try again"
+        })
+    }
+
+
+}
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
@@ -1543,5 +1725,7 @@ module.exports = {
     renderWishListPage,
     removeFromWishListHandler,
     addToCartHandler,
-    renderCartPage
+    renderCartPage,
+    deleteItemFromCartHandler,
+    reduceCartItemQuantityHandler
 }

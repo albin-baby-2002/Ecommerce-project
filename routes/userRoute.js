@@ -78,6 +78,8 @@ router.route('/user/wishList')
 
 router.route('/user/cart')
     .get(userController.renderCartPage)
+    .delete(userController.deleteItemFromCartHandler)
+    .put(userController.reduceCartItemQuantityHandler);
 
 
 
