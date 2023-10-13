@@ -1,3 +1,22 @@
+const deleteBtnS = document.querySelectorAll('.deleteButton');
+
+deleteBtnS.forEach((btn) => {
+
+    btn.addEventListener("click", function () {
+
+        const data = btn.getAttribute('data-id').trim();
+        const confirmed = confirm("Are you sure you want to delete?");
+
+        if (confirmed) {
+
+            deleteProduct(data);
+        } else {
+
+        }
+    })
+
+});
+
 
 async function deleteProduct(data) {
     try {

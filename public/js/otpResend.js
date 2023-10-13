@@ -13,7 +13,7 @@ switch (performance.navigation.type) {
 
         console.log('Page is initially loaded');
 
-        minutes = parseInt(localStorage.getItem('timerMinutes'), 10) === 0 ? 0 : parseInt(localStorage.getItem('timerMinutes'), 10) || 5;
+        minutes = parseInt(localStorage.getItem('timerMinutes'), 10) === 0 ? 0 : parseInt(localStorage.getItem('timerMinutes'), 10) || 2;
 
         seconds = parseInt(localStorage.getItem('timerSeconds'), 10) === 0 ? 0 : parseInt(localStorage.getItem('timerSeconds'), 10) || 0;
 
@@ -84,7 +84,7 @@ async function resendOTP() {
 
             if (res.success) {
 
-                minutes = 5;
+                minutes = 2;
                 seconds = 0;
 
                 localStorage.setItem('timerMinutes', minutes);

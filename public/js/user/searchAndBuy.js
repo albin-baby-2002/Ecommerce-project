@@ -3,6 +3,28 @@ const sortSelect = document.getElementById('sortby');
 const searchProduct = document.getElementById('search');
 const wishListButtons = document.querySelectorAll('.wishListBtn');
 
+
+document.addEventListener("click", function (e) {
+    const customSelect = document.querySelector(".custom-selected");
+    const selectOptions = customSelect.querySelector(".select-options");
+    const selectButton = customSelect.querySelector(".select-button");
+
+    if (e.target === selectButton) {
+        // Toggle visibility of options when the button is clicked
+        selectOptions.style.display = selectOptions.style.display === "block" ? "none" : "block";
+    } else if (e.target.parentNode === selectOptions) {
+        // Handle option selection
+        selectButton.textContent = e.target.textContent;
+        selectOptions.style.display = "none";
+
+        // You can access the selected value using e.target.getAttribute("data-value")
+    } else {
+        // Hide the options if clicking outside the custom select
+        selectOptions.style.display = "none";
+    }
+});
+
+
 categoryRadios.forEach((radio) => {
     radio.addEventListener('change', () => {
         const categoryID = radio.value;

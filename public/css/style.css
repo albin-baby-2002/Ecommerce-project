@@ -124,6 +124,40 @@ ol {
 
 }
 
+.custom-selected {
+	position: relative;
+	display: inline-block;
+}
+
+.select-button {
+	padding: 10px;
+	border: 1px solid #ccc;
+	background: #fff;
+	cursor: pointer;
+}
+
+.select-options {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	display: none;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	border: 1px solid #ccc;
+	background: #fff;
+}
+
+.select-options li {
+	padding: 5px;
+	cursor: pointer;
+}
+
+.select-options li:hover {
+	background: #f0f0f0;
+}
+
+
 /*---------------------
   Helper CSS
 -----------------------*/

@@ -1,6 +1,35 @@
+const deleteBtnS = document.querySelectorAll('.deleteButton');
+
+deleteBtnS.forEach((btn) => {
+
+    btn.addEventListener("click", function () {
+
+        const data = btn.getAttribute('data-id').trim();
+        const confirmed = confirm("Are you sure you want to delete?");
+
+        if (confirmed) {
+
+            deleteCategory(data);
+        } else {
+
+        }
+    })
+
+});
+
+
+
+
+
 
 async function deleteCategory(data) {
+
+
+
     try {
+
+        console.log(data);
+
         const response = await fetch("http://localhost:2500/admin/deleteCategory/" + data, {
             method: "POST",
             headers: {
@@ -19,7 +48,7 @@ async function deleteCategory(data) {
 
                 window.alert("Category deleted");
 
-                const row = document.querySelector(`[data-id="${data}"]`);
+                const row = document.querySelector(`[row-id="${data}"]`);
 
                 row.remove();
 

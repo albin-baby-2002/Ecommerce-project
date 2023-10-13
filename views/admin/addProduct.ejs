@@ -24,6 +24,8 @@
         <main class="main my-5">
             <div class="container">
 
+                <h2 class="text-center">Enter New Product Details</h2>
+
                 <form class="container  w-50 my-5" id="myForm" action="/admin/addProduct" method="post"
                     enctype="multipart/form-data">
 
@@ -196,8 +198,9 @@
 
 
 
-                    <div class="form-outline mb-2">
-                        <textarea name="description" id="description" cols="49" rows="5" required></textarea>
+                    <div class="form-outline mb-2 w-100">
+                        <textarea class=" w-100" style="width: auto;" name="description" id="description"
+                            required></textarea>
                         <label class="form-label mt-2" for="description">Description</label>
                     </div>
 

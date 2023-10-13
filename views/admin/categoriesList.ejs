@@ -49,8 +49,7 @@
                                 <% for(let i=0; i < categories.length ;i++) { %>
 
 
-                                    <tr data-id="<%= categories[i]._id%>" class="text-center"
-                                        style="font-size: medium;">
+                                    <tr row-id="<%= categories[i]._id%>" class="text-center" style="font-size: medium;">
                                         <td data-title="Name" style="width: 300px;">
                                             <%= categories[i].name %>
                                         </td>
@@ -66,7 +65,7 @@
 
 
 
-                                            <button onclick=" deleteCategory('<%=categories[i]._id %>' )" class=" btn
+                                            <button  data-id=" <%=categories[i]._id %>" class=" deleteButton btn
                                                 btn-sm mx-4 btn-outline-danger">
                                                 Delete
 

@@ -320,10 +320,12 @@ const addProductHandler = async (req, res, next) => {
 
         price = Number(price);
         stock = Number(stock);
-        groupingID = Number(groupingID)
+        groupingID = Number(groupingID);
+        size = size.trim();
+        color = color.trim();
 
 
-        if (!name || !category || !description || !price || !stock || !groupingID || !size || !color) {
+        if (!name || !category || !description || !price || !groupingID || !size || !color) {
 
             res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
 
@@ -481,9 +483,11 @@ const editProductHandler = async (req, res, next) => {
 
         price = Number(price);
         stock = Number(stock);
+        onSale = onSale.trim();
+        size = size.trim();
 
 
-        if (!name || !category || !groupingID || !description || !price || !stock || !onSale || !size || !color) {
+        if (!name || !category || !groupingID || !description || !price || !onSale || !size || !color) {
 
             req.session.message = {
                 type: 'danger',
@@ -763,7 +767,8 @@ const deleteCategoryHandler = async (req, res, next) => {
 
     try {
 
-        const categoryId = req.params.categoryId;
+
+        const categoryId = new mongoose.Types.ObjectId(req.params.categoryId);
 
         const isDeleted = await Category.findByIdAndDelete(categoryId);
 
