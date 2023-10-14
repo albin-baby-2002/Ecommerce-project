@@ -105,6 +105,17 @@ router.route('/user/cart')
     .delete(cartController.deleteItemFromCartHandler)
     .put(cartController.reduceCartItemQuantityHandler);
 
+// ! get total price of cart items 
+
+router.get('/user/cartTotal', cartController.getTotalCartPrice)
+
+// ! render checkout page 
+
+router.get('/user/checkout', productController.renderCheckOutPage);
+
+// ! add new delivery address handler
+
+router.post('/user/addNewAddress', userController.addNewDeliveryAddress)
 
 // ! for rendering error page for unknown / critical error
 

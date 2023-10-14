@@ -4,6 +4,8 @@ const User = require('../models/userModel');
 const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 const WishList = require('../models/wishListModel');
+const Address = require('../models/addressModel');
+const { default: mongoose } = require('mongoose');
 
 
 
@@ -421,10 +423,92 @@ const removeFromWishListHandler = async (req, res, next) => {
 
 }
 
+// ! render checkout page 
+
+const renderCheckOutPage = async (req, res, next) => {
+
+
+
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Login to view your Checkout Page'
+            }
+            res.redirect('/');
+
+            return;
+        };
+
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
+        const Addresses = await User.aggregate([
+            {
+                $match: {
+                    _id: userID
+                }
+            },
+            {
+                $lookup: {
+
+                    from: "addresses",
+                    localField: 'addresses',
+                    foreignField: '_id',
+                    as: 'Addresses'
+                }
+            }, {
+                $unwind: '$Addresses'
+            }, {
+                $replaceRoot: {
+                    newRoot: '$Addresses'
+                }
+            }
+
+        ]).exec()
+
+
+
+        if (!Addresses) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Login to view your wishlist'
+            }
+
+
+            res.redirect('/user/cart');
+
+            return;
+
+        }
+
+
+
+
+
+
+
+        res.render('users/checkout.ejs', { Addresses });
+
+        return;
+
+    }
+    catch (err) {
+        next(err);
+    }
+
+
+}
+
 module.exports = {
     renderSearchAndBuy,
     renderProductDetailsPage,
     addToWishListHandler,
     renderWishListPage,
-    removeFromWishListHandler
+    removeFromWishListHandler,
+    renderCheckOutPage
 }

@@ -2,11 +2,11 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
 const User = require('../models/userModel');
 const OtpData = require('../models/otpDataModel');
+const Address = require('../models/addressModel');
+const userVerificationHelper = require('../helpers/userVerificationHelpers');
 
-const userVerificationHelper = require('../helpers/userVerificationHelpers')
 
 
 
@@ -832,15 +832,17 @@ const renderResetPasswordPage = async (req, res, next) => {
 
 const resetPasswordHandler = async (req, res, next) => {
 
-    if (req.session.userID) {
 
-        res.redirect('/');
-
-        return;
-    }
 
 
     try {
+
+        if (req.session.userID) {
+
+            res.redirect('/');
+
+            return;
+        }
 
         const { password } = req.body;
 
@@ -933,6 +935,65 @@ const resetPasswordHandler = async (req, res, next) => {
 
 }
 
+// ! add new delivery address handler
+
+const addNewDeliveryAddress = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to add New Address" })
+
+            return;
+        }
+
+        const userID = req.session.userID;
+
+        let { fullName, country, phone, locality, city, addressLine, state, pinCode } = req.body;
+
+        console.log(req.body);
+
+        if (!fullName || !country || !phone || !locality || !city || !addressLine || !state || !pinCode) {
+
+            res.status(400).json({ "success": false, "message": " Failed to create new Address all fields are mandatory  !" })
+        }
+
+        const newAddress = new Address({ userID, fullName, country, phone, locality, city, addressLine, state, pinCode });
+
+        savedAddress = await newAddress.save();
+
+        if (savedAddress instanceof Address) {
+
+            const updatedUser = await User.findByIdAndUpdate(userID, { $push: { addresses: savedAddress._id } });
+
+            if (updatedUser instanceof User) {
+
+                res.status(201).json({ "success": true, "message": " New Delivery Address Added successfully" })
+            }
+            else {
+
+                res.status(500).json({ "success": false, "message": " Failed to create new Address . Server facing issues!" })
+            }
+
+        }
+        else {
+
+            res.status(500).json({ "success": false, "message": " Failed to create new Address . Server facing issues!" })
+
+        }
+
+
+
+
+    }
+    catch (err) {
+        next(err);
+    }
+
+
+}
 
 module.exports = {
     renderLoginPage,
@@ -950,5 +1011,6 @@ module.exports = {
     forgotPasswordVerifyOtpHandler,
     renderResetPasswordPage,
     resetPasswordHandler,
-    renderForgotPasswordVerifyOtpPage
+    renderForgotPasswordVerifyOtpPage,
+    addNewDeliveryAddress
 }

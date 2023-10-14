@@ -83,6 +83,39 @@ function addToCart(id, cartItemID) {
 
                 }
 
+
+                fetch('http://localhost:2500/user/cartTotal', {
+
+                    method: 'GET'
+
+                })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (data.success) {
+
+                            const gt = document.getElementById('grandTotal');
+
+                            gt.innerText = data.message;
+
+
+
+                        } else {
+
+                            location.reload();
+
+                        }
+                    })
+                    .catch(error => {
+
+                        location.reload()
+
+                    });
+
+
+
+
+
                 window.alert(data.message);
 
                 addButton.disabled = false;
@@ -145,6 +178,35 @@ function reduceOneFromCart(id) {
 
                 quantityDiv.textContent = (quantity - 1);
 
+                fetch('http://localhost:2500/user/cartTotal', {
+
+                    method: 'GET'
+
+                })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        if (data.success) {
+
+                            const gt = document.getElementById('grandTotal');
+
+                            gt.innerText = data.message;
+
+
+
+                        } else {
+
+                            location.reload();
+
+                        }
+                    })
+                    .catch(error => {
+
+                        location.reload()
+
+                    });
+
+
                 if (quantity === 2) {
                     window.alert(data.message);
                     return;
@@ -177,3 +239,7 @@ function reduceOneFromCart(id) {
 
 
 }
+
+
+
+

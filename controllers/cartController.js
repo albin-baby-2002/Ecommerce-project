@@ -239,15 +239,57 @@ const renderCartPage = async (req, res, next) => {
 
         ]).exec()
 
-        console.log(itemsInCart)
+
+        let totalPriceOfCart = await Cart.aggregate([
+            {
+                $match: {
+                    userID: userID,
+                },
+            }, {
+                $lookup: {
+                    from: 'cartitems',
+                    localField: 'items',
+                    foreignField: '_id',
+                    as: 'cartItems',
+                }
+            }, {
+
+                $unwind: "$cartItems"
+
+
+            }, {
+                $replaceRoot: {
+                    newRoot: '$cartItems'
+                }
+            }, {
+
+                $addFields: {
+                    totalPriceOfTheProduct: {
+                        $multiply: ["$quantity", "$price"]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalAmount: { $sum: "$totalPriceOfTheProduct" }
+                }
+            }
+
+
+
+        ]).exec()
+
+        totalPriceOfCart = totalPriceOfCart[0].totalAmount;
+
+        console.log(totalPriceOfCart);
 
 
 
 
 
 
-
-        res.render('users/shoppingCart.ejs', { itemsInCart });
+        res.render('users/shoppingCart.ejs', { itemsInCart, grandTotal: totalPriceOfCart });
 
         return;
 
@@ -440,12 +482,100 @@ const reduceCartItemQuantityHandler = async (req, res, next) => {
 
 }
 
+// ! get total of cart 
 
+
+const getTotalCartPrice = async (req, res, next) => {
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": " your session timeout login to get data !" })
+
+            return;
+        }
+
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
+
+
+        let totalPriceOfCart = await Cart.aggregate([
+            {
+                $match: {
+                    userID: userID,
+                },
+            }, {
+                $lookup: {
+                    from: 'cartitems',
+                    localField: 'items',
+                    foreignField: '_id',
+                    as: 'cartItems',
+                }
+            }, {
+
+                $unwind: "$cartItems"
+
+
+            }, {
+                $replaceRoot: {
+                    newRoot: '$cartItems'
+                }
+            }, {
+
+                $addFields: {
+                    totalPriceOfTheProduct: {
+                        $multiply: ["$quantity", "$price"]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalAmount: { $sum: "$totalPriceOfTheProduct" }
+                }
+            }
+
+
+
+        ]).exec()
+
+        totalPriceOfCart = totalPriceOfCart[0].totalAmount;
+
+        console.log(totalPriceOfCart);
+
+        if (totalPriceOfCart) {
+            res.status(200).json({ "success": true, "message": `${totalPriceOfCart}` });
+
+            return;
+        }
+
+        else {
+
+            res.status(500).json({ "success": false, "message": " failed to get data !" })
+
+            return;
+
+        }
+
+
+
+    }
+    catch (err) {
+
+
+        res.status(500).json({ "success": false, "message": " failed to get data !" })
+    }
+
+
+}
 
 
 module.exports = {
     addToCartHandler,
     renderCartPage,
     deleteItemFromCartHandler,
-    reduceCartItemQuantityHandler
+    reduceCartItemQuantityHandler,
+    getTotalCartPrice
 }
