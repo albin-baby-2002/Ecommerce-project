@@ -90,21 +90,28 @@
                 </nav>
             </div>
             <div class="col-lg-3 col-md-3">
-                <div class="header__nav__option">
-                    <a href="#" class="search-switch"><img src="/img/icon/search.png" alt=""></a>
+                <div class="header__nav__option ">
 
-                    <a href="/user/wishList"><img src="/img/icon/heart.png" alt=""></a>
+                    <div style="padding-top: 3px;">
 
-                    <a href="/user/cart"><img src="/img/icon/cart.png" alt=""></a>
+                        <a href="#" class="search-switch"><img src="/img/icon/search.png" alt=""></a>
 
-                    <% if(userID) { %>
+                        <a href="/user/wishList"><img src="/img/icon/heart.png" alt=""></a>
 
-                        <a class="font-weight-bolder text-dark" href="/user/logout">Logout</a>
-                        <%} else {%>
-                            <a class="font-weight-bolder text-dark" href="/user/login">Login</a>
+                        <a href="/user/cart"><img src="/img/icon/cart.png" alt=""></a>
 
-                            <% } %>
-                                <!-- <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
+                        <% if(userID) { %>
+
+                            <a class="font-weight-bolder text-dark" href="/user/profile">Profile</a>
+                            <%} else {%>
+                                <a class="font-weight-bolder text-dark" href="/user/login">Login</a>
+
+                                <% } %>
+
+                    </div>
+
+
+                    <!-- <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
                     <div class="price">$0.00</div> -->
                 </div>
             </div>
@@ -141,3 +148,13 @@
 
     </div>
     <% } %>
+
+
+        <div hidden id="notification-message" class="container notification ">
+
+            <p id="messageLine"> </p>
+
+            <button class="close" id="notificationClose"><i class="fa-solid fa-xmark"
+                    style="color: #d2cfce;"></i></button>
+
+        </div>

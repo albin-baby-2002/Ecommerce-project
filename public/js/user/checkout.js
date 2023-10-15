@@ -51,25 +51,78 @@ form.addEventListener("submit", function (event) {
         body: JSON.stringify(formDataJSON),
     })
         .then(response => response.json())
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to wish list due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
 
                 console.log('success')
 
-                window.alert(data.message);
 
-                location.reload();
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 2000)
+
+
+
+
+                setTimeout(function () {
+
+                    window.location.reload();
+                }, 2000);
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
             }
         })
         .catch(error => {
 
-            alert('Failed to add New Address data due to local / network issues');
             // Handle network or other errors here
             console.error('Error:', error);
         });

@@ -112,6 +112,16 @@
     window.addEventListener('load', renderBg);
 
 
+    const notificationBtn = document.getElementById('notificationClose');
+    const notificationMessage = document.getElementById('notification-message');
+    const messageLine = document.getElementById('messageLine');
+
+    notificationBtn.addEventListener('click', (e) => {
+
+        notificationMessage.hidden = true
+    })
+
+
 
 
 </script>

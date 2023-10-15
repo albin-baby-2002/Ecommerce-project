@@ -13,6 +13,25 @@ async function removeFromWishList(id) {
         body: JSON.stringify(productData),
     })
         .then(response => response.json())
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to remove from wish list due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
@@ -24,17 +43,47 @@ async function removeFromWishList(id) {
 
                 row.remove();
 
-                window.alert(data.message);
+
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
+
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
+
             }
         })
         .catch(error => {
 
-            alert('Failed to remove product due to local / network issues');
+
             // Handle network or other errors here
             console.error('Error:', error);
         })
@@ -44,6 +93,8 @@ async function removeFromWishList(id) {
 const quantityInput = document.querySelector('[data-id="quantity"]');
 
 function addToCart(id) {
+
+    console.log('using this');
 
     const quantity = quantityInput.value;
 
@@ -63,23 +114,71 @@ function addToCart(id) {
         body: JSON.stringify(cartData),
     })
         .then(response => response.json())
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to cart due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
 
                 console.log('success')
 
-                window.alert(data.message);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
+
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
+
             }
         })
         .catch(error => {
 
-            alert('Failed to add category data due to local / network issues');
+
             // Handle network or other errors here
             console.error('Error:', error);
         });
@@ -89,50 +188,95 @@ function addToCart(id) {
 }
 
 
-function addToCart(id) {
+// function addToCart(id) {
 
-    const quantity = "1";
+//     const quantity = "1";
 
-    const productID = id;
+//     const productID = id;
 
-    let cartData = { productID, quantity };
+//     let cartData = { productID, quantity };
 
-    console.log(cartData)
+//     console.log(cartData)
 
-    fetch('http://localhost:2500/user/addToCart', {
+//     fetch('http://localhost:2500/user/addToCart', {
 
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cartData)
-    })
-        .then(response => response.json())
-        .then(data => {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(cartData)
+//     })
+//         .then(response => response.json())
+//         .catch(error => {
 
-            if (data.success) {
+//             notificationMessage.hidden = false;
 
-                console.log('success')
+//             messageLine.classList.add('red');
 
-                window.alert(data.message);
+//             messageLine.innerText = 'Failed to add to  cart due to network/serverError';
 
-            } else {
-
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
-            }
-        })
-        .catch(error => {
-
-            // alert('Failed to add to cart  due to local / network issues' + error);
+//             window.scrollTo(0, 0)
 
 
-            // Handle network or other errors here
-            console.error('Error:', error);
-        });
+//             setTimeout(() => {
+
+//                 notificationMessage.hidden = true;
+//                 messageLine.classList.remove('red');
+//             }, 3000)
+
+//             console.error('Error:', error);
+//         })
+//         .then(data => {
+
+//             if (data.success) {
+
+//                 console.log('success')
+
+//                 notificationMessage.hidden = false;
+
+//                 messageLine.classList.add('green');
+
+//                 messageLine.innerText = data.message;
+
+//                 window.scrollTo(0, 0)
+
+
+//                 setTimeout(() => {
+
+//                     notificationMessage.hidden = true;
+//                     messageLine.classList.remove('green');
+//                 }, 3000)
 
 
 
-}
+
+//             } else {
+
+//                 notificationMessage.hidden = false;
+
+//                 messageLine.classList.add('red');
+
+//                 messageLine.innerText = data.message;
+
+//                 window.scrollTo(0, 0)
+
+
+//                 setTimeout(() => {
+
+//                     notificationMessage.hidden = true;
+//                     messageLine.classList.remove('red');
+//                 }, 3000)
+
+//             }
+//         })
+//         .catch(error => {
+
+
+//             console.error('Error:', error);
+//         });
+
+
+
+// }
 
 

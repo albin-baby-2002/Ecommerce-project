@@ -13,6 +13,26 @@ function removeFromCart(id) {
         body: JSON.stringify(dataForDeletion),
     })
         .then(response => response.json())
+
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to delete due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
@@ -24,18 +44,79 @@ function removeFromCart(id) {
 
                 row.remove();
 
-                window.alert(data.message);
+
+
+                fetch('http://localhost:2500/user/cartTotal', {
+
+                    method: 'GET'
+
+                })
+                    .then(response => response.json())
+
+
+                    .then(data => {
+
+                        if (data.success) {
+
+                            const gt = document.getElementById('grandTotal');
+
+                            gt.innerText = data.message;
+
+
+
+                        } else {
+
+                            location.reload();
+
+                        }
+                    })
+                    .catch(error => {
+
+                        location.reload()
+
+                    });
+
+
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
+
+
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
+
+
             }
         })
         .catch(error => {
 
-            alert('Failed to remove product due to local / network issues');
-            // Handle network or other errors here
             console.error('Error:', error);
         })
 };
@@ -63,6 +144,29 @@ function addToCart(id, cartItemID) {
         body: JSON.stringify(cartData)
     })
         .then(response => response.json())
+
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to cart due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
+            console.error('Error:', error);
+        })
+
+
+
         .then(data => {
 
             if (data.success) {
@@ -90,6 +194,8 @@ function addToCart(id, cartItemID) {
 
                 })
                     .then(response => response.json())
+
+
                     .then(data => {
 
                         if (data.success) {
@@ -116,21 +222,45 @@ function addToCart(id, cartItemID) {
 
 
 
-                window.alert(data.message);
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
 
                 addButton.disabled = false;
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
 
                 addButton.disabled = false;
             }
         })
         .catch(error => {
-
-            alert('Failed to add to cart  due to local / network issues' + error);
 
 
             // Handle network or other errors here
@@ -166,6 +296,25 @@ function reduceOneFromCart(id) {
         body: JSON.stringify(cartData)
     })
         .then(response => response.json())
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to reduce quantity due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
@@ -208,26 +357,65 @@ function reduceOneFromCart(id) {
 
 
                 if (quantity === 2) {
-                    window.alert(data.message);
+
+                    notificationMessage.hidden = false;
+
+                    messageLine.classList.add('green');
+
+                    messageLine.innerText = data.message;
+
+                    window.scrollTo(0, 0)
+
+
+                    setTimeout(() => {
+
+                        notificationMessage.hidden = true;
+                        messageLine.classList.remove('green');
+                    }, 3000)
                     return;
 
                 }
 
-                window.alert(data.message);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
 
                 reduceButton.disabled = false;
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
 
                 reduceButton.disabled = false;
             }
         })
         .catch(error => {
-
-            alert('Failed to add to cart  due to local / network issues' + error);
 
 
             // Handle network or other errors here

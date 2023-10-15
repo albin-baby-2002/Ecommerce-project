@@ -39,12 +39,16 @@
 
 
 
-                                    <div class="custom-selected">
-                                        <button
-                                            class="select-button font-weight-bold d-flex justify-content-around align-items-center"
-                                            style="width: 241px;">
-                                            <span>Categories </span><i class="fa-solid fa-caret-down ml-3"></i></button>
-                                        <ul class="select-options" style="width: 241px;">
+                                    <div class="position-relative">
+                                        <div class="custom-selected">
+                                            <button
+                                                class="select-button font-weight-bold d-flex justify-content-around align-items-center"
+                                                style="width: 241px;">
+                                                <span>Categories </span><i
+                                                    class="fa-solid fa-caret-down ml-3"></i></button>
+
+                                        </div>
+                                        <ul class="select-options position-relative" style="width: 241px;">
 
 
                                             <% if(categories.length> 0){ %>
@@ -71,7 +75,9 @@
                                                     <% } %>
                                                         <% } %>
                                         </ul>
+
                                     </div>
+
 
 
 

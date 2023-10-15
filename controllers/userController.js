@@ -62,6 +62,8 @@ const signUpHandler = async (req, res, next) => {
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
     try {
 
         const { name, email, password, phone } = req.body;
@@ -75,7 +77,15 @@ const signUpHandler = async (req, res, next) => {
                 message: 'All Fields Are Mandatory'
             }
 
-        } else if (!nameRegex.test(name)) {
+        } else if (!passwordRegex.test(password)) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'The password should contain at-least one capital letter one small letter and one symbol from (@, $, !, %, *, ?, or &) and should be eight character long '
+            }
+        }
+
+        else if (!nameRegex.test(name)) {
 
             req.session.message = {
                 type: 'danger',
@@ -288,7 +298,17 @@ const resendOtpHandler = async (req, res, next) => {
 
     try {
 
-        const user = await User.findOne({ _id: req.session.passwordResetToken });
+
+        if (req.session.userID || (!req.session.passwordResetToken && !req.session.verificationToken)) {
+
+            res.status(500).json({ "success": false, 'message': "Error: Session Time Out Try Again !" });
+
+            return;
+        }
+
+        const userID = req.session.passwordResetToken ? req.session.passwordResetToken : req.session.verificationToken;
+
+        const user = await User.findOne({ _id: userID });
 
 
 
@@ -304,7 +324,7 @@ const resendOtpHandler = async (req, res, next) => {
 
         } else {
 
-            res.status(500).json({ "success": false });
+            res.status(500).json({ "success": false, 'message': "Server facing some issues try again  !" });
 
             console.log('failed')
 
@@ -317,7 +337,9 @@ const resendOtpHandler = async (req, res, next) => {
     }
 
     catch (err) {
-        next(err);
+
+        res.status(500).json({ "success": false, 'message': `${err}` });
+
     }
 }
 
@@ -844,6 +866,8 @@ const resetPasswordHandler = async (req, res, next) => {
             return;
         }
 
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
         const { password } = req.body;
 
 
@@ -863,7 +887,18 @@ const resetPasswordHandler = async (req, res, next) => {
                 return;
 
 
-            } else {
+            } else if (!passwordRegex.test(password)) {
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'The password should contain at-least one capital letter one small letter and one symbol and should be eight character long'
+                }
+
+                res.redirect('/user/forgotPassword');
+                return;
+            }
+
+            else {
 
                 const userId = req.session.passwordResetToken;
 
@@ -995,6 +1030,96 @@ const addNewDeliveryAddress = async (req, res, next) => {
 
 }
 
+// ! render user profile page 
+
+const renderUserProfile = async (req, res, next) => {
+
+    try {
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Login to view profile !',
+
+            };
+
+            res.redirect('/');
+            return;
+        }
+
+        const userID = req.session.userID;
+
+        let user = await User.findById(userID).lean();
+
+        firstName = user.name.split(' ')[0];
+
+        lastName = user.name.split(' ')[1];
+
+        joined_date = user.joined_date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
+
+        user = { ...user, firstName, lastName, joined_date };
+
+
+
+        console.log(user);
+
+
+
+        res.render('users/myAccount.ejs', { user });
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        next(err)
+    }
+}
+
+// !render edit profile page
+
+const renderEditProfilePage = async (req, res, next) => {
+
+    try {
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Session time out login  profile !',
+
+            };
+
+            res.redirect('/');
+            return;
+        }
+
+
+        const userID = req.session.userID;
+
+        let user = await User.findById(userID).lean();
+
+        firstName = user.name.split(' ')[0];
+
+        lastName = user.name.split(' ')[1];
+
+        joined_date = user.joined_date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
+
+        user = { ...user, firstName, lastName, joined_date };
+
+        res.render('users/editProfile.ejs', { user })
+
+    }
+    catch (err) {
+        console.log(err);
+
+        next(err)
+    }
+}
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
@@ -1012,5 +1137,7 @@ module.exports = {
     renderResetPasswordPage,
     resetPasswordHandler,
     renderForgotPasswordVerifyOtpPage,
-    addNewDeliveryAddress
+    addNewDeliveryAddress,
+    renderUserProfile,
+    renderEditProfilePage
 }

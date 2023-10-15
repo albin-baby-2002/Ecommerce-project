@@ -107,7 +107,7 @@ router.route('/user/cart')
 
 // ! get total price of cart items 
 
-router.get('/user/cartTotal', cartController.getTotalCartPrice)
+router.get('/user/cartTotal', cartController.getTotalCartPrice);
 
 // ! render checkout page 
 
@@ -115,11 +115,23 @@ router.get('/user/checkout', productController.renderCheckOutPage);
 
 // ! add new delivery address handler
 
-router.post('/user/addNewAddress', userController.addNewDeliveryAddress)
+router.post('/user/addNewAddress', userController.addNewDeliveryAddress);
+
+// ! render user profile page
+
+router.get('/user/profile', userController.renderUserProfile);
+
+// ! render edit profile page 
+
+router.route('/user/profile/edit')
+    .get(userController.renderEditProfilePage)
+
 
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.userErrorHandler);
+
+
 
 
 // ! exporting the user routes

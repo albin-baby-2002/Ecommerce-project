@@ -70,7 +70,7 @@
 
                                 <!-- Password input -->
                                 <div class="form-outline mb-4">
-                                    <input type="password" id="Password" class="form-control" name="password" />
+                                    <input type="text" id="Password" class="form-control" name="password" />
                                     <label class="form-label" for="Password">Password</label>
                                 </div>
 
@@ -90,7 +90,8 @@
                                 </div> -->
 
                                 <!-- Submit button -->
-                                <button type="submit" class="btn btn-dark btn-block mb-3">Sign in</button>
+                                <button data-id="signInBtn" type="submit" class="btn btn-dark btn-block mb-3">Sign
+                                    in</button>
                             </form>
                         </div>
                     </div>
@@ -110,4 +111,7 @@
 
 
         <%- include('../users/userFooter.ejs') %>
+
+            <script src="/js/user/removeResendData.js"></script>
+
             <%- include('../layouts/footer.ejs') %>

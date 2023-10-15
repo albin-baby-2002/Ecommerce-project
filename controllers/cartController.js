@@ -239,53 +239,61 @@ const renderCartPage = async (req, res, next) => {
 
         ]).exec()
 
+        let totalPriceOfCart;
 
-        let totalPriceOfCart = await Cart.aggregate([
-            {
-                $match: {
-                    userID: userID,
+
+        if (itemsInCart.length > 0) {
+
+
+            totalPriceOfCart = await Cart.aggregate([
+                {
+                    $match: {
+                        userID: userID,
+                    },
+                }, {
+                    $lookup: {
+                        from: 'cartitems',
+                        localField: 'items',
+                        foreignField: '_id',
+                        as: 'cartItems',
+                    }
+                }, {
+
+                    $unwind: "$cartItems"
+
+
+                }, {
+                    $replaceRoot: {
+                        newRoot: '$cartItems'
+                    }
+                }, {
+
+                    $addFields: {
+                        totalPriceOfTheProduct: {
+                            $multiply: ["$quantity", "$price"]
+                        }
+                    }
                 },
-            }, {
-                $lookup: {
-                    from: 'cartitems',
-                    localField: 'items',
-                    foreignField: '_id',
-                    as: 'cartItems',
-                }
-            }, {
-
-                $unwind: "$cartItems"
-
-
-            }, {
-                $replaceRoot: {
-                    newRoot: '$cartItems'
-                }
-            }, {
-
-                $addFields: {
-                    totalPriceOfTheProduct: {
-                        $multiply: ["$quantity", "$price"]
+                {
+                    $group: {
+                        _id: null,
+                        totalAmount: { $sum: "$totalPriceOfTheProduct" }
                     }
                 }
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalAmount: { $sum: "$totalPriceOfTheProduct" }
-                }
-            }
 
 
 
-        ]).exec()
-
-        totalPriceOfCart = totalPriceOfCart[0].totalAmount;
-
-        console.log(totalPriceOfCart);
+            ]).exec()
 
 
 
+            totalPriceOfCart = totalPriceOfCart[0].totalAmount;
+
+
+        }
+        else {
+            totalPriceOfCart = 0
+        }
 
 
 
