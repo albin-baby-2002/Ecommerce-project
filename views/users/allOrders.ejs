@@ -2,7 +2,143 @@
 
     <%- include('../users/userHeader.ejs') %>
 
+        <body class="goto-here " data-aos-easing="slide" data-aos-duration="800" data-aos-delay="0">
 
 
-        <%- include('../users/userFooter.ejs') %>
-            <%- include('../layouts/footer.ejs') %>
+            <!-- Breadcrumb Section Begin -->
+            <section class="breadcrumb-option">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="breadcrumb__text">
+                                <h4>Orders</h4>
+                                <div class="breadcrumb__links">
+                                    <a href="./index.html">Home</a>
+                                    <span>Orders</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <div class="hero-wrap hero-bread ">
+                <div class="container">
+                    <div class="row no-gutters slider-text align-items-center justify-content-center">
+                        <div class="col-md-9 ftco-animate text-center fadeInUp ftco-animated">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="ftco-section ftco-cart h-100">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 ftco-animate fadeInUp ftco-animated">
+                            <div class="cart-list">
+
+
+                                <% if(orders.length>0){ %>
+
+                                    <table class="table mt-4">
+                                        <thead class="thead-primary wishlist001">
+                                            <tr class="text-center" style="background-color: burlywood;">
+                                                <th>No Of Products</th>
+                                                <th>Items</th>
+                                                <th>Order Status</th>
+                                                <th>Price</th>
+                                                <th>Payment Method</th>
+                                                <th>Options</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            <% for(let i=0 ; i< orders.length ; i++) { %>
+
+
+                                                <tr data-id="<%=orders[i]._id%>" class="text-center border-bottom">
+
+                                                    <td>
+                                                        <%=orders[i].orderedItems.length %>
+                                                    </td>
+
+
+                                                    <td class="  ">
+
+                                                        <ul>
+                                                            <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
+
+                                                                <li class="text-uppercase list-unstyled mt-3 "
+                                                                    style="letter-spacing: 2px;">
+                                                                    <%=orders[i].orderedItems[j].productInfo.name%> (
+                                                                        <%=orders[i].orderedItems[j].quantity%>
+                                                                            )
+                                                                </li>
+
+
+                                                                <% }%>
+
+                                                        </ul>
+
+
+
+
+                                                    </td>
+
+                                                    <td class="text-uppercase " style="letter-spacing: 2px;">
+                                                        <%=orders[i].orderStatus %>
+                                                    </td>
+
+                                                    <td class="text-uppercase " style="letter-spacing: 2px;">
+                                                        <%=orders[i].finalPrice %>
+                                                    </td>
+
+                                                    <td class="text-uppercase " style="letter-spacing: 2px;">
+                                                        <%=orders[i].paymentMethod %>
+                                                    </td>
+
+
+
+                                                    <td class="">
+                                                        <button id="cancelOrderBtn" order-id="<%=orders[i]._id%>"
+                                                            class=" text-uppercase  p-2"
+                                                            style="letter-spacing: 2px; background-color: rgb(31, 30, 30); color: rgb(243, 5, 5);">
+                                                            cancel</button>
+                                                    </td>
+
+
+                                                </tr><!-- END TR-->
+
+                                                <%}%>
+
+
+                                        </tbody>
+                                    </table>
+
+                                    <% } else{ %>
+
+                                        <h3 class="mt-5 text-center">No Orders In Your List</h3>
+
+                                        <% } %>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+            </section>
+
+
+
+
+            <%- include('../users/userFooter.ejs') %>
+
+                <script src="/js/user/orders.js"></script>
+
+                <%- include('../layouts/footer.ejs') %>

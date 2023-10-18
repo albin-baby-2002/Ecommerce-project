@@ -1,0 +1,195 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Order List</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Order List</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <% if(orders.length>0) { %>
+
+
+
+
+                    <div class="table-responsive" id="no-more-tables">
+                        <table class="table table-striped bg-white" id="myTable">
+                            <thead class=" ">
+                                <tr class="">
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting ">
+                                        Date </th>
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        Products In Order
+                                    </th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        Status</th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        pay status</th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        GT
+                                    </th>
+
+
+
+                                    <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        Discount
+                                    </th>
+
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Final
+                                        Price
+                                    </th>
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Client
+                                        processing
+                                    </th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Actions
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <% for(let i=0; i < orders.length ;i++) { %>
+
+
+                                    <tr data-id="" class="text-center" style="font-size: medium; ">
+                                        <td style="max-width: 150px;" data-title="Name">
+
+                                            <% const options={ year: 'numeric' , month: 'short' , day: 'numeric' ,
+                                                hour: '2-digit' , minute: '2-digit' , second: '2-digit' ,
+                                                timeZoneName: 'short' }; const
+                                                shortDate=orders[i].orderDate.toLocaleDateString('en-US', options); %>
+
+                                                <%=shortDate %>
+
+                                        </td>
+                                        <td style="max-width: 200px;" data-title="Email">
+
+                                            <ul>
+                                                <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
+
+                                                    <li class="text-uppercase list-unstyled mt-3 ">
+                                                        <%=orders[i].orderedItems[j].productInfo[0].name%> (
+                                                            <%=orders[i].orderedItems[j].quantity%>
+                                                                )
+                                                    </li>
+
+
+                                                    <% }%>
+
+                                            </ul>
+
+
+                                        </td>
+
+                                        <td data-title="Name">
+                                            <%=orders[i].orderStatus%>
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%=orders[i].paymentStatus%>
+
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%=orders[i].grossTotal%>
+
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%=orders[i].discountAmount%>
+
+                                        </td>
+                                        <td data-title="Mobile">
+                                            <%=orders[i].finalPrice%>
+
+                                        </td>
+
+
+                                        <td data-title="Mobile">
+                                            <% if(orders[i].clientOrderProcessingCompleted){%>
+                                                completed
+
+                                                <%} else {%>
+
+                                                    pending <%}%>
+
+                                        </td>
+
+
+                                        <td>
+                                            <button style="background-color: rgb(29, 27, 27); color: aliceblue;"><a
+                                                    class="nav-link"
+                                                    href="/admin/order/changeStatus/<%=orders[i]._id%>">change
+                                                    status/cancel</a></button>
+                                        </td>
+
+
+
+
+
+                                    </tr>
+
+                                    <%}%>
+
+
+
+
+
+
+
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <%} else{%>
+
+                        <div class=" text-danger">Products Not Found
+                        </div>
+
+                        <%}%>
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/dataTables.js"></script>
+
+
+            <%- include('../layouts/footer.ejs') %>

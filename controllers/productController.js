@@ -5,6 +5,7 @@ const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 const WishList = require('../models/wishListModel');
 const Address = require('../models/addressModel');
+const Cart = require('../models/cartModel')
 const { default: mongoose } = require('mongoose');
 
 
@@ -486,13 +487,114 @@ const renderCheckOutPage = async (req, res, next) => {
 
         }
 
+        let itemsInCart = await Cart.aggregate([
+            {
+                $match: {
+                    userID: userID,
+                },
+            }, {
+                $lookup: {
+                    from: 'cartitems',
+                    localField: 'items',
+                    foreignField: '_id',
+                    as: 'cartItems',
+                }
+            }, {
+
+                $unwind: "$cartItems"
+
+
+            }, {
+                $replaceRoot: {
+                    newRoot: '$cartItems'
+                }
+            }, {
+                $lookup: {
+                    from: 'products',
+                    localField: 'product',
+                    foreignField: '_id',
+                    as: 'cartProductData'
+
+                }
+            }, {
+                $replaceRoot: {
+                    newRoot: {
+                        $mergeObjects: [
+                            { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
+                            { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
+                        ]
+                    }
+                }
+            }, {
+
+                $addFields: {
+                    totalPriceOfTheProduct: {
+                        $multiply: ["$quantity", "$price"]
+                    }
+                }
+            },
+
+
+
+        ]).exec()
+
+        let totalPriceOfCart;
+
+
+        if (itemsInCart.length > 0) {
+
+
+            totalPriceOfCart = await Cart.aggregate([
+                {
+                    $match: {
+                        userID: userID,
+                    },
+                }, {
+                    $lookup: {
+                        from: 'cartitems',
+                        localField: 'items',
+                        foreignField: '_id',
+                        as: 'cartItems',
+                    }
+                }, {
+
+                    $unwind: "$cartItems"
+
+
+                }, {
+                    $replaceRoot: {
+                        newRoot: '$cartItems'
+                    }
+                }, {
+
+                    $addFields: {
+                        totalPriceOfTheProduct: {
+                            $multiply: ["$quantity", "$price"]
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalAmount: { $sum: "$totalPriceOfTheProduct" }
+                    }
+                }
+
+
+
+            ]).exec()
+
+
+
+            totalPriceOfCart = totalPriceOfCart[0].totalAmount;
+
+        }
 
 
 
 
 
-
-        res.render('users/checkout.ejs', { Addresses });
+        res.render('users/checkout.ejs', { Addresses, itemsInCart, totalPriceOfCart });
 
         return;
 

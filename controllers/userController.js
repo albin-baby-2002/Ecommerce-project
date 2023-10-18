@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 const OtpData = require('../models/otpDataModel');
 const Address = require('../models/addressModel');
+const Order = require('../models/orderModel');
 const userVerificationHelper = require('../helpers/userVerificationHelpers');
 
 
@@ -1120,6 +1121,329 @@ const renderEditProfilePage = async (req, res, next) => {
     }
 }
 
+// ! edit profile handler 
+
+const editProfileHandler = async (req, res, next) => {
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to edit profile" })
+
+            return;
+        }
+
+        const userID = req.session.userID;
+
+        const { firstName, lastName, phone } = req.body;
+
+        const newName = firstName.trim() + " " + lastName.trim();
+
+        const updatedUser = await User.findByIdAndUpdate(userID, { $set: { name: newName, phone } });
+
+        if (updatedUser instanceof User) {
+
+            res.status(201).json({ "success": true, "message": "Your profile is updated !" });
+
+            return;
+        }
+
+        res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
+
+    }
+    catch (err) {
+
+        res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
+
+    }
+}
+
+// ! change password handler 
+
+const changePasswordHandler = async (req, res, next) => {
+
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to edit profile" })
+
+            return;
+        }
+
+        const userID = req.session.userID;
+
+        const userData = await User.findById(userID);
+
+        const password = userData.password;
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        const { currentPassword, newPassword } = req.body;
+
+        if (! await bcrypt.compare(currentPassword, password)) {
+
+
+            res.status(401).json({ "success": false, "message": "Enter the right current password ! " })
+
+
+            return;
+        }
+
+
+        if (!passwordRegex.test(newPassword)) {
+
+            res.status(400).json({ "success": false, "message": "The new  password should contain at-least one capital letter one small letter and one symbol from (@, $, !, %, *, ?, or &) and should be eight character long  " });
+
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        if (!hashedPassword) {
+
+
+            res.status(500).json({ "success": false, "message": " Failed to change password due to server issues  " });
+
+            return;
+        }
+
+        const updatedData = await User.findByIdAndUpdate(userID, { $set: { password: hashedPassword } });
+
+
+        if (updatedData instanceof User) {
+
+            res.status(201).json({ "success": true, "message": " Your password is changed  !" });
+
+            return;
+
+        }
+
+
+        res.status(500).json({ "success": false, "message": " Failed to change password due to server issues  " });
+
+        return;
+
+    }
+    catch (err) {
+
+        res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
+
+    }
+}
+
+// ! render orders page 
+
+const orderPageRender = async (req, res, next) => {
+
+    try {
+
+        if (!req.session.userID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'login to view your orders !',
+
+            };
+
+
+            res.redirect('/');
+
+
+            return;
+
+        }
+
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
+        let orders = await User.aggregate([{
+            $match: {
+                _id: userID,
+            }
+        }, {
+            $lookup: {
+                from: 'orders',
+                localField: 'orders',
+                foreignField: '_id',
+                as: 'ordersPlaced',
+            }
+        }, {
+            $unwind: '$ordersPlaced'
+        },
+        {
+            $replaceRoot: {
+                newRoot: '$ordersPlaced'
+            }
+        }, {
+
+            $match: {
+
+                $and: [
+
+
+                    {
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    },
+
+                    {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    },
+                    { clientOrderProcessingCompleted: true }]
+            },
+
+        },
+
+        {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedItems',
+            }
+        }, {
+            $unwind: '$orderedItems'
+        },
+
+
+
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'orderedItems.product',
+                foreignField: '_id',
+                as: 'orderedItems.productInfo'
+            }
+        }, {
+            $group: {
+                _id: '$_id',
+                userID: { $first: '$userID' },
+                paymentMethod: { $first: '$paymentMethod' },
+                paymentStatus: { $first: '$paymentStatus' },
+                orderStatus: { $first: '$orderStatus' },
+                shippingAddress: { $first: '$shippingAddress' },
+                grossTotal: { $first: '$grossTotal' },
+                couponApplied: { $first: '$couponApplied' },
+                discountAmount: { $first: '$discountAmount' },
+                finalPrice: { $first: '$finalPrice' },
+                clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
+                orderDate: { $first: '$orderDate' },
+                orderedItems: { $push: '$orderedItems' }
+            }
+        }, {
+            $project: {
+                _id: 1,
+                userID: 1,
+                paymentMethod: 1,
+                paymentStatus: 1,
+                orderStatus: 1,
+                shippingAddress: 1,
+                grossTotal: 1,
+                couponApplied: 1,
+                discountAmount: 1,
+                finalPrice: 1,
+                clientOrderProcessingCompleted: 1,
+                orderDate: 1,
+                orderedItems: {
+                    $map: {
+                        input: "$orderedItems",
+                        as: "item",
+                        in: {
+                            _id: "$$item._id",
+                            userID: "$$item.userID",
+                            product: "$$item.product",
+                            quantity: "$$item.quantity",
+                            totalPrice: "$$item.totalPrice",
+                            productInfo: {
+                                name: { $arrayElemAt: ["$$item.productInfo.name", 0] },
+                                price: { $arrayElemAt: ["$$item.productInfo.price", 0] },
+                                color: { $arrayElemAt: ["$$item.productInfo.color", 0] }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        ]).exec()
+
+        console.log('\n\n\n' + JSON.stringify(orders, null, 2) + '\n\n\n');
+
+
+        res.render('users/allOrders.ejs', { orders });
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        next(err)
+    }
+}
+
+// ! cancel orders
+
+const cancelOrderHandler = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to cancel order" })
+
+            return;
+
+        }
+
+        const userID = req.session.userID;
+
+        const orderID = req.params.orderID;
+
+        const orderExist = await Order.findOne({ _id: orderID, userID });
+
+        if (orderExist instanceof Order && orderExist.paymentMethod === 'cod') {
+
+            const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled' } });
+
+            if (cancelledOrder instanceof Order) {
+
+                res.status(200).json({ "success": true, "message": " Order Cancelled successfully" })
+
+                return;
+
+            } else {
+
+                res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+
+                return;
+            }
+
+        } else {
+            res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+        }
+    }
+
+
+    catch (err) {
+
+        res.status(500).json({ "success": false, "message": "server facing issues try again " })
+
+        return;
+    }
+}
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
@@ -1139,5 +1463,9 @@ module.exports = {
     renderForgotPasswordVerifyOtpPage,
     addNewDeliveryAddress,
     renderUserProfile,
-    renderEditProfilePage
+    renderEditProfilePage,
+    editProfileHandler,
+    changePasswordHandler,
+    orderPageRender,
+    cancelOrderHandler
 }

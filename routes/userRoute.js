@@ -6,7 +6,8 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const errorHandler = require('../middleware/errorHandling');
 const productController = require('../controllers/productController')
-const cartController = require('../controllers/cartController')
+const cartController = require('../controllers/cartController');
+const checkoutController = require('../controllers/checkoutController')
 
 
 // ! user home render 
@@ -121,17 +122,44 @@ router.post('/user/addNewAddress', userController.addNewDeliveryAddress);
 
 router.get('/user/profile', userController.renderUserProfile);
 
-// ! render edit profile page 
+// ! render edit profile page and edit profile handler
 
 router.route('/user/profile/edit')
     .get(userController.renderEditProfilePage)
+    .put(userController.editProfileHandler);
 
+// ! change password handler 
+
+router.put('/user/password/change', userController.changePasswordHandler);
+
+
+// ! verify coupon handler 
+
+router.post('/user/coupon/verify', checkoutController.couponVerificationHandler)
+
+// ! order processing - add address and coupon
+
+router.post('/user/checkout/addressCouponAndItems', checkoutController.addressCouponAndItemsInputHandler)
+
+// ! order processing - render payment page
+
+router.get('/user/paymentPage/:orderID', checkoutController.renderPaymentPage)
+
+// ! order placement handler - cod
+
+router.post('/user/placeOrder/cod', checkoutController.placeCodOrderHandler)
+
+// ! orders page render 
+
+router.get('/user/orders', userController.orderPageRender);
+
+// ! cancel a order 
+
+router.put('/user/order/cancel/:orderID', userController.cancelOrderHandler);
 
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.userErrorHandler);
-
-
 
 
 // ! exporting the user routes

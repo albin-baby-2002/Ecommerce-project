@@ -77,6 +77,33 @@ router.route('/addProduct')
     .post(upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.addProductHandler);
 
 
+// ! render the add coupon page
+
+router.route('/addCoupon')
+    .get(adminController.addCouponPageRender)
+    .post(adminController.addCouponHandler)
+
+// ! render coupon list page 
+
+
+router.get('/couponList', adminController.renderCouponListPage)
+
+// ! render edit coupon page 
+
+router.route('/editCoupon/:couponID')
+    .get(adminController.renderEditCouponPage)
+    .put(adminController.editCouponHandler);
+
+// ! render order page 
+
+router.route('/orders')
+    .get(adminController.renderOrdersPage)
+
+
+// ! change order status or cancel order 
+
+router.route('/order/changeStatus/:orderID')
+    .get(adminController.renderOrderEditPage)
 
 // ! for rendering error page for unknown / critical error
 

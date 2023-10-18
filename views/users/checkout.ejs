@@ -29,8 +29,20 @@
 
                     <div class="row">
                         <div class="col-lg-8 col-md-6 ">
-                            <h6 class="coupon__code"><span class="icon_tag_alt"></span> Have a coupon? <a href="#">Click
-                                    here</a> to enter your code</h6>
+
+                            <div class="coupon__code">
+                                <h6 class=""><span class="icon_tag_alt"></span> Have a coupon?
+                                    enter your code to check it's validity</h6>
+
+                                <form class="" style="margin-left: 33px; margin-top: 15px;" id="couponValidityChecker">
+                                    <input type="text" name="couponCode">
+
+                                    <button class=" bg-dark border-0 text-white  font-weight-bold px-2"
+                                        style="height: 27px;">verify</button>
+                                </form>
+                            </div>
+
+
 
 
 
@@ -209,40 +221,76 @@
                                 <h4 class="order__title">Your order</h4>
                                 <div class="checkout__order__products">Product <span>Total</span></div>
                                 <ul class="checkout__total__products">
-                                    <li>01. Vanilla salted caramel <span>$ 300.0</span></li>
-                                    <li>02. German chocolate <span>$ 170.0</span></li>
-                                    <li>03. Sweet autumn <span>$ 170.0</span></li>
-                                    <li>04. Cluten free mini dozen <span>$ 110.0</span></li>
+
+                                    <% if(itemsInCart.length> 0 ) { %>
+
+                                        <% for(let i=0; i < itemsInCart.length ; i++){ %>
+
+
+
+
+
+                                            <li>
+
+                                                <div class="d-flex  ">
+
+                                                    <div class="" style="width: 74%;">
+                                                        <%=i+1%>. <%=itemsInCart[i].cartProductData.name%> (
+                                                                <%=itemsInCart[i].quantity%> )
+                                                    </div>
+
+                                                    <div style="width: 26%;" class="text-right d-inline-block">
+                                                        <%=itemsInCart[i].totalPriceOfTheProduct%>.0
+                                                    </div>
+
+                                                </div>
+
+                                            </li>
+
+                                            <%}%>
+
+                                                <%} else{%>
+
+                                                    <li> Your cart is empty </li>
+
+                                                    <%} %>
+
                                 </ul>
                                 <ul class="checkout__total__all">
-                                    <li>Subtotal <span>$750.99</span></li>
-                                    <li>Total <span>$750.99</span></li>
+
+                                    <li>Total <span>Rs.<%=totalPriceOfCart%></span></li>
                                 </ul>
-                                <div class="checkout__input__checkbox">
-                                    <label for="acc-or">
-                                        Create an account?
-                                        <input type="checkbox" id="acc-or">
-                                        <span class="checkmark"></span>
-                                    </label>
+
+                                <div class="d-flex justify-content-center mb-3">
+                                    <input id="couponApplied" class="w-100 p-2" type="text" name="couponApplied"
+                                        placeholder="Enter Coupon Code ">
+
                                 </div>
-                                <p>Lorem ipsum dolor sit amet, consectetur adip elit, sed do eiusmod tempor
-                                    incididunt
-                                    ut labore et dolore magna aliqua.</p>
-                                <div class="checkout__input__checkbox">
-                                    <label for="payment">
-                                        Check Payment
-                                        <input type="checkbox" id="payment">
-                                        <span class="checkmark"></span>
-                                    </label>
+
+                                <div class="mt-4 mb-3">
+
+                                    <p>Choose Your Mode Of Payment</p>
+
+                                    <div>
+                                        <input class="paymentMethod" type="radio" value="cod" name="paymentMethod">
+                                        <label for="">COD</label>
+                                    </div>
+
+                                    <div>
+                                        <input class="paymentMethod" type="radio" value="onlinePayment"
+                                            name="paymentMethod">
+                                        <label for="">Pay Now</label>
+                                    </div>
+
+
                                 </div>
-                                <div class="checkout__input__checkbox">
-                                    <label for="paypal">
-                                        Paypal
-                                        <input type="checkbox" id="paypal">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <button class="site-btn">PLACE ORDER</button>
+
+
+
+                                <button id="proceedToPaymentBtn" class="site-btn" <% if(itemsInCart.length <=0 ) { %>
+                                    disabled <%}%>
+
+                                        >PROCEED TO PAYMENT</button>
                             </div>
                         </div>
                     </div>

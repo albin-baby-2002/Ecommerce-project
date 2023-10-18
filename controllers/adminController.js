@@ -4,7 +4,9 @@ const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
 const Product = require('../models/productModel');
+const Coupon = require('../models/couponModel')
 const path = require('path');
+const Order = require('../models/orderModel');
 const fsPromises = require('fs').promises;
 
 //!render login page
@@ -793,6 +795,294 @@ const deleteCategoryHandler = async (req, res, next) => {
     }
 };
 
+//! render add Coupon page 
+
+const addCouponPageRender = async (req, res, next) => {
+
+    try {
+
+        res.render('admin/addCouponPage.ejs',);
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+
+// ! add coupon handler
+
+
+const addCouponHandler = async (req, res, next) => {
+
+    try {
+
+        let { code, description, rateOfDiscount, maximumDiscount, expirationDate, isActive } = req.body;
+
+        rateOfDiscount = Number(rateOfDiscount);
+
+        maximumDiscount = Number(maximumDiscount);
+
+        expirationDate = new Date(expirationDate);
+
+        code = code.trim().toLowerCase();
+
+        if (!code || !description || !rateOfDiscount || !maximumDiscount || !expirationDate || !isActive) {
+
+            res.status(400).json({ "success": false, "message": "All fields are mandatory. and rate of discount and maximum discount should be above zero Try Again !" })
+
+            return;
+
+        }
+        else if (isNaN(rateOfDiscount) || isNaN(maximumDiscount) || rateOfDiscount < 0 || maximumDiscount < 0) {
+
+            res.status(400).json({ "success": false, "message": " Rate of discount and maximum discount value should be non negative numerical values. Try Again !" })
+
+            return;
+        }
+
+        isActive = isActive === 'true' ? true : false;
+
+        let coupon = new Coupon({
+            code, description, rateOfDiscount, maximumDiscount, isActive, expirationDate
+        })
+
+        let savedData = await coupon.save();
+
+        if (savedData instanceof Coupon) {
+
+            res.status(201).json({ "success": true, "message": " new coupon created !" });
+
+            return;
+        }
+
+
+        res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
+
+        return;
+
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
+
+    }
+};
+
+// ! render coupon list page
+
+const renderCouponListPage = async (req, res, next) => {
+
+    try {
+
+        const coupons = await Coupon.find().lean();
+
+
+
+        res.render('admin/couponListPage.ejs', { coupons });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+
+// !render coupon edit page 
+
+const renderEditCouponPage = async (req, res, next) => {
+
+    try {
+
+        const couponID = new mongoose.Types.ObjectId(req.params.couponID);
+
+
+
+        const coupon = await Coupon.findById(couponID);
+
+        console.log(coupon)
+
+        res.render('admin/editCoupon.ejs', { coupon });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+// ! edit coupon handler 
+
+const editCouponHandler = async (req, res, next) => {
+
+    try {
+
+        const couponID = req.params.couponID;
+
+        console.log(req.body);
+
+        let { code, description, rateOfDiscount, maximumDiscount, expirationDate, isActive } = req.body;
+
+        rateOfDiscount = Number(rateOfDiscount);
+
+        maximumDiscount = Number(maximumDiscount);
+
+        expirationDate = new Date(expirationDate);
+
+        code = code.trim().toLowerCase();
+
+        if (!code || !description || !rateOfDiscount || !maximumDiscount || !expirationDate || !isActive) {
+
+            res.status(400).json({ "success": false, "message": "All fields are mandatory. and rate of discount and maximum discount should be above zero Try Again !" })
+
+            return;
+
+        }
+        else if (isNaN(rateOfDiscount) || isNaN(maximumDiscount) || rateOfDiscount <= 0 || maximumDiscount <= 0) {
+
+            res.status(400).json({ "success": false, "message": " Rate of discount and maximum discount value should be non negative numerical values. Try Again !" })
+
+            return;
+        }
+
+        isActive = isActive === 'true' ? true : false;
+
+
+        const updatedCoupon = await Coupon.findByIdAndUpdate(couponID, { code, description, rateOfDiscount, maximumDiscount, isActive, expirationDate });
+
+
+
+        if (updatedCoupon instanceof Coupon) {
+
+            res.status(201).json({ "success": true, "message": " coupon updated Successfully !" });
+
+            return;
+        }
+
+
+        res.status(500).json({ "success": false, "message": " Failed to edit coupon server facing issues !" })
+
+        return;
+
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
+
+        return;
+
+    }
+};
+
+// ! render order page 
+
+const renderOrdersPage = async (req, res, next) => {
+
+    try {
+
+        let orders = await Order.aggregate([{
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedItems',
+            }
+        }, {
+            $unwind: '$orderedItems'
+        },
+
+
+
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'orderedItems.product',
+                foreignField: '_id',
+                as: 'orderedItems.productInfo'
+            }
+        }, {
+            $group: {
+                _id: '$_id',
+                userID: { $first: '$userID' },
+                paymentMethod: { $first: '$paymentMethod' },
+                paymentStatus: { $first: '$paymentStatus' },
+                orderStatus: { $first: '$orderStatus' },
+                shippingAddress: { $first: '$shippingAddress' },
+                grossTotal: { $first: '$grossTotal' },
+                couponApplied: { $first: '$couponApplied' },
+                discountAmount: { $first: '$discountAmount' },
+                finalPrice: { $first: '$finalPrice' },
+                clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
+                orderDate: { $first: '$orderDate' },
+                orderedItems: { $push: '$orderedItems' }
+            }
+        }]);
+
+
+
+        res.render('admin/orderList.ejs', { orders });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+
+// ! render order edit page 
+
+const renderOrderEditPage = async (req, res, next) => {
+
+    try {
+
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
+
+        let orderData = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }]).exec();
+
+        console.log(orderData);
+
+        const orderStatusEnum = Order.schema.path('orderStatus').enumValues;
+
+        console.log(orderStatusEnum);
+
+        res.render('admin/modifyOrder.ejs', { orderData, orderStatusEnum })
+
+    }
+    catch (err) {
+
+        next(err)
+
+    }
+}
+
+
 
 module.exports = {
     renderLoginPage,
@@ -811,5 +1101,12 @@ module.exports = {
     editCategoryHandler,
     renderEditCategoryPage,
     deleteCategoryHandler,
-    logoutHandler
+    logoutHandler,
+    addCouponPageRender,
+    addCouponHandler,
+    renderCouponListPage,
+    renderEditCouponPage,
+    editCouponHandler,
+    renderOrdersPage,
+    renderOrderEditPage
 }
