@@ -157,6 +157,14 @@ router.get('/user/orders', userController.orderPageRender);
 
 router.put('/user/order/cancel/:orderID', userController.cancelOrderHandler);
 
+// ! route to create the razor Pay order 
+
+router.post('/user/razorPay/createOrder/:orderID', userController.razorPayCreateOrder);
+
+// ! payment success req from client 
+
+router.post('/user/razorPay/payment-success', userController.paymentSuccessHandler)
+
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.userErrorHandler);

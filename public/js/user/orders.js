@@ -1,18 +1,21 @@
-const cancelOrderBtn = document.getElementById('cancelOrderBtn');
+const cancelOrderBtns = document.querySelectorAll('.cancelOrderBtn');
 
-cancelOrderBtn.addEventListener('click', (e) => {
+cancelOrderBtns.forEach((cancelOrderBtn) => {
 
-    const data = cancelOrderBtn.getAttribute('order-id');
+    cancelOrderBtn.addEventListener('click', (e) => {
 
-    console.log(data);
+        const data = cancelOrderBtn.getAttribute('order-id');
 
-    const confirmed = confirm("Are you sure you want to cancel this order?");
+        console.log(data);
 
-    if (confirmed) {
+        const confirmed = confirm("Are you sure you want to cancel this order?");
 
-        cancelTheOrder(data);
-    }
+        if (confirmed) {
 
+            cancelTheOrder(data);
+        }
+
+    })
 })
 
 

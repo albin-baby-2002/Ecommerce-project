@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema({
 
     paymentMethod: {
         type: String,
-        enum: ['cod', 'onlinePayment', 'upi', 'card', 'onlineBanking'],
+        enum: ['cod', 'onlinePayment'],
 
     },
     paymentStatus: {
@@ -40,8 +40,8 @@ const orderSchema = new mongoose.Schema({
         ref: 'Address',
         required: true
     },
-    prepaidPaymentDetails: {
-        type: mongoose.Schema.Types.ObjectId,
+    razorpayTransactionId: {
+        type: String,
         ref: 'PrepaidPaymentDetail',
     },
 

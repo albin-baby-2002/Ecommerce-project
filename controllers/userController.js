@@ -6,9 +6,19 @@ const User = require('../models/userModel');
 const OtpData = require('../models/otpDataModel');
 const Address = require('../models/addressModel');
 const Order = require('../models/orderModel');
+const Cart = require('../models/cartModel');
+const CartItem = require('../models/cartItemModel')
 const userVerificationHelper = require('../helpers/userVerificationHelpers');
 
+const dotenv = require('dotenv').config()
 
+//! razorPay Instance
+
+const Razorpay = require('razorpay')
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 
 // !render Home page
@@ -1320,7 +1330,9 @@ const orderPageRender = async (req, res, next) => {
                 foreignField: '_id',
                 as: 'orderedItems.productInfo'
             }
-        }, {
+        },
+
+        {
             $group: {
                 _id: '$_id',
                 userID: { $first: '$userID' },
@@ -1413,6 +1425,8 @@ const cancelOrderHandler = async (req, res, next) => {
 
         const orderExist = await Order.findOne({ _id: orderID, userID });
 
+        const orderPrice = orderExist.finalPrice;
+
         if (orderExist instanceof Order && orderExist.paymentMethod === 'cod') {
 
             const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled' } });
@@ -1430,7 +1444,38 @@ const cancelOrderHandler = async (req, res, next) => {
                 return;
             }
 
-        } else {
+        } else if (orderExist instanceof Order && orderExist.paymentMethod === 'onlinePayment' && orderExist.paymentStatus === 'paid') {
+
+            const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled', paymentStatus: 'refunded' } });
+
+            if (cancelledOrder instanceof Order) {
+
+                const refund = await User.findByIdAndUpdate(userID, { $inc: { wallet: orderPrice } })
+
+                if (refund instanceof User) {
+                    res.status(200).json({ "success": true, "message": " Order Cancelled successfully and price refunded" });
+
+                    return
+                }
+                else {
+
+                    res.status(500).json({ "success": false, "message": " Order Cancelled successfully but failed to refund the price contact customer support" });
+
+                    return
+                }
+
+
+
+            } else {
+
+                res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+
+                return;
+            }
+
+
+        }
+        else {
             res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
         }
     }
@@ -1441,6 +1486,140 @@ const cancelOrderHandler = async (req, res, next) => {
         res.status(500).json({ "success": false, "message": "server facing issues try again " })
 
         return;
+    }
+}
+
+// ! razor pay create order 
+
+const razorPayCreateOrder = async (req, res, next) => {
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ 'success': false, "message": 'session timeout login to continue purchasing' });
+
+            return;
+        }
+
+        const orderID = req.params.orderID;
+
+        const userID = req.session.userID;
+
+        const orderData = await Order.findById(orderID);
+
+        if (!orderData) {
+
+            res.status(500).json({ 'success': false, "message": ' server facing issue getting order data' });
+
+            return;
+
+        }
+
+
+        const amount = orderData.finalPrice * 100;
+
+        const receipt = orderData._id.toString();
+
+        const currency = 'INR';
+
+        const options = {
+            amount: amount,
+            currency: currency,
+            receipt: receipt
+        };
+
+        razorpay.orders.create(options, (err, order) => {
+
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ 'success': false, "message": 'server facing issues when creating order' });
+            }
+
+            console.log(order)
+            res.status(200).json({ 'success': true, "message": 'continue', order });
+        });
+
+
+    }
+    catch (err) {
+        console.log(err);
+
+        res.status(500).json({ 'success': false, "message": 'server facing issues when creating order' })
+    }
+}
+
+// !payment Success Handler
+
+const paymentSuccessHandler = async (req, res, next) => {
+
+
+    try {
+
+        const userID = req.session.userID;
+
+        console.log(req.body);
+
+        const { receipt, id } = req.body;
+
+        const orderID = new mongoose.Types.ObjectId(receipt);
+
+        console.log(orderID);
+        const updatedOrder = await Order.findByIdAndUpdate(orderID,
+            {
+                $set:
+                {
+                    paymentStatus: 'paid',
+                    orderStatus: 'shipmentProcessing', clientOrderProcessingCompleted: true, razorpayTransactionId: id
+                }
+            });
+
+        console.log('updateOrder', updatedOrder);
+
+        if (updatedOrder instanceof Order) {
+
+
+            const userDataUpdate = await User.findByIdAndUpdate(userID, { $push: { orders: updatedOrder._id } })
+
+            if (userDataUpdate instanceof User) {
+
+                res.status(200).json({ 'success': true, "message": ' order placed successfully' });
+
+                const userCart = await Cart.findOne({ userID: userID });
+
+                const itemsInCart = userCart.items;
+
+                console.log(itemsInCart);
+
+                const deletedCartItems = await CartItem.deleteMany({ _id: { $in: itemsInCart } });
+
+                if (deletedCartItems.ok && deletedCartItems.n === itemsInCart.length && deletedCartItems.deletedCount === itemsInCart.length) {
+
+                    const updatedCart = await Cart.findByIdAndUpdate(userCart._id, { $set: { items: [] } });
+
+                    if (updatedCart instanceof Cart) {
+                        console.log('successfully removed from the cart');
+                    }
+
+                }
+
+            } else {
+                res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
+            }
+
+
+
+        } else {
+
+            res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
+        }
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
     }
 }
 
@@ -1467,5 +1646,6 @@ module.exports = {
     editProfileHandler,
     changePasswordHandler,
     orderPageRender,
-    cancelOrderHandler
+    cancelOrderHandler,
+    razorPayCreateOrder, paymentSuccessHandler
 }

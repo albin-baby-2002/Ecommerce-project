@@ -171,7 +171,7 @@
 
                                     <% if(orderData.paymentMethod==='onlinePayment' ) { %>
                                         <div class=" w-100 d-flex justify-content-center">
-                                            <button id="payNow" order-id="<%=orderData._id %>"
+                                            <button id="payButton" order-id="<%=orderData._id %>"
                                                 style="font-size: 1.1rem;"
                                                 class="nav-link bg-dark text-white px-4 py-2"> PAY NOW AND PLACE
                                                 ORDER</button>
@@ -200,6 +200,10 @@
 
         <%- include('../users/userFooter.ejs') %>
 
+            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
             <script src="/js/user/placeOrder.js"></script>
+            <script src="/js/user/razorpay.js"></script>
+
 
             <%- include('../layouts/footer.ejs') %>

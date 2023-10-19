@@ -104,6 +104,7 @@ router.route('/orders')
 
 router.route('/order/changeStatus/:orderID')
     .get(adminController.renderOrderEditPage)
+    .put(adminController.modifyOrderStatusHandler)
 
 // ! for rendering error page for unknown / critical error
 

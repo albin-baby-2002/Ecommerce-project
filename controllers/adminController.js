@@ -1082,7 +1082,37 @@ const renderOrderEditPage = async (req, res, next) => {
     }
 }
 
+// ! modify order status 
 
+const modifyOrderStatusHandler = async (req, res, next) => {
+
+    try {
+
+        const { orderStatus } = req.body;
+
+        console.log(req.body);
+
+        const orderID = req.params.orderID;
+
+        console.log(orderID);
+
+        const updatedOrder = await Order.findByIdAndUpdate(orderID, { $set: { orderStatus: orderStatus } });
+
+        if (updatedOrder instanceof Order) {
+
+            res.status(200).json({ "success": true, "message": 'order status updated' })
+        } else {
+            res.status(500).json({ "success": false, "message": 'server facing issues try again' })
+        }
+
+    }
+    catch (err) {
+        console.log(err);
+
+        res.status(500).json({ "success": false, "message": 'server facing issues try again' })
+    }
+
+}
 
 module.exports = {
     renderLoginPage,
@@ -1108,5 +1138,6 @@ module.exports = {
     renderEditCouponPage,
     editCouponHandler,
     renderOrdersPage,
-    renderOrderEditPage
+    renderOrderEditPage,
+    modifyOrderStatusHandler
 }

@@ -48,7 +48,7 @@
 
 
 
-                <form class="container  w-50 mb-3">
+                <form id="changeStatusForm" order-id="<%=orderData[0]._id %>" class="container  w-50 mb-3">
 
 
                     <div class="form-outline mb-4">
@@ -58,7 +58,8 @@
                         <select class="w-100" id="orderStatus" name="orderStatus">
 
                             <% for(i=0 ; i< orderStatusEnum.length; i++) {%>
-                                <option value="user" <% if(orderData[0].orderStatus===orderStatusEnum[i] ){%>
+                                <option value="<%=orderStatusEnum[i]%>" <%
+                                    if(orderData[0].orderStatus===orderStatusEnum[i] ){%>
 
                                     selected <%}%>
 
@@ -90,5 +91,7 @@
 
 
         <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/modifyOrder.js"></script>
 
             <%- include('../layouts/footer.ejs') %>

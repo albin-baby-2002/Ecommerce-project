@@ -541,8 +541,6 @@ const placeCodOrderHandler = async (req, res, next) => {
 
             const userDataUpdate = await User.findByIdAndUpdate(userID, { $push: { orders: orderID } })
 
-
-
             const userCart = await Cart.findOne({ userID: userID });
 
             const itemsInCart = userCart.items;
