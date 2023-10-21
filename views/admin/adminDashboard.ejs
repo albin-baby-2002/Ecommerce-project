@@ -1,0 +1,333 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+
+                            <h2 class="text-center font-weight-bold" style="color: rgba(22, 22, 22, 0.751);">Admin
+                                Dashboard
+                            </h2>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5 ">
+            <div class="container d-flex justify-content-around">
+
+                <div class="d-flex flex-column justify-content-center align-items-center"
+                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(62, 15, 180, 0.377);">
+
+
+                    <div style="font-size: 3rem; color: rgb(0, 0, 0);">
+                        <%=totalUsers%>
+                    </div>
+
+                    <!-- <div>
+                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
+                    </div> -->
+
+
+
+                    <div class="text-center mt-3 font-weight-bold"
+                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                        Total Users
+                    </div>
+
+
+                </div>
+                <div class="d-flex flex-column justify-content-center align-items-center"
+                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(251, 144, 5, 0.377);">
+
+
+                    <div style="font-size: 3rem; color: rgb(0, 0, 0);">
+                        <%=totalProducts%>
+                    </div>
+
+                    <!-- <div>
+                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
+                    </div> -->
+
+
+
+                    <div class="text-center mt-3 font-weight-bold"
+                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                        Total Products
+                    </div>
+
+
+                </div>
+                <div class="d-flex flex-column justify-content-center align-items-center"
+                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(15, 180, 89, 0.377);">
+
+
+                    <div style="font-size: 3rem; color: rgb(0, 0, 0);">
+                        <%=totalOrders%>
+                    </div>
+
+                    <!-- <div>
+                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
+                    </div> -->
+
+
+
+                    <div class="text-center mt-3 font-weight-bold"
+                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                        Total Orders
+                    </div>
+
+
+                </div>
+
+                <div class="d-flex flex-column justify-content-center align-items-center"
+                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(14, 125, 244, 0.377);">
+
+
+                    <div style="font-size: 3rem;">
+                        <%=totalRevenue%>
+
+                    </div>
+
+                    <!-- <div>
+                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
+                    </div> -->
+
+
+
+                    <div class="text-center mt-3 font-weight-bold"
+                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                        Total Revenue (rs)
+                    </div>
+
+
+                </div>
+
+
+
+
+
+            </div>
+
+            <div class="container d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
+
+                <h2 class="text-center font-weight-bold m-5"> Monthly Sales Chart </h2>
+
+                <div class="w-75 ">
+                    <canvas id="myChart"></canvas>
+                </div>
+
+            </div>
+
+            <div class="container d-flex flex-column align-items-center justify-content-center m-5">
+
+                <h2 class="text-center font-weight-bold m-5"> Monthly Orders Chart </h2>
+
+                <div class="w-75 ">
+                    <canvas id="myChartOrders"></canvas>
+                </div>
+
+            </div>
+
+            <div class="container d-flex flex-column align-items-center justify-content-center m-5">
+
+                <h2 class="text-center font-weight-bold m-5"> Types Of Orders Chart </h2>
+
+                <div class="w-75 ">
+                    <canvas style="max-height: 450px;" id="myChartOrderType"></canvas>
+                </div>
+
+            </div>
+
+
+            <div class="container d-flex flex-column align-items-center justify-content-center m-5">
+
+                <h2 class="text-center font-weight-bold m-5"> Category Wise Sales </h2>
+
+                <div class="w-75 ">
+                    <canvas style="max-height: 450px;" id="myChartCategoryWiseSales"></canvas>
+                </div>
+
+            </div>
+
+
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <script>
+
+                const ctx = document.getElementById('myChart');
+                const ctxOrder = document.getElementById('myChartOrders');
+                const ctxOrderType = document.getElementById('myChartOrderType');
+                const ctxCategoryWise = document.getElementById('myChartCategoryWiseSales');
+
+
+                function loadChart() {
+
+                    fetch('http://localhost:2500/admin/chart', {
+
+                        method: 'GET',
+
+                    })
+                        .then(response => response.json())
+                        .then((Data) => {
+
+                            let salesData = Data.sales;
+
+                            let orderTypeData = Data.orderType;
+
+                            let categoryWiseSales = Data.categoryBasedOrders
+
+                            console.log(Data);
+
+                            let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                            let salesLabels = salesData.map((data) => {
+                                return months[data._id.month - 1]
+                            });
+
+                            let totalSalesData = salesData.map((data) => {
+                                return data.totalSales
+                            })
+                            let totalOrdersData = salesData.map((data) => {
+                                return data.totalOrder
+                            })
+
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: salesLabels,
+                                    datasets: [
+                                        {
+                                            label: 'Sales (rs)',
+                                            data: totalSalesData,
+                                            backgroundColor: 'rgba(14, 125, 244, 0.377)',
+                                            borderColor: 'rgba(75, 192, 192, 1)',
+                                            borderWidth: 1,
+                                        },
+
+                                    ],
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            new Chart(ctxOrder, {
+                                type: 'bar',
+                                data: {
+                                    labels: salesLabels,
+                                    datasets: [
+
+                                        {
+                                            label: 'Orders (no)',
+                                            data: totalOrdersData,
+                                            backgroundColor: 'rgba(192, 75, 75, 0.2)',
+                                            borderColor: 'rgba(192, 75, 75, 1)',
+                                            borderWidth: 1,
+                                        },
+                                    ],
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            let orderTypeLabel = orderTypeData.map((type) => type._id);
+
+                            let orderTypeValues = orderTypeData.map((type) => type.totalOrder);
+
+
+                            new Chart(ctxOrderType, {
+                                type: 'pie',
+                                data: {
+                                    labels: orderTypeLabel,
+                                    datasets: [
+
+                                        {
+                                            label: 'Orders (no)',
+                                            data: orderTypeValues,
+                                            backgroundColor: ['rgba(192, 75, 75)', 'rgba(14, 125, 244)'],
+                                            borderColor: ['rgba(192, 75, 75, 1)'],
+                                            borderWidth: 1,
+                                        },
+                                    ],
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+
+
+                            let categoryWiseLabel = categoryWiseSales.map((type) => type._id);
+
+                            let categoryWiseValues = categoryWiseSales.map((type) => type.count);
+
+
+                            new Chart(ctxCategoryWise, {
+                                type: 'pie',
+                                data: {
+                                    labels: categoryWiseLabel,
+                                    datasets: [
+
+                                        {
+                                            label: 'Orders (no)',
+                                            data: categoryWiseValues,
+                                            backgroundColor: ['rgba(15, 180, 89)', 'rgba(14, 125, 244)'],
+                                            borderColor: ['rgba(192, 75, 75, 1)'],
+                                            borderWidth: 1,
+                                        },
+                                    ],
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+
+                        })
+
+                }
+
+                window.onload = loadChart()
+
+
+
+
+
+            </script>
+
+            <script src="/js/admin/addProduct.js"></script>
+
+            <%- include('../layouts/footer.ejs') %>

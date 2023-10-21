@@ -7,7 +7,9 @@ const Product = require('../models/productModel');
 const Coupon = require('../models/couponModel')
 const path = require('path');
 const Order = require('../models/orderModel');
+const { log } = require('console');
 const fsPromises = require('fs').promises;
+const excelJS = require('exceljs');
 
 //!render login page
 
@@ -78,7 +80,7 @@ const loginHandler = async (req, res, next) => {
                 req.session.admin = admin._id;
                 req.session.adminLoggedIn = true;
 
-                res.redirect('/admin/addProduct');
+                res.redirect('/admin/dashboard');
 
                 return;
 
@@ -1114,6 +1116,528 @@ const modifyOrderStatusHandler = async (req, res, next) => {
 
 }
 
+// ! render admin dashboard
+
+const renderAdminDashboard = async (req, res, next) => {
+
+    try {
+
+
+
+        let ProductsCount = await Product.aggregate([
+
+            {
+
+                $match: { onSale: true }
+
+            },
+
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 }
+                }
+            }
+        ]).exec();
+
+        let ordersData = await Order.aggregate([{
+
+
+            $match: {
+
+                $and: [
+
+
+                    {
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    },
+
+                    {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    },
+                    { clientOrderProcessingCompleted: true }]
+            },
+
+        }, {
+
+            $group: {
+                _id: null,
+                count: { $sum: 1 },
+                totalRevenue: { $sum: '$finalPrice' }
+            }
+        }
+
+        ]).exec()
+
+
+
+        let totalProducts = ProductsCount[0].count;
+
+        let totalOrders = ordersData[0].count;
+
+        let totalRevenue = ordersData[0].totalRevenue;
+
+        let totalUsers = await User.countDocuments();
+
+
+        res.render('admin/adminDashboard.ejs', { totalUsers, totalProducts, totalOrders, totalRevenue });
+
+    }
+    catch (err) {
+        next(err);
+    }
+
+}
+
+
+// ! chart data 
+
+const getChartDataHandler = async (req, res, next) => {
+
+
+
+    try {
+
+        const startDate = new Date(new Date().getFullYear(), 0, 1);
+        const endDate = new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999);
+
+        let sales = await Order.aggregate([{
+
+            $match: {
+                $and: [
+                    {
+                        orderDate: {
+                            $gte: startDate,
+                            $lte: endDate
+                        },
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    }, {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    }, { clientOrderProcessingCompleted: true }
+                ]
+            }
+        }, {
+            $group: {
+                _id: {
+                    month: { $month: { $toDate: '$orderDate' } },
+                    year: { $year: { $toDate: '$orderDate' } }
+                },
+                totalSales: { $sum: "$finalPrice" },
+                totalOrder: { $sum: 1 }
+            }
+        }, {
+            $sort: { '_id.year': 1, '_id.month': 1 }
+        }
+
+        ]).exec();
+
+        let orderType = await Order.aggregate([{
+
+            $match: {
+                $and: [
+                    {
+                        orderDate: {
+                            $gte: startDate,
+                            $lte: endDate
+                        },
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    }, {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    }, { clientOrderProcessingCompleted: true }
+                ]
+            }
+        }, {
+            $group: {
+                _id: '$paymentMethod',
+
+                totalOrder: { $sum: 1 }
+            }
+        },
+
+        ]).exec();
+
+        let categoryBasedOrders = await Order.aggregate([{
+
+            $match: {
+                $and: [
+                    {
+                        orderDate: {
+                            $gte: startDate,
+                            $lte: endDate
+                        },
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    }, {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    }, { clientOrderProcessingCompleted: true }
+                ]
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderItems',
+            }
+        }, {
+            $unwind: '$orderItems'
+        },
+
+        {
+            $replaceRoot: {
+                newRoot: '$orderItems'
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'productInfo',
+            }
+
+        }, {
+            $unwind: '$productInfo'
+        }, {
+            $replaceRoot: {
+                newRoot: '$productInfo'
+            }
+        }, {
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'catInfo',
+            }
+        }, {
+            $addFields: {
+                categoryInfo: { $arrayElemAt: ['$catInfo', 0] }
+            }
+        }, {
+            $project: {
+                'catInfo': 0
+            }
+        }, {
+            $addFields: {
+                catName: "$categoryInfo.name"
+            }
+        }, {
+            $group: {
+                _id: '$catName',
+                count: { $sum: 1 }
+            }
+        }
+
+        ]).exec();
+
+        console.log(categoryBasedOrders);
+
+
+
+
+        // console.log(orderType);
+
+        res.status(200).json({ sales, orderType, categoryBasedOrders });
+
+        return;
+
+    }
+    catch (err) {
+        next(err)
+    }
+}
+
+
+// ! render the sales report 
+
+
+const renderSalesReport = async (req, res, next) => {
+
+    try {
+
+        let startingDate = new Date();
+        let endingDate = new Date();
+
+        console.log(req.query.startingDate)
+
+
+        if (req.query.startingDate) {
+
+            startingDate = new Date(req.query.startingDate);
+        }
+
+        if (req.query.endingDate) {
+
+            endingDate = new Date(req.query.endingDate);
+        }
+
+
+
+
+
+
+        startingDate.setUTCHours(0, 0, 0, 0);
+
+        endingDate.setUTCHours(23, 59, 59, 999);
+
+
+        console.log(startingDate, endingDate);
+
+
+
+
+        let orders = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: { $gte: startingDate, $lt: endingDate },
+
+                }
+            },
+
+            {
+                $match: {
+                    orderStatus: {
+                        $ne: 'cancelled'
+                    }
+                }
+            }, {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderedItems',
+                }
+            }, {
+                $unwind: '$orderedItems'
+            },
+
+
+
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderedItems.product',
+                    foreignField: '_id',
+                    as: 'orderedItems.productInfo'
+                }
+            }, {
+                $group: {
+                    _id: '$_id',
+                    userID: { $first: '$userID' },
+                    paymentMethod: { $first: '$paymentMethod' },
+                    paymentStatus: { $first: '$paymentStatus' },
+                    orderStatus: { $first: '$orderStatus' },
+                    shippingAddress: { $first: '$shippingAddress' },
+                    grossTotal: { $first: '$grossTotal' },
+                    couponApplied: { $first: '$couponApplied' },
+                    discountAmount: { $first: '$discountAmount' },
+                    finalPrice: { $first: '$finalPrice' },
+                    clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
+                    orderDate: { $first: '$orderDate' },
+                    orderedItems: { $push: '$orderedItems' }
+                }
+            }]);
+
+
+        startingDate = startingDate.getFullYear() + '-' + (("0" + (startingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + startingDate.getUTCDate()).slice(-2));
+
+        console.log(endingDate.getDate());
+
+
+        endingDate = endingDate.getFullYear() + '-' + (("0" + (endingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + endingDate.getUTCDate()).slice(-2));
+
+
+
+        console.log(startingDate, endingDate);
+
+
+        res.render('admin/salesReport.ejs', { orders, startingDate, endingDate });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+// ! sales report in excel
+
+const salesReportInExcel = async (req, res, next) => {
+
+    try {
+
+
+        let startingDate = new Date();
+        let endingDate = new Date();
+
+
+        if (req.query.startingDate) {
+
+            startingDate = new Date(req.query.startingDate);
+        }
+
+        if (req.query.endingDate) {
+
+            endingDate = new Date(req.query.endingDate);
+        }
+
+
+
+
+
+
+        startingDate.setUTCHours(0, 0, 0, 0);
+
+        endingDate.setUTCHours(23, 59, 59, 999);
+
+
+        console.log(startingDate, endingDate);
+
+
+
+
+        let orders = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: { $gte: startingDate, $lt: endingDate },
+
+                }
+            },
+
+            {
+                $match: {
+                    orderStatus: {
+                        $ne: 'cancelled'
+                    }
+                }
+            }, {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderedItems',
+                }
+            }, {
+                $unwind: '$orderedItems'
+            },
+
+
+
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderedItems.product',
+                    foreignField: '_id',
+                    as: 'orderedItems.productInfo'
+                }
+            },
+
+            {
+                $project: {
+                    userID: 1,
+                    paymentMethod: 1,
+                    paymentStatus: 1,
+                    orderStatus: 1,
+                    shippingAddress: 1,
+                    grossTotal: 1,
+                    discountAmount: 1,
+                    finalPrice: 1,
+                    clientOrderProcessingCompleted: 1,
+                    orderDate: 1,
+
+                    order: {
+
+                        OrderItemId: '$orderedItems._id',
+                        quantity: '$orderedItems.quantity',
+                        totalPrice: '$orderedItems.totalPrice',
+                        product: {
+                            $arrayElemAt: ['$orderedItems.productInfo.name', 0]
+                        }
+                    }
+
+
+                }
+            },
+            {
+                $group: {
+                    _id: '$_id',
+                    userID: { $first: '$userID' },
+                    paymentMethod: { $first: '$paymentMethod' },
+                    paymentStatus: { $first: '$paymentStatus' },
+                    orderStatus: { $first: '$orderStatus' },
+                    shippingAddress: { $first: '$shippingAddress' },
+                    grossTotal: { $first: '$grossTotal' },
+                    couponApplied: { $first: '$couponApplied' },
+                    discountAmount: { $first: '$discountAmount' },
+                    finalPrice: { $first: '$finalPrice' },
+                    clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
+                    orderDate: { $first: '$orderDate' },
+                    orderedItems: { $push: '$order' }
+                }
+            }
+
+        ]).exec();
+
+        console.log(orders);
+
+        const workBook = new excelJS.Workbook();
+        const worksheet = workBook.addWorksheet('Sales Report');
+
+        worksheet.columns = [
+            { header: 'id', key: '_id' },
+            { header: 'userID', key: 'userID' },
+            { header: 'payment Method', key: 'paymentMethod' },
+            { header: 'payment Status', key: 'paymentStatus' },
+            { header: 'order Status', key: 'orderStatus' },
+            { header: 'shipping Address', key: 'shippingAddress' },
+            { header: 'gross Total', key: 'grossTotal' },
+            { header: 'coupon Applied', key: 'couponApplied' },
+            { header: 'discount Amount', key: 'discountAmount' },
+            { header: 'final Price', key: 'finalPrice' },
+            { header: 'client OrderProcessing Completed', key: 'clientOrderProcessingCompleted' },
+            { header: 'order Date', key: 'orderDate' },
+            { header: 'ordered Items', key: 'orderedItems' },
+        ];
+
+        orders.forEach((order) => {
+            worksheet.addRow(order);
+
+        })
+
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.font = { bold: true }
+        })
+
+        res.setHeader("content-Type", "application/vnd.openxmlformats-officedocument.spreadsheatml.sheet");
+
+        res.setHeader("content-Disposition", 'attachment; filename=orders.xlsx');
+
+        return workBook.xlsx.write(res).then(() => {
+            res.status(200)
+        })
+
+    }
+    catch (err) {
+        next(err);
+    }
+}
 module.exports = {
     renderLoginPage,
     renderUsersList,
@@ -1139,5 +1663,10 @@ module.exports = {
     editCouponHandler,
     renderOrdersPage,
     renderOrderEditPage,
-    modifyOrderStatusHandler
+    modifyOrderStatusHandler,
+    renderAdminDashboard,
+    getChartDataHandler,
+    renderSalesReport,
+    salesReportInExcel
+
 }

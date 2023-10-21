@@ -7,7 +7,8 @@ const OtpData = require('../models/otpDataModel');
 const Address = require('../models/addressModel');
 const Order = require('../models/orderModel');
 const Cart = require('../models/cartModel');
-const CartItem = require('../models/cartItemModel')
+const CartItem = require('../models/cartItemModel');
+const Product = require('../models/productModel')
 const userVerificationHelper = require('../helpers/userVerificationHelpers');
 
 const dotenv = require('dotenv').config()
@@ -100,7 +101,7 @@ const signUpHandler = async (req, res, next) => {
 
             req.session.message = {
                 type: 'danger',
-                message: 'Invalid Name: make sure name only contain letters'
+                message: 'Invalid Name: make sure name only contain  letters and first name and last name only'
             }
         }
         else if (!emailRegex.test(email)) {
@@ -239,12 +240,14 @@ const otpVerificationHandler = async (req, res, next) => {
 
                     if (updateUser) {
 
-                        req.session.destroy();
+
 
                         req.session.message = {
                             type: 'success',
                             message: 'otp verification completed now you can login'
                         }
+
+                        req.session.destroy();
 
                         res.redirect('/user/login');
 
@@ -894,7 +897,7 @@ const resetPasswordHandler = async (req, res, next) => {
 
                 };
 
-                res.redirect('/user/forgotPassword');
+                res.redirect('/user/resetPassword');
                 return;
 
 
@@ -902,10 +905,10 @@ const resetPasswordHandler = async (req, res, next) => {
 
                 req.session.message = {
                     type: 'danger',
-                    message: 'The password should contain at-least one capital letter one small letter and one symbol and should be eight character long'
+                    message: 'The password should contain at-least one capital letter one small letter and one symbol(@$!%*?&) and should be eight character long'
                 }
 
-                res.redirect('/user/forgotPassword');
+                res.redirect('/user/resetPassword');
                 return;
             }
 
@@ -1564,7 +1567,44 @@ const paymentSuccessHandler = async (req, res, next) => {
 
         const orderID = new mongoose.Types.ObjectId(receipt);
 
-        console.log(orderID);
+        let orderedItems = await Order.aggregate([{
+            $match: {
+                _id: orderID,
+            }
+        }
+
+            , {
+            $project: {
+                'orderItems': 1
+            }
+
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'items'
+            }
+        }, {
+            $unwind: '$items'
+        }, {
+            $replaceRoot: {
+                newRoot: '$items'
+            }
+        }, {
+            $project: {
+
+                product: 1,
+                quantity: 1
+            }
+        }, {
+            $project: {
+                _id: 0
+            }
+        }
+        ]).exec();
+
+
         const updatedOrder = await Order.findByIdAndUpdate(orderID,
             {
                 $set:
@@ -1579,6 +1619,9 @@ const paymentSuccessHandler = async (req, res, next) => {
         if (updatedOrder instanceof Order) {
 
 
+
+
+
             const userDataUpdate = await User.findByIdAndUpdate(userID, { $push: { orders: updatedOrder._id } })
 
             if (userDataUpdate instanceof User) {
@@ -1590,6 +1633,13 @@ const paymentSuccessHandler = async (req, res, next) => {
                 const itemsInCart = userCart.items;
 
                 console.log(itemsInCart);
+
+                for (const item of orderedItems) {
+
+                    const updateProductQuantity = await Product.findByIdAndUpdate(item.product, { $inc: { stock: -(item.quantity) } })
+
+                }
+
 
                 const deletedCartItems = await CartItem.deleteMany({ _id: { $in: itemsInCart } });
 

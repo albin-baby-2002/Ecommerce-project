@@ -11,6 +11,7 @@ const Coupon = require('../models/couponModel');
 const Order = require('../models/orderModel');
 const OrderItem = require('../models/orderItemModel');
 const CartItem = require('../models/cartItemModel');
+const Product = require('../models/productModel')
 
 
 const userVerificationHelper = require('../helpers/userVerificationHelpers');
@@ -531,13 +532,57 @@ const placeCodOrderHandler = async (req, res, next) => {
 
         const userID = req.session.userID;
 
-        const { orderID } = req.body;
+        const orderID = new mongoose.Types.ObjectId(req.body.orderID);
 
-        const orderPlaced = await Order.updateOne({ _id: orderID, userID: userID }, { $set: { orderStatus: 'shipmentProcessing', clientOrderProcessingCompleted: true } })
+        const orderPlaced = await Order.updateOne({ _id: orderID, userID: userID }, { $set: { orderStatus: 'shipmentProcessing', clientOrderProcessingCompleted: true } });
 
-        console.log(orderPlaced)
+        let orderedItems = await Order.aggregate([{
+            $match: {
+                _id: orderID,
+            }
+        }
+
+            , {
+            $project: {
+                'orderItems': 1
+            }
+
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'items'
+            }
+        }, {
+            $unwind: '$items'
+        }, {
+            $replaceRoot: {
+                newRoot: '$items'
+            }
+        }, {
+            $project: {
+
+                product: 1,
+                quantity: 1
+            }
+        }, {
+            $project: {
+                _id: 0
+            }
+        }
+        ]).exec();
+
+        console.log(orderedItems);
+
+
+
+
 
         if (orderPlaced.matchedCount === 1 && orderPlaced.modifiedCount === 1) {
+
+
+
 
             const userDataUpdate = await User.findByIdAndUpdate(userID, { $push: { orders: orderID } })
 
@@ -546,6 +591,12 @@ const placeCodOrderHandler = async (req, res, next) => {
             const itemsInCart = userCart.items;
 
             console.log(itemsInCart);
+
+            for (const item of orderedItems) {
+
+                const updateProductQuantity = await Product.findByIdAndUpdate(item.product, { $inc: { stock: -(item.quantity) } })
+
+            }
 
             const deletedCartItems = await CartItem.deleteMany({ _id: { $in: itemsInCart } });
 

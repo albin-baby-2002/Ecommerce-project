@@ -106,9 +106,29 @@ router.route('/order/changeStatus/:orderID')
     .get(adminController.renderOrderEditPage)
     .put(adminController.modifyOrderStatusHandler)
 
+// ! admin dashboard render
+
+router.route('/dashboard')
+    .get(adminController.renderAdminDashboard)
+
+// ! chart data handler
+
+router.route('/chart')
+    .get(adminController.getChartDataHandler)
+
+
+// ! render sales report 
+
+router.get('/salesReport', adminController.renderSalesReport)
+
+// ! excel sales report
+router.get('/salesReport/excel', adminController.salesReportInExcel)
+
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.adminErrorHandler);
+
+
 
 // ! exporting admin routes 
 
