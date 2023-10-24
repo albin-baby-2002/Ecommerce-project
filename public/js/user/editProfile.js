@@ -9,23 +9,15 @@ form.addEventListener("submit", function (event) {
 
     const formData = new FormData(form);
 
-    const formDataJSON = {};
-
-    formData.forEach((value, key) => {
-        formDataJSON[key] = value;
-    });
-
 
 
 
     fetch('http://localhost:2500/user/profile/edit', {
 
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        method: 'POST',
 
-        body: JSON.stringify(formDataJSON),
+
+        body: formData
     })
         .then(response => response.json())
         .catch(error => {

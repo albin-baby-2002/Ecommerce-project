@@ -21,67 +21,93 @@
         </section>
 
 
-        <div class="container">
-            <div class="row">
+        <div class=" " style="background-color: rgba(255, 255, 255, 0.592);">
+            <div class="container ">
                 <div class="col-12">
                     <!-- Page title -->
 
                     <!-- Form START -->
 
-                    <div class="row mb-5 gx-5">
+                    <div class="row  ">
+
+
+                        <h3 class="mb-5 mt-5 text-center font-weight-bold  text-white">Your Personal Details</h3>
                         <!-- Contact detail -->
-                        <div class="col-xxl-8 mb-5 mb-xxl-0">
-                            <div class="bg-secondary-soft px-4 pt-5 pb-0 rounded">
-                                <div class="row g-3">
-                                    <h3 class="mb-5 mt-5 text-center font-weight-bold ">Your Personal Details</h3>
-                                    <!-- First Name -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">First Name </label>
-                                        <input readonly type="text" class="form-control" placeholder=""
-                                            aria-label="First name" value="<%= user.firstName %>">
-                                    </div>
-                                    <!-- Last name -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">Last Name </label>
-                                        <input readonly type="text" class="form-control" placeholder=""
-                                            aria-label="Last name" value="<%= user.lastName %>">
-                                    </div>
-                                    <!-- Phone number -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">Phone number </label>
-                                        <input readonly type="text" class="form-control" placeholder=""
-                                            aria-label="Phone number" value="<%= user.phone%>">
-                                    </div>
-                                    <!-- Mobile number -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">Joined Date </label>
-                                        <input readonly type="text" class="form-control" placeholder=""
-                                            aria-label="Phone number" value="<%= user.joined_date %>">
-                                    </div>
-                                    <!-- Email -->
-                                    <div class="col-md-6">
-                                        <label for="inputEmail4" class="form-label">Email </label>
-                                        <input readonly type="email" class="form-control" id="inputEmail4"
-                                            value="<%= user.email %>">
-                                    </div>
-                                    <!-- Skype -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">Wallet </label>
-                                        <input readonly type="text" class="form-control" placeholder=""
-                                            aria-label="Phone number" value="<%-user.wallet%>">
-                                    </div>
+                        <div class="col-xxl-12 mb-5 mb-xxl-0  ">
+
+                            <div class=" row m-0 p-0 bg-secondary-soft rounded d-flex ">
 
 
-                                    <div class="mt-5 w-100 d-flex justify-content-center">
+                                <div class="col-4 d-flex justify-content-center  ">
 
-                                        <button class=" w-50 btn-dark p-1 mr-2"> <a href="/user/profile/edit"
-                                                class="nav-link">Edit Profile</a></button>
+                                    <% if(user.profileImg){ %>
+                                        <img class="" src="/img/" style='border-radius: 10%;' alt="">
 
-                                        <button class="btn-dark p-1 w-50 ml-2"> <a class="nav-link"
-                                                href="/user/logout">Logout</a></button>
+                                        <%} else {%>
+
+                                            <img class="" src="/img/p3.png" style='border-radius: 10%;' alt="">
+
+                                            <%}%>
+
+                                </div>
+
+                                <div class=" col-8  g-3 ">
+
+                                    <div class="row">
+
+                                        <!-- First Name -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">First Name </label>
+                                            <input readonly type="text" class="form-control" placeholder=""
+                                                aria-label="First name" value="<%= user.firstName %>">
+                                        </div>
+                                        <!-- Last name -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">Last Name </label>
+                                            <input readonly type="text" class="form-control" placeholder=""
+                                                aria-label="Last name" value="<%= user.lastName %>">
+                                        </div>
+                                        <!-- Phone number -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">Phone number </label>
+                                            <input readonly type="text" class="form-control" placeholder=""
+                                                aria-label="Phone number" value="<%= user.phone%>">
+                                        </div>
+                                        <!-- Mobile number -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">Joined Date </label>
+                                            <input readonly type="text" class="form-control" placeholder=""
+                                                aria-label="Phone number" value="<%= user.joined_date %>">
+                                        </div>
+                                        <!-- Email -->
+                                        <div class="col-md-6">
+                                            <label for="inputEmail4" class="form-label">Email </label>
+                                            <input readonly type="email" class="form-control" id="inputEmail4"
+                                                value="<%= user.email %>">
+                                        </div>
+                                        <!-- Skype -->
+                                        <div class="col-md-6">
+                                            <label class="form-label">Wallet </label>
+                                            <input readonly type="text" class="form-control" placeholder=""
+                                                aria-label="Phone number" value="<%-user.wallet%>">
+                                        </div>
+
+
+                                        <div class="mt-5 w-100 d-flex justify-content-center">
+
+                                            <button class=" w-50 btn-dark p-1 mr-2"> <a href="/user/profile/edit"
+                                                    class="nav-link">Edit Profile</a></button>
+
+                                            <button class="btn-dark p-1 w-50 ml-2"> <a class="nav-link"
+                                                    href="/user/logout">Logout</a></button>
+
+                                        </div>
 
                                     </div>
+
                                 </div> <!-- Row END -->
+
+
                             </div>
                         </div>
                         <!-- Upload profile -->
@@ -90,48 +116,55 @@
 
 
                         <!-- change password -->
-                        <div class="col-xxl-6">
-                            <div class="bg-secondary-soft px-4 py-5 rounded d-flex justify-content-center">
-                                <div class="row g-3 w-75">
-                                    <h3 class="my-4 mb-5 mt-5 text-center font-weight-bold">Change Your Password</h3>
 
-                                    <form id="changePasswordForm">
-
-                                        <div class="mt-3">
-                                            <label for="exampleInputPassword1" class="form-label">Current password
-                                                *</label>
-
-                                            <input type="password" class="form-control " name="currentPassword"
-                                                style="background-color: #e9ecef;" id="exampleInputPassword1">
-                                        </div>
-                                        <!-- New password -->
-                                        <div class="mt-3">
-                                            <label for="exampleInputPassword2" class="form-label">New password *</label>
-
-                                            <input style="background-color: #e9ecef;" type="text" name="newPassword"
-                                                class="form-control" id="exampleInputPassword2">
-                                        </div>
-
-                                        <div class="mt-5 w-100 d-flex justify-content-center">
-
-                                            <button type="submit" class="w-75 btn-dark p-1">Change Password</button>
-
-                                        </div>
-
-
-                                    </form>
-                                    <!-- Old password -->
-
-
-                                </div>
-                            </div>
-                        </div>
                     </div> <!-- Row END -->
                     <!-- button -->
 
                     <!-- Form END -->
                 </div>
             </div>
+        </div>
+
+
+        <div class="container">
+
+            <div class="col-xxl-12">
+                <div class="bg-secondary-soft px-4 py-5 rounded d-flex justify-content-center">
+                    <div class="row g-3 w-75">
+                        <h3 class="my-4 mb-5 mt-5 text-center font-weight-bold">Change Your Password</h3>
+
+                        <form id="changePasswordForm">
+
+                            <div class="mt-3">
+                                <label for="exampleInputPassword1" class="form-label">Current password
+                                    *</label>
+
+                                <input type="password" class="form-control " name="currentPassword"
+                                    style="background-color: #e9ecef;" id="exampleInputPassword1">
+                            </div>
+                            <!-- New password -->
+                            <div class="mt-3">
+                                <label for="exampleInputPassword2" class="form-label">New password *</label>
+
+                                <input style="background-color: #e9ecef;" type="text" name="newPassword"
+                                    class="form-control" id="exampleInputPassword2">
+                            </div>
+
+                            <div class="mt-5 w-100 d-flex justify-content-center">
+
+                                <button type="submit" class="w-75 btn-dark p-1">Change Password</button>
+
+                            </div>
+
+
+                        </form>
+                        <!-- Old password -->
+
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <%- include('../users/userFooter.ejs') %>

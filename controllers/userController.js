@@ -1148,13 +1148,41 @@ const editProfileHandler = async (req, res, next) => {
             return;
         }
 
+
+
         const userID = req.session.userID;
 
         const { firstName, lastName, phone } = req.body;
 
         const newName = firstName.trim() + " " + lastName.trim();
 
-        const updatedUser = await User.findByIdAndUpdate(userID, { $set: { name: newName, phone } });
+
+        let DataForUpdate = {
+
+            $set: {
+                name: newName,
+                phone,
+
+
+            }
+        };
+
+        console.log(req.file);
+
+        let profileImg
+
+        if (req.file) {
+
+            profileImg = req.file.filename;
+
+            DataForUpdate.$set.profileImg = profileImg;
+        }
+
+
+
+
+
+        const updatedUser = await User.findByIdAndUpdate(userID, DataForUpdate);
 
         if (updatedUser instanceof User) {
 
@@ -1167,6 +1195,8 @@ const editProfileHandler = async (req, res, next) => {
 
     }
     catch (err) {
+
+        console.log(err);
 
         res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
 
@@ -1429,6 +1459,14 @@ const cancelOrderHandler = async (req, res, next) => {
         const orderExist = await Order.findOne({ _id: orderID, userID });
 
         const orderPrice = orderExist.finalPrice;
+
+        if (orderExist.orderStatus === 'delivered') {
+
+            res.status(400).json({ "success": false, "message": " The order is already delivered you can't cancel it " });
+
+            return;
+
+        }
 
         if (orderExist instanceof Order && orderExist.paymentMethod === 'cod') {
 

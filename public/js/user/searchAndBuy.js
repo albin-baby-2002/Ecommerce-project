@@ -31,7 +31,7 @@ categoryRadios.forEach((radio) => {
         const categoryID = radio.value;
         const sortValue = sortSelect.value;
         const searchValue = searchProduct.value;
-        const url = `/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
+        const url = `/search/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
         searchProduct.value = ''; // clear search input
         window.location.href = url;
     });
@@ -41,7 +41,7 @@ sortSelect.addEventListener('change', () => {
     const categoryId = new URLSearchParams(window.location.search).get('category');
     const sortValue = sortSelect.value;
     const searchValue = searchProduct.value;
-    const url = `/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    const url = `/search/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
     window.location.href = url;
 });
 
@@ -56,7 +56,7 @@ form.addEventListener('submit', function (event) {
 
     const sortValue = sortSelect.value;
     const searchValue = searchProduct.value;
-    const url = `/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    const url = `/search/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
     searchProduct.value = ''; // clear search input
     window.location.href = url;
 

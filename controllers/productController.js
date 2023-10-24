@@ -94,6 +94,25 @@ const renderSearchAndBuy = async (req, res, next) => {
 
 }
 
+// ! render the home page 
+
+const renderHomePage = async (req, res, next) => {
+
+    try {
+
+        const products = await Product.find()
+
+            .limit(8)
+            .exec();
+
+        res.render('users/home.ejs', { products });
+
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
 
 //! render product details page 
 
@@ -612,5 +631,6 @@ module.exports = {
     addToWishListHandler,
     renderWishListPage,
     removeFromWishListHandler,
-    renderCheckOutPage
+    renderCheckOutPage,
+    renderHomePage
 }

@@ -28,14 +28,11 @@ const adminErrorHandler = (err, req, res, next) => {
 }
 
 const multerErrorHandler = (err, req, res, next) => {
+
     console.log(err)
 
-    req.session.message = {
-        type: 'danger',
-        message: ' failed to add image wrong file type '
-    }
+    res.status(400).json({ "success": false, "message": "Img uploading Failed : wrong img type , Insert correct Img and try Again!" })
 
-    res.redirect('/admin/addProduct');
     return;
 
 

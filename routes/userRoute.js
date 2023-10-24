@@ -7,12 +7,18 @@ const userController = require('../controllers/userController');
 const errorHandler = require('../middleware/errorHandling');
 const productController = require('../controllers/productController')
 const cartController = require('../controllers/cartController');
-const checkoutController = require('../controllers/checkoutController')
+const checkoutController = require('../controllers/checkoutController');
+const { upload } = require('../middleware/multerMiddlewareForProfile');
+
 
 
 // ! user home render 
 
-router.get('/', productController.renderSearchAndBuy);
+router.get('/', productController.renderHomePage);
+
+// ! search page render 
+
+router.get('/search', productController.renderSearchAndBuy)
 
 
 // ! signUp render and validation
@@ -126,7 +132,7 @@ router.get('/user/profile', userController.renderUserProfile);
 
 router.route('/user/profile/edit')
     .get(userController.renderEditProfilePage)
-    .put(userController.editProfileHandler);
+    .post(upload.single('profileImg'), errorHandler.multerErrorHandler, userController.editProfileHandler);
 
 // ! change password handler 
 

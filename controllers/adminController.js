@@ -167,6 +167,8 @@ const blockUserHandler = async (req, res, next) => {
 
         const user = await User.findOne({ _id: id });
 
+
+
         if (user) {
             if (user.blocked) {
 
@@ -1096,7 +1098,21 @@ const modifyOrderStatusHandler = async (req, res, next) => {
 
         const orderID = req.params.orderID;
 
-        console.log(orderID);
+        const orderExist = await Order.findById(orderID);
+
+        console.log(orderExist)
+
+        if (!orderExist) {
+            res.status(500).json({ "success": false, "message": 'server facing issues finding order data  try again' })
+
+            return;
+        } else if (orderExist.orderStatus === 'delivered') {
+            res.status(400).json({ "success": false, "message": " The order is already delivered you can't change its status " });
+
+            return;
+        }
+
+
 
         const updatedOrder = await Order.findByIdAndUpdate(orderID, { $set: { orderStatus: orderStatus } });
 

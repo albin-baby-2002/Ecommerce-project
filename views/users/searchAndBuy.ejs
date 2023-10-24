@@ -124,11 +124,12 @@
 
 
                                     <div class="col-lg-4 col-md-4 col-sm-6 mx-1 pl-0" style="max-width: 262px;">
+
                                         <div class="product__item">
                                             <div click-id="productDetailsLink" group-id="<%=products[i].groupingID%>"
                                                 color-id="<%=products[i].color%>"
                                                 class="product__item__pic set-bg add-hover mt-1" data-id="bg-render"
-                                                data-for-bg="img/productImages/<%=products[i].images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
+                                                data-for-bg="/img/productImages/<%=products[i].images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
                                                 style="background-size: cover;background-position: top;
                                                 background-repeat: no-repeat;">
 
