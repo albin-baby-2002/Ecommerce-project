@@ -97,6 +97,8 @@ cropBtn.addEventListener('click', function () {
 
 const form = document.getElementById('myForm');
 
+const productID = form.getAttribute('product-id');
+
 form.addEventListener('submit', function (event) {
 
     event.preventDefault();
@@ -122,7 +124,7 @@ form.addEventListener('submit', function (event) {
     console.log(formData);
 
 
-    fetch('http://localhost:2500/admin/addProduct', {
+    fetch('http://localhost:2500/admin/editProduct/' + productID, {
         method: 'POST',
 
         body: formData,

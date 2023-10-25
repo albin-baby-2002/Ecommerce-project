@@ -186,35 +186,77 @@
                         .then(response => response.json())
                         .then((Data) => {
 
-                            let salesData = Data.sales;
+                            let { saleChartInfo, orderTypeChartInfo, categoryChartInfo, orderQuantityChartInfo } = Data;
 
-                            let orderTypeData = Data.orderType;
 
-                            let categoryWiseSales = Data.categoryBasedOrders
 
-                            console.log(Data);
+                            console.log('sales \n \n', saleChartInfo, '\n\n\n')
 
-                            let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                            console.log('orderType \n \n', orderTypeChartInfo, '\n\n\n')
 
-                            let salesLabels = salesData.map((data) => {
-                                return months[data._id.month - 1]
-                            });
+                            console.log('categoryBased \n \n', categoryChartInfo, '\n\n\n')
 
-                            let totalSalesData = salesData.map((data) => {
-                                return data.totalSales
-                            })
-                            let totalOrdersData = salesData.map((data) => {
-                                return data.totalOrder
-                            })
+
+                            let salesChartLabel;
+
+                            let totalSalesValData;
+
+
+                            if (saleChartInfo.timeBasis === 'yearly') {
+
+
+                                let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+
+                                salesChartLabel = saleChartInfo.data.map((data) => {
+                                    return months[data._id.month - 1]
+                                });
+
+
+                                totalSalesValData = saleChartInfo.data.map((data) => {
+                                    return data.totalSales
+                                })
+
+
+                            } else if (saleChartInfo.timeBasis === 'weekly') {
+
+                                salesChartLabel = saleChartInfo.data.map((data) => {
+                                    return data._id
+                                });
+
+                                totalSalesValData = saleChartInfo.data.map((data) => {
+                                    return data.totalSales
+                                })
+
+                            }
+
+                            else if (saleChartInfo.timeBasis === 'daily') {
+
+
+                                salesChartLabel = saleChartInfo.data.map((data) => {
+
+                                    const hr = data._id;
+
+                                    return `${hr}:00 - ${hr + 1}:00 UTC`
+                                });
+
+                                totalSalesValData = saleChartInfo.data.map((data) => {
+                                    return data.totalSales
+                                })
+                            }
+
+                            console.log(salesChartLabel);
+                            console.log(totalSalesValData)
+
 
                             new Chart(ctx, {
                                 type: 'bar',
                                 data: {
-                                    labels: salesLabels,
+                                    labels: salesChartLabel,
                                     datasets: [
                                         {
                                             label: 'Sales (rs)',
-                                            data: totalSalesData,
+                                            data: totalSalesValData,
                                             backgroundColor: 'rgba(14, 125, 244, 0.377)',
                                             borderColor: 'rgba(75, 192, 192, 1)',
                                             borderWidth: 1,
@@ -225,22 +267,78 @@
                                 options: {
                                     scales: {
                                         y: {
-                                            beginAtZero: true
+                                            beginAtZero: true,
+                                            min: 0,
+
                                         }
                                     }
                                 }
                             });
 
 
+                            let OrderQuantityChartLabels;
+
+                            let OrderQuantityChartData;
+
+
+                            if (orderQuantityChartInfo.timeBasis === 'yearly') {
+
+
+                                let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+
+                                OrderQuantityChartLabels = orderQuantityChartInfo.data.map((data) => {
+                                    return months[data._id.month - 1]
+                                });
+
+
+                                OrderQuantityChartData = orderQuantityChartInfo.data.map((data) => {
+                                    return data.totalOrder
+                                })
+
+
+                            } else if (orderQuantityChartInfo.timeBasis === 'weekly') {
+
+                                OrderQuantityChartLabels = orderQuantityChartInfo.data.map((data) => {
+                                    return data._id
+                                });
+
+                                OrderQuantityChartData = orderQuantityChartInfo.data.map((data) => {
+                                    return data.totalOrder
+                                })
+
+                            }
+
+                            else if (orderQuantityChartInfo.timeBasis === 'daily') {
+
+
+                                OrderQuantityChartLabels = orderQuantityChartInfo.data.map((data) => {
+
+                                    const hr = data._id;
+
+                                    return `${hr}:00 - ${hr + 1}:00 UTC`
+                                });
+
+                                OrderQuantityChartData = orderQuantityChartInfo.data.map((data) => {
+                                    return data.totalOrder
+                                })
+                            }
+
+                            console.log(OrderQuantityChartLabels);
+                            console.log(OrderQuantityChartData);
+
+
+
+
                             new Chart(ctxOrder, {
                                 type: 'bar',
                                 data: {
-                                    labels: salesLabels,
+                                    labels: OrderQuantityChartLabels,
                                     datasets: [
 
                                         {
                                             label: 'Orders (no)',
-                                            data: totalOrdersData,
+                                            data: OrderQuantityChartData,
                                             backgroundColor: 'rgba(192, 75, 75, 0.2)',
                                             borderColor: 'rgba(192, 75, 75, 1)',
                                             borderWidth: 1,
@@ -257,67 +355,75 @@
                             });
 
 
-                            let orderTypeLabel = orderTypeData.map((type) => type._id);
 
-                            let orderTypeValues = orderTypeData.map((type) => type.totalOrder);
-
-
-                            new Chart(ctxOrderType, {
-                                type: 'pie',
-                                data: {
-                                    labels: orderTypeLabel,
-                                    datasets: [
-
-                                        {
-                                            label: 'Orders (no)',
-                                            data: orderTypeValues,
-                                            backgroundColor: ['rgba(192, 75, 75)', 'rgba(14, 125, 244)'],
-                                            borderColor: ['rgba(192, 75, 75, 1)'],
-                                            borderWidth: 1,
-                                        },
-                                    ],
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
-
-
-                            let categoryWiseLabel = categoryWiseSales.map((type) => type._id);
-
-                            let categoryWiseValues = categoryWiseSales.map((type) => type.count);
-
-
-                            new Chart(ctxCategoryWise, {
-                                type: 'pie',
-                                data: {
-                                    labels: categoryWiseLabel,
-                                    datasets: [
-
-                                        {
-                                            label: 'Orders (no)',
-                                            data: categoryWiseValues,
-                                            backgroundColor: ['rgba(15, 180, 89)', 'rgba(14, 125, 244)'],
-                                            borderColor: ['rgba(192, 75, 75, 1)'],
-                                            borderWidth: 1,
-                                        },
-                                    ],
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
 
                         })
 
+
+
+
+                    //             let orderTypeLabel = orderTypeData.map((type) => type._id);
+
+                    //             let orderTypeValues = orderTypeData.map((type) => type.totalOrder);
+
+
+                    //             new Chart(ctxOrderType, {
+                    //                 type: 'pie',
+                    //                 data: {
+                    //                     labels: orderTypeLabel,
+                    //                     datasets: [
+
+                    //                         {
+                    //                             label: 'Orders (no)',
+                    //                             data: orderTypeValues,
+                    //                             backgroundColor: ['rgba(192, 75, 75)', 'rgba(14, 125, 244)'],
+                    //                             borderColor: ['rgba(192, 75, 75, 1)'],
+                    //                             borderWidth: 1,
+                    //                         },
+                    //                     ],
+                    //                 },
+                    //                 options: {
+                    //                     scales: {
+                    //                         y: {
+                    //                             beginAtZero: true
+                    //                         }
+                    //                     }
+                    //                 }
+                    //             });
+
+
+                    //             let categoryWiseLabel = categoryWiseSales.map((type) => type._id);
+
+                    //             let categoryWiseValues = categoryWiseSales.map((type) => type.count);
+
+
+                    //             new Chart(ctxCategoryWise, {
+                    //                 type: 'pie',
+                    //                 data: {
+                    //                     labels: categoryWiseLabel,
+                    //                     datasets: [
+
+                    //                         {
+                    //                             label: 'Orders (no)',
+                    //                             data: categoryWiseValues,
+                    //                             backgroundColor: ['rgba(15, 180, 89)', 'rgba(14, 125, 244)'],
+                    //                             borderColor: ['rgba(192, 75, 75, 1)'],
+                    //                             borderWidth: 1,
+                    //                         },
+                    //                     ],
+                    //                 },
+                    //                 options: {
+                    //                     scales: {
+                    //                         y: {
+                    //                             beginAtZero: true
+                    //                         }
+                    //                     }
+                    //                 }
+                    //             });
+
+                    //         })
+
+                    // 
                 }
 
                 window.onload = loadChart()

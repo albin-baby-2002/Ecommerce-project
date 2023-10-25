@@ -339,7 +339,9 @@ const addProductHandler = async (req, res, next) => {
 
         } else if (isNaN(groupingID) || groupingID < 1000) {
 
-            res.status(400).json({ "success": false, "message": " Grouping ID should be a  numberical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
+            res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
+
+            return;
 
         }
         else if (isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
@@ -467,6 +469,8 @@ const editProductHandler = async (req, res, next) => {
 
     try {
 
+        console.log('edit product handler \n \n', req.params.productId);
+
         console.log(req.files);
 
         const files = req.files;
@@ -495,12 +499,8 @@ const editProductHandler = async (req, res, next) => {
 
         if (!name || !category || !groupingID || !description || !price || !onSale || !size || !color) {
 
-            req.session.message = {
-                type: 'danger',
-                message: 'All Fields Are Mandatory'
-            }
+            res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
 
-            res.redirect(`/admin/editProduct/${productId}`);
             return;
 
         } else if (isNaN(groupingID) || groupingID < 1000) {
@@ -508,12 +508,9 @@ const editProductHandler = async (req, res, next) => {
             res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
 
         } else if (Number.isNaN(price) || Number.isNaN(stock) || price < 0 || stock < 0) {
-            req.session.message = {
-                type: 'danger',
-                message: 'Price and Stock should be numerical value'
-            }
 
-            res.redirect(`/admin/editProduct/${productId}`);
+            res.status(400).json({ "success": false, "message": " Price and stock value should be non negative numerical values. Try Again !" })
+
             return;
 
         }
@@ -557,13 +554,11 @@ const editProductHandler = async (req, res, next) => {
 
                 console.log('image match not found');
 
-                req.session.message = {
-                    type: 'danger',
-                    message: 'failed to update the product'
-                }
 
-                res.redirect(`/admin/editProduct/${productId}`);
+                res.status(500).json({ "success": false, "message": " failed to update the product !" })
+
                 return;
+
 
             }
 
@@ -583,12 +578,8 @@ const editProductHandler = async (req, res, next) => {
 
         if (updatedProduct) {
 
-            req.session.message = {
-                type: 'success',
-                message: 'product updated successfully'
-            }
 
-            res.redirect(`/admin/editProduct/${productId}`);
+
 
             oldImages.forEach(async (img) => {
 
@@ -602,30 +593,37 @@ const editProductHandler = async (req, res, next) => {
                     console.log(err);
                     console.log('failed deletion error');
 
-
-                    return;
                 }
             })
+
+            res.status(201).json({ "success": true, "message": " Product edited successfully  " })
+
             return;
 
         } else {
 
-            infoOfUpdatedImgs.forEach(async (info) => {
+            try {
 
-                let imgPath = path.join(__dirname, '../public/img/productImages', info[1]);
+                infoOfUpdatedImgs.forEach(async (info) => {
 
-                await fsPromises.unlink(imgPath);
+                    let imgPath = path.join(__dirname, '../public/img/productImages', info[1]);
 
-                console.log('new images deleted due to failed update');
+                    await fsPromises.unlink(imgPath);
 
-            })
+                    console.log('new images deleted due to failed update');
 
-            req.session.message = {
-                type: 'danger',
-                message: 'failed to update the product'
+                })
+
+            } catch (err) {
+
+                console.log(err);
             }
 
-            res.redirect(`/admin/editProduct/${productId}`);
+
+
+            res.status(500).json({ "success": false, "message": " failed to update the product !" })
+
+
             return;
         }
 
@@ -636,8 +634,10 @@ const editProductHandler = async (req, res, next) => {
 
     }
     catch (err) {
+        console.log(err);
 
-        next(err)
+        res.status(500).json({ "success": false, "message": " failed to update the product !" });
+
     }
 };
 
@@ -1218,17 +1218,160 @@ const getChartDataHandler = async (req, res, next) => {
 
     try {
 
-        const startDate = new Date(new Date().getFullYear(), 0, 1);
-        const endDate = new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999);
+        let timeBaseForSalesChart = 'yearly';
+        let timeBaseForOrderNoChart = 'yearly';
+        let timeBaseForOrderTypeChart = 'yearly';
+        let timeBaseForCategoryBasedChart = 'yearly';
 
-        let sales = await Order.aggregate([{
+
+
+        function getDatesAndQueryData(timeBaseForChart, chartType) {
+
+
+            let startDate, endDate;
+
+            let groupingQuery, sortQuery;
+
+
+
+            if (timeBaseForChart === 'yearly') {
+
+                startDate = new Date(new Date().getFullYear(), 0, 1);
+
+                endDate = new Date(new Date().getFullYear(), 11, 31, 23, 59, 59, 999);
+
+                groupingQuery = {
+                    _id: {
+                        month: { $month: { $toDate: '$orderDate' } },
+                        year: { $year: { $toDate: '$orderDate' } }
+                    },
+                    totalSales: { $sum: "$finalPrice" },
+                    totalOrder: { $sum: 1 }
+                }
+
+                sortQuery = { '_id.year': 1, '_id.month': 1 }
+            }
+
+
+
+            if (timeBaseForChart === 'weekly') {
+
+                startDate = new Date();
+
+                endDate = new Date();
+
+                const timezoneOffset = startDate.getTimezoneOffset();
+
+                startDate.setDate(startDate.getDate() - 6);
+
+                startDate.setUTCHours(0, 0, 0, 0);
+
+                startDate.setUTCMinutes(startDate.getUTCMinutes() + timezoneOffset);
+
+                endDate.setUTCHours(0, 0, 0, 0);
+
+                endDate.setDate(endDate.getDate() + 1)
+
+                endDate.setUTCMinutes(endDate.getUTCMinutes() + timezoneOffset);
+
+
+                console.log('final \n ', startDate, '\n', endDate);
+
+
+                groupingQuery = {
+                    _id: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$orderDate" }
+                    },
+                    totalSales: { $sum: "$finalPrice" },
+                    totalOrder: { $sum: 1 }
+
+                }
+
+                sortQuery = { '_id': 1 }
+
+            }
+
+
+
+
+
+            if (timeBaseForChart === 'daily') {
+
+                startDate = new Date();
+                endDate = new Date();
+
+
+                const timezoneOffset = startDate.getTimezoneOffset();
+
+                console.log('offset', timezoneOffset);
+
+
+                startDate.setUTCHours(0, 0, 0, 0);
+
+                endDate.setUTCHours(0, 0, 0, 0);
+
+                endDate.setDate(endDate.getDate() + 1)
+
+
+                console.log('utcZero', startDate);
+                console.log('utcZero', endDate);
+
+                startDate.setUTCMinutes(startDate.getUTCMinutes() + timezoneOffset);
+
+                endDate.setUTCMinutes(endDate.getUTCMinutes() + timezoneOffset);
+
+                console.log('final', startDate, endDate);
+
+                groupingQuery = {
+                    _id: { $hour: "$orderDate" },
+                    totalSales: { $sum: "$finalPrice" },
+                    totalOrder: { $sum: 1 }
+                }
+
+                sortQuery = { '_id.hour': 1 }
+            }
+
+
+            if (chartType === 'sales') {
+
+                return { groupingQuery, sortQuery, startDate, endDate }
+            }
+
+            else if (chartType === 'orderType') {
+
+                return { startDate, endDate }
+            }
+
+            else if (chartType === 'categoryBasedChart') {
+
+                return { startDate, endDate }
+            }
+            else if (chartType === 'orderNoChart') {
+                return { groupingQuery, sortQuery, startDate, endDate }
+            }
+
+
+        }
+
+        const salesChartInfo = getDatesAndQueryData(timeBaseForSalesChart, 'sales');
+
+        const orderChartInfo = getDatesAndQueryData(timeBaseForOrderTypeChart, 'orderType');
+
+        const categoryBasedChartInfo = getDatesAndQueryData(timeBaseForCategoryBasedChart, 'categoryBasedChart');
+
+        const orderNoChartInfo = getDatesAndQueryData(timeBaseForOrderNoChart, 'orderNoChart')
+
+
+
+
+        let salesChartData = await Order.aggregate([{
 
             $match: {
                 $and: [
                     {
                         orderDate: {
-                            $gte: startDate,
-                            $lte: endDate
+                            $gte: salesChartInfo.startDate,
+                            $lte: salesChartInfo.endDate
                         },
                         orderStatus: {
                             $nin: ['clientSideProcessing', 'cancelled']
@@ -1240,29 +1383,58 @@ const getChartDataHandler = async (req, res, next) => {
                     }, { clientOrderProcessingCompleted: true }
                 ]
             }
+        },
+
+        {
+            $group: salesChartInfo.groupingQuery
         }, {
-            $group: {
-                _id: {
-                    month: { $month: { $toDate: '$orderDate' } },
-                    year: { $year: { $toDate: '$orderDate' } }
-                },
-                totalSales: { $sum: "$finalPrice" },
-                totalOrder: { $sum: 1 }
-            }
-        }, {
-            $sort: { '_id.year': 1, '_id.month': 1 }
+            $sort: salesChartInfo.sortQuery
         }
 
         ]).exec();
 
-        let orderType = await Order.aggregate([{
+
+
+
+        let orderNoChartData = await Order.aggregate([{
 
             $match: {
                 $and: [
                     {
                         orderDate: {
-                            $gte: startDate,
-                            $lte: endDate
+                            $gte: orderNoChartInfo.startDate,
+                            $lte: orderNoChartInfo.endDate
+                        },
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    }, {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    }, { clientOrderProcessingCompleted: true }
+                ]
+            }
+        },
+
+        {
+            $group: orderNoChartInfo.groupingQuery
+        }, {
+            $sort: orderNoChartInfo.sortQuery
+        }
+
+        ]).exec();
+
+
+
+        let orderChartData = await Order.aggregate([{
+
+            $match: {
+                $and: [
+                    {
+                        orderDate: {
+                            $gte: orderChartInfo.startDate,
+                            $lte: orderChartInfo.endDate
                         },
                         orderStatus: {
                             $nin: ['clientSideProcessing', 'cancelled']
@@ -1284,14 +1456,17 @@ const getChartDataHandler = async (req, res, next) => {
 
         ]).exec();
 
-        let categoryBasedOrders = await Order.aggregate([{
+
+
+
+        let categoryWiseChartData = await Order.aggregate([{
 
             $match: {
                 $and: [
                     {
                         orderDate: {
-                            $gte: startDate,
-                            $lte: endDate
+                            $gte: categoryBasedChartInfo.startDate,
+                            $lte: categoryBasedChartInfo.endDate
                         },
                         orderStatus: {
                             $nin: ['clientSideProcessing', 'cancelled']
@@ -1360,14 +1535,30 @@ const getChartDataHandler = async (req, res, next) => {
 
         ]).exec();
 
-        console.log(categoryBasedOrders);
+
+
+
+        console.log('sales \n \n', salesChartData, '\n\n\n')
+
+        console.log('orderType \n \n', orderChartData, '\n\n\n')
+
+        console.log('categoryBased \n \n', categoryWiseChartData, '\n\n\n')
+
+        console.log('orderNo \n \n', orderNoChartData, '\n\n\n')
+
+
+        let saleChartInfo = { timeBasis: timeBaseForSalesChart, data: salesChartData };
+
+        let orderTypeChartInfo = { timeBasis: timeBaseForOrderTypeChart, data: orderChartData };
+
+        let categoryChartInfo = { timeBasis: timeBaseForOrderTypeChart, data: categoryWiseChartData }
+
+        let orderQuantityChartInfo = { timeBasis: timeBaseForOrderNoChart, data: orderNoChartData }
 
 
 
 
-        // console.log(orderType);
-
-        res.status(200).json({ sales, orderType, categoryBasedOrders });
+        res.status(200).json({ saleChartInfo, orderTypeChartInfo, categoryChartInfo, orderQuantityChartInfo });
 
         return;
 

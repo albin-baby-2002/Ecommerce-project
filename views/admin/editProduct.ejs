@@ -24,8 +24,9 @@
         <main class="main my-5">
             <div class="container">
 
-                <form class="container  w-50 my-5" action="/admin/editProduct/<%=product._id%>" method="post"
-                    enctype="multipart/form-data">
+                <h2 class="text-center">Enter New Product Details</h2>
+
+                <form class="container  w-50 my-5" id="myForm" product-id="<%=product._id%>">
 
 
                     <div class="form-outline mb-4">
@@ -75,9 +76,11 @@
 
                         <input type="text" id="color" class="form-control" name="color" required
                             value="<%= product.color%>" />
+
                         <label class="form-label mt-2" for="color">Color</label>
 
                     </div>
+
 
 
                     <div class="form-outline mb-4">
@@ -93,7 +96,6 @@
                             value="<%= product.stock%>" />
                         <label class="form-label mt-2" for="stock">Stock no </label>
                     </div>
-
 
                     <div class="form-outline mb-4 d-flex flex-column ">
 
@@ -121,39 +123,25 @@
 
                     </div>
 
-
-
-
-                    <div class="form-outline mb-2">
-                        <textarea name="description" id="description" cols="49" rows="5"
-                            required><%= product.description %></textarea>
-                        <label class="form-label mt-2" for="description">Description</label>
-                    </div>
-
-
-                    <!-- images upload -->
-
-
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="UPLOADBASICIMG">Upload</span>
+                            <span class="input-group-text" span-id="mainImg">Upload</span>
                         </div>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="mainImg" aria-describedby="UPLOADBASICIMG"
-                                name="mainImg">
-                            <label class="custom-file-label" for="mainImg"> Main Image replacement </label>
+                            <input type="file" class="custom-file-input addProductImg" id="mainImg"
+                                aria-describedby="UPLOADBASICIMG" name="mainImg">
+                            <label class="custom-file-label" for="mainImg"> Main Image </label>
                         </div>
                     </div>
 
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="UPLOADBASICTHUMB">Upload</span>
+                            <span class="input-group-text" span-id="mainImgThumbnail">Upload</span>
                         </div>
                         <div class="custom-file ">
-                            <input type="file" class="custom-file-input" id="mainImgThumbnail"
+                            <input type="file" class="custom-file-input addProductImg" id="mainImgThumbnail"
                                 aria-describedby="UPLOADBASICTHUMB" name="mainImgThumbnail">
-                            <label class="custom-file-label" for="mainImgThumbnail"> Main Image thumbnail replacement
-                            </label>
+                            <label class="custom-file-label" for="mainImgThumbnail"> Main Image Thumbnail </label>
                         </div>
                     </div>
 
@@ -161,25 +149,25 @@
 
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="secondIMG">Upload</span>
+                            <span class="input-group-text" span-id="secondImg">Upload</span>
                         </div>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="secondImg" aria-describedby="secondIMG"
-                                name="secondImg">
-                            <label class="custom-file-label" for="secondImg"> Second Image replacement</label>
+                            <input type="file" class="custom-file-input addProductImg" id="secondImg"
+                                aria-describedby="secondIMG" name="secondImg">
+                            <label class="custom-file-label" for="secondImg"> Second Image</label>
                         </div>
                     </div>
 
 
-                    <div class="input-group mb-4">
+                    <div class="input-group mb-4 ">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="secondIMGThumbnail">Upload</span>
+                            <span class="input-group-text " span-id="secondImgThumbnail">Upload</span>
                         </div>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="secondImgThumbnail"
+                            <input type="file" class="custom-file-input addProductImg " id="secondImgThumbnail"
                                 aria-describedby="secondIMGThumbnail" name="secondImgThumbnail">
-                            <label class="custom-file-label" for="secondImgThumbnail"> Second Image thumbnail
-                                replacement </label>
+                            <label class="custom-file-label" for="secondImgThumbnail">
+                                Second Image Thumbnail</label>
                         </div>
                     </div>
 
@@ -187,40 +175,39 @@
 
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="thirdIMG">Upload</span>
+                            <span class="input-group-text" span-id="thirdImg">Upload</span>
                         </div>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="thirdImg" aria-describedby="thirdIMG"
-                                name="thirdImg">
-                            <label class="custom-file-label" for="thirdImg"> Third Image replacement</label>
+                            <input type="file" class="custom-file-input addProductImg" id="thirdImg"
+                                aria-describedby="thirdIMG" name="thirdImg">
+                            <label class="custom-file-label" for="thirdImg"> Third Image</label>
                         </div>
                     </div>
 
 
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="thirdIMGThumbnail">Upload</span>
+                            <span class="input-group-text" span-id="thirdImgThumbnail">Upload</span>
                         </div>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="thirdImgThumbnail"
+                            <input type="file" class="custom-file-input addProductImg" id="thirdImgThumbnail"
                                 aria-describedby="thirdIMGThumbnail" name="thirdImgThumbnail">
-                            <label class="custom-file-label" for="thirdImgThumbnail"> Third Image thumbnail replacement
-                            </label>
+                            <label class="custom-file-label" for="thirdImgThumbnail"> Third Image Thumbnail</label>
                         </div>
                     </div>
 
 
                     <!-- fourth image -->
 
-                    <!-- 
-                    <div class="input-group mb-4">
+
+                    <!-- <div class="input-group mb-4">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="fourthIMG">Upload</span>
                         </div>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="fourthImg" aria-describedby="fourthIMG"
-                                name="fourthImg">
-                            <label class="custom-file-label" for="fourthImg"> Fourth Image replacement</label>
+                                name="fourthImg" >
+                            <label class="custom-file-label" for="fourthImg"> Fourth Image</label>
                         </div>
                     </div>
 
@@ -231,11 +218,30 @@
                         </div>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="fourthImgThumbnail"
-                                aria-describedby="fourthIMGThumbnail" name="fourthImgThumbnail">
-                            <label class="custom-file-label" for="fourthImgThumbnail"> Fourth Image thumbnail
-                                replacement </label>
+                                aria-describedby="fourthIMGThumbnail" name="fourthImgThumbnail" >
+                            <label class="custom-file-label" for="fourthImgThumbnail"> Fourth Image Thumbnail</label>
                         </div>
                     </div> -->
+
+
+
+
+
+
+
+
+
+                    <div class="form-outline mb-2 w-100">
+                        <textarea class=" w-100" style="width: auto;" name="description" id="description"
+                            required><%=product.description%></textarea>
+                        <label class="form-label mt-2" for="description">Description</label>
+                    </div>
+
+
+
+
+
+
 
 
 
@@ -247,15 +253,91 @@
                     <button type="submit" class="btn btn-dark btn-block mb-4"> Edit Product</button>
 
 
+
+
+
                 </form>
 
 
             </div>
         </main>
 
+        <div id="modal"
+            style="position: absolute;top:0 ; z-index: 11; height: 100%; width: 100vw; background-color: rgba(0, 0, 0, 0.479);"
+            class="d-flex d-none justify-content-center align-items-center ">
+
+            <div class=" d-flex flex-column justify-content-center"
+                style=" background-color: rgb(255, 255, 255); height: 450px ; width: 50%; ">
+
+                <div style="height: 80%;" class="  d-flex justify-content-center align-items-center ">
+
+                    <img id="cropImg" style="height: 90% ;width:80%;" alt="">
+
+                </div>
+
+                <div class="d-flex  justify-content-center ">
+                    <button id="cropBtn" class="nav-link mt-4 mb-4"
+                        style="background-color: black; color:whitesmoke ;padding :10px"> CROP THE
+                        IMG</button>
+
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
         <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/editproduct.js"></script>
 
             <%- include('../layouts/footer.ejs') %>

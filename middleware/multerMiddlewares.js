@@ -2,7 +2,7 @@ const path = require('path');
 
 const multer = require('multer');
 
-const imageTypes = /(jpeg|png|svg|jpg|webp)$/i;
+const imageTypes = /^(image\/(jpeg|png|svg|jpg|webp))$/i;
 
 
 const storage = multer.diskStorage({
@@ -28,7 +28,7 @@ const upload = multer({
         const extname = imageTypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = imageTypes.test(file.mimetype);
 
-        if (extname && mimetype) {
+        if (mimetype) {
 
 
             return cb(null, true);

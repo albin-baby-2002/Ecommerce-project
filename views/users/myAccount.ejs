@@ -38,10 +38,11 @@
                             <div class=" row m-0 p-0 bg-secondary-soft rounded d-flex ">
 
 
-                                <div class="col-4 d-flex justify-content-center  ">
+                                <div style="max-height: 100%;" class="col-4 d-flex justify-content-center  ">
 
                                     <% if(user.profileImg){ %>
-                                        <img class="" src="/img/" style='border-radius: 10%;' alt="">
+                                        <img class="" src="/img/profileImages/<%=user.profileImg%>"
+                                            style='border-radius: 10%; max-height: 300px;' alt="">
 
                                         <%} else {%>
 
