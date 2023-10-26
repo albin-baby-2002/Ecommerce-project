@@ -171,6 +171,10 @@ router.post('/user/razorPay/createOrder/:orderID', userController.razorPayCreate
 
 router.post('/user/razorPay/payment-success', userController.paymentSuccessHandler)
 
+// ! order Details page render 
+
+router.get('/user/orderDetails/:orderID', userController.renderOrderDetails)
+
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.userErrorHandler);

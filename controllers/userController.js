@@ -1711,6 +1711,153 @@ const paymentSuccessHandler = async (req, res, next) => {
     }
 }
 
+// ! render order details page 
+
+const renderOrderDetails = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'session time out login to got to payment page  !',
+
+            };
+
+            res.redirect('/');
+
+            return;
+        }
+
+
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
+
+        if (!orderID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+        }
+
+
+
+        const orderData = await Order.findById(orderID);
+
+
+        let productsData = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedProducts',
+            }
+        }, {
+            $unwind: "$orderedProducts"
+        }, {
+            $replaceRoot: {
+                newRoot: "$orderedProducts"
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'productInfo'
+
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        { _id: "$_id", userID: "$userID", product: "$product", quantity: "$quantity", totalPrice: "$totalPrice", __v: "$__v" },
+                        { productInfo: { $arrayElemAt: ["$productInfo", 0] } }
+                    ]
+                }
+            }
+        }
+
+        ]).exec();
+
+
+        console.log('\n\n\n' + JSON.stringify(productsData, null, 2) + '\n\n\n');
+
+
+        let address = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'addresses',
+                localField: 'shippingAddress',
+                foreignField: '_id',
+                as: 'address',
+            }
+        }, {
+
+            $unwind: "$address"
+        }, {
+
+            $replaceRoot: {
+                newRoot: "$address"
+            }
+        }
+
+        ]).exec();
+
+
+        address = address[0];
+
+        // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
+
+
+        if (orderData && productsData && address) {
+
+
+
+
+
+            res.render('users/orderDetailsPage.ejs', { address, orderData, productsData });
+
+
+
+
+        } else {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.log(err)
+    }
+}
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
@@ -1735,5 +1882,7 @@ module.exports = {
     changePasswordHandler,
     orderPageRender,
     cancelOrderHandler,
-    razorPayCreateOrder, paymentSuccessHandler
+    razorPayCreateOrder,
+    paymentSuccessHandler,
+    renderOrderDetails
 }

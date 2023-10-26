@@ -24,7 +24,7 @@
         <main class="main my-5 ">
             <div class="container d-flex justify-content-around">
 
-                <div class="d-flex flex-column justify-content-center align-items-center"
+                <div id="usersList" class="d-flex flex-column justify-content-center align-items-center"
                     style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(62, 15, 180, 0.377);">
 
 
@@ -45,7 +45,9 @@
 
 
                 </div>
-                <div class="d-flex flex-column justify-content-center align-items-center"
+
+
+                <div id="productsList" class="d-flex flex-column justify-content-center align-items-center"
                     style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(251, 144, 5, 0.377);">
 
 
@@ -66,7 +68,9 @@
 
 
                 </div>
-                <div class="d-flex flex-column justify-content-center align-items-center"
+
+
+                <div id="ordersList" class="d-flex flex-column justify-content-center align-items-center"
                     style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(15, 180, 89, 0.377);">
 
 
@@ -88,7 +92,7 @@
 
                 </div>
 
-                <div class="d-flex flex-column justify-content-center align-items-center"
+                <div id="salesList" class="d-flex flex-column justify-content-center align-items-center"
                     style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(14, 125, 244, 0.377);">
 
 
@@ -119,20 +123,39 @@
 
             <div class="container d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
 
-                <h2 class="text-center font-weight-bold m-5"> Monthly Sales Chart </h2>
+                <h2 class="text-center font-weight-bold m-5"> Total Sales Revenue Chart </h2>
 
                 <div class="w-75 ">
                     <canvas id="myChart"></canvas>
+                </div>
+
+                <div class="mt-5 d-flex font-weight-bold">
+                    <button class=" salesChart  ml-4 nav-link "
+                        style="background-color: black; color: rgb(240, 255, 254) ; width: 65px;"
+                        data="yearly">Yearly</button>
+                    <button class=" salesChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="weekly">Weekly</button>
+                    <button class=" salesChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="daily">Daily</button>
                 </div>
 
             </div>
 
             <div class="container d-flex flex-column align-items-center justify-content-center m-5">
 
-                <h2 class="text-center font-weight-bold m-5"> Monthly Orders Chart </h2>
+                <h2 class="text-center font-weight-bold m-5"> Total Orders Placed Chart </h2>
 
                 <div class="w-75 ">
                     <canvas id="myChartOrders"></canvas>
+                </div>
+
+                <div class="mt-5 d-flex font-weight-bold">
+                    <button class="ordersChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="yearly">Yearly</button>
+                    <button class="ordersChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="weekly">Weekly</button>
+                    <button class="ordersChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="daily">Daily</button>
                 </div>
 
             </div>
@@ -145,6 +168,15 @@
                     <canvas style="max-height: 450px;" id="myChartOrderType"></canvas>
                 </div>
 
+                <div class="mt-5 d-flex font-weight-bold">
+                    <button class="orderTypeChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px" data="yearly">Yearly</button>
+                    <button class="orderTypeChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px" data="weekly">Weekly</button>
+                    <button class="orderTypeChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="daily">Daily</button>
+                </div>
+
             </div>
 
 
@@ -154,6 +186,15 @@
 
                 <div class="w-75 ">
                     <canvas style="max-height: 450px;" id="myChartCategoryWiseSales"></canvas>
+                </div>
+
+                <div class="mt-5 d-flex font-weight-bold">
+                    <button class="categoryChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="yearly">Yearly</button>
+                    <button class="categoryChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="weekly">Weekly</button>
+                    <button class="categoryChart ml-4 nav-link py-1 px-2"
+                        style="background-color: black; color: aliceblue ; width: 70px;" data="daily">Daily</button>
                 </div>
 
             </div>
@@ -170,15 +211,206 @@
 
             <script>
 
+                document.getElementById('usersList').addEventListener('click', (e) => {
+
+                    window.location.href = '/admin/usersList'
+                });
+
+                document.getElementById('productsList').addEventListener('click', (e) => {
+
+                    window.location.href = '/admin/productList'
+                })
+
+                document.getElementById('salesList').addEventListener('click', (e) => {
+
+                    window.location.href = '/admin/salesReport'
+                })
+
+
+
+
                 const ctx = document.getElementById('myChart');
                 const ctxOrder = document.getElementById('myChartOrders');
                 const ctxOrderType = document.getElementById('myChartOrderType');
                 const ctxCategoryWise = document.getElementById('myChartCategoryWiseSales');
 
+                let salesTimeBase = 'yearly';
+                let orderChartTimeBase = 'yearly';
+                let orderTypeChartTimeBase = 'yearly';
+                let CategoryChartTimeBase = 'yearly';
 
-                function loadChart() {
+                let salesButtons = document.querySelectorAll('.salesChart');
 
-                    fetch('http://localhost:2500/admin/chart', {
+                salesButtons.forEach((btn) => {
+
+                    btn.addEventListener('click', (e) => {
+
+                        let val = btn.getAttribute('data');
+
+                        salesTimeBase = val;
+
+                        updateData();
+                    })
+                })
+
+                let orderButtons = document.querySelectorAll('.ordersChart');
+
+                orderButtons.forEach((btn) => {
+
+                    btn.addEventListener('click', (e) => {
+
+                        let val = btn.getAttribute('data');
+
+                        orderChartTimeBase = val;
+
+                        updateData();
+                    })
+                })
+
+
+                let orderTypeButtons = document.querySelectorAll('.orderTypeChart');
+
+                orderTypeButtons.forEach((btn) => {
+
+                    btn.addEventListener('click', (e) => {
+
+                        let val = btn.getAttribute('data');
+
+                        orderTypeChartTimeBase = val;
+
+                        updateData();
+                    })
+                })
+
+                let categoryButtons = document.querySelectorAll('.categoryChart');
+
+                categoryButtons.forEach((btn) => {
+
+                    btn.addEventListener('click', (e) => {
+
+                        let val = btn.getAttribute('data');
+
+                        CategoryChartTimeBase = val;
+
+                        updateData();
+                    })
+                })
+
+
+
+
+
+
+                let salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['loading'],
+                        datasets: [
+                            {
+                                label: 'Sales (rs)',
+                                data: [0],
+                                backgroundColor: 'rgba(14, 125, 244, 0.377)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                            },
+
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                min: 0,
+
+                            }
+                        }
+                    }
+                });
+
+
+
+                let OrderChart = new Chart(ctxOrder, {
+                    type: 'bar',
+                    data: {
+                        labels: ['loading'],
+                        datasets: [
+                            {
+                                label: 'Orders (no)',
+                                data: [0],
+                                backgroundColor: 'rgba(192, 75, 75, 0.2)',
+                                borderColor: 'rgba(192, 75, 75, 1)',
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+
+                let orderTypeChart = new Chart(ctxOrderType, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['loading'],
+                        datasets: [
+
+                            {
+                                label: 'Orders (no)',
+                                data: [0],
+                                backgroundColor: ['rgba(192, 75, 75)', 'rgba(14, 125, 244)'],
+                                borderColor: ['rgba(192, 75, 75, 1)'],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+
+
+                let categoryChart = new Chart(ctxCategoryWise, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['loading'],
+                        datasets: [
+
+                            {
+                                label: 'Orders (no)',
+                                data: [0],
+                                backgroundColor: ['rgba(15, 180, 89)', 'rgba(14, 125, 244)'],
+                                borderColor: ['rgba(15, 180, 89)', 'rgba(14, 125, 244)'],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+
+
+
+
+
+                function updateData() {
+
+                    fetch(`http://localhost:2500/admin/chart?salesChart=${salesTimeBase}&orderChart=${orderChartTimeBase}&orderType=${orderTypeChartTimeBase}&categoryChart=${CategoryChartTimeBase}`, {
 
                         method: 'GET',
 
@@ -248,32 +480,15 @@
                             console.log(salesChartLabel);
                             console.log(totalSalesValData)
 
+                            salesChart.data.labels = salesChartLabel;
+                            salesChart.data.datasets[0].data = totalSalesValData;
 
-                            new Chart(ctx, {
-                                type: 'bar',
-                                data: {
-                                    labels: salesChartLabel,
-                                    datasets: [
-                                        {
-                                            label: 'Sales (rs)',
-                                            data: totalSalesValData,
-                                            backgroundColor: 'rgba(14, 125, 244, 0.377)',
-                                            borderColor: 'rgba(75, 192, 192, 1)',
-                                            borderWidth: 1,
-                                        },
+                            // Call the update method to refresh the chart
+                            salesChart.update();
 
-                                    ],
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            min: 0,
 
-                                        }
-                                    }
-                                }
-                            });
+
+
 
 
                             let OrderQuantityChartLabels;
@@ -328,105 +543,100 @@
                             console.log(OrderQuantityChartData);
 
 
+                            OrderChart.data.labels = OrderQuantityChartLabels;
+                            OrderChart.data.datasets[0].data = OrderQuantityChartData;
+
+                            // Call the update method to refresh the chart
+                            OrderChart.update();
 
 
-                            new Chart(ctxOrder, {
-                                type: 'bar',
-                                data: {
-                                    labels: OrderQuantityChartLabels,
-                                    datasets: [
 
-                                        {
-                                            label: 'Orders (no)',
-                                            data: OrderQuantityChartData,
-                                            backgroundColor: 'rgba(192, 75, 75, 0.2)',
-                                            borderColor: 'rgba(192, 75, 75, 1)',
-                                            borderWidth: 1,
-                                        },
-                                    ],
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
+
+
+                            let orderTypeLabel = orderTypeChartInfo.data.map((type) => type._id);
+
+                            let orderTypeValues = orderTypeChartInfo.data
+                                .map((type) => type.totalOrder);
+
+
+                            orderTypeChart.data.labels = orderTypeLabel;
+                            orderTypeChart.data.datasets[0].data = orderTypeValues;
+
+                            // Call the update method to refresh the chart
+                            orderTypeChart.update();
+
+
+
+
+
+
+
+                            let categoryWiseLabel = categoryChartInfo.data.map((type) => type._id);
+
+                            let categoryWiseValues = categoryChartInfo.data.map((type) => type.count);
+
+
+                            categoryChart.data.labels = categoryWiseLabel;
+                            categoryChart.data.datasets[0].data = categoryWiseValues;
+
+                            // Call the update method to refresh the chart
+                            categoryChart.update();
+
+
+                            salesButtons.forEach((btn) => {
+
+                                if (btn.getAttribute('data') === salesTimeBase) {
+
+                                    btn.style.color = 'rgb(138, 240, 240)';
+                                } else {
+                                    btn.style.color = 'white'
                                 }
-                            });
+                            })
 
 
+                            orderButtons.forEach((btn) => {
 
+                                if (btn.getAttribute('data') === orderChartTimeBase) {
+
+                                    btn.style.color = 'rgb(138, 240, 240)';
+                                } else {
+                                    btn.style.color = 'white'
+                                }
+                            })
 
                         })
 
+                    orderTypeButtons.forEach((btn) => {
 
+                        if (btn.getAttribute('data') === orderTypeChartTimeBase) {
 
+                            btn.style.color = 'rgb(138, 240, 240)';
+                        } else {
+                            btn.style.color = 'white'
+                        }
+                    })
 
-                    //             let orderTypeLabel = orderTypeData.map((type) => type._id);
+                    categoryButtons.forEach((btn) => {
 
-                    //             let orderTypeValues = orderTypeData.map((type) => type.totalOrder);
+                        if (btn.getAttribute('data') === CategoryChartTimeBase) {
 
+                            btn.style.color = 'rgb(138, 240, 240)';
+                        } else {
+                            btn.style.color = 'white'
+                        }
+                    })
 
-                    //             new Chart(ctxOrderType, {
-                    //                 type: 'pie',
-                    //                 data: {
-                    //                     labels: orderTypeLabel,
-                    //                     datasets: [
-
-                    //                         {
-                    //                             label: 'Orders (no)',
-                    //                             data: orderTypeValues,
-                    //                             backgroundColor: ['rgba(192, 75, 75)', 'rgba(14, 125, 244)'],
-                    //                             borderColor: ['rgba(192, 75, 75, 1)'],
-                    //                             borderWidth: 1,
-                    //                         },
-                    //                     ],
-                    //                 },
-                    //                 options: {
-                    //                     scales: {
-                    //                         y: {
-                    //                             beginAtZero: true
-                    //                         }
-                    //                     }
-                    //                 }
-                    //             });
-
-
-                    //             let categoryWiseLabel = categoryWiseSales.map((type) => type._id);
-
-                    //             let categoryWiseValues = categoryWiseSales.map((type) => type.count);
-
-
-                    //             new Chart(ctxCategoryWise, {
-                    //                 type: 'pie',
-                    //                 data: {
-                    //                     labels: categoryWiseLabel,
-                    //                     datasets: [
-
-                    //                         {
-                    //                             label: 'Orders (no)',
-                    //                             data: categoryWiseValues,
-                    //                             backgroundColor: ['rgba(15, 180, 89)', 'rgba(14, 125, 244)'],
-                    //                             borderColor: ['rgba(192, 75, 75, 1)'],
-                    //                             borderWidth: 1,
-                    //                         },
-                    //                     ],
-                    //                 },
-                    //                 options: {
-                    //                     scales: {
-                    //                         y: {
-                    //                             beginAtZero: true
-                    //                         }
-                    //                     }
-                    //                 }
-                    //             });
-
-                    //         })
-
-                    // 
                 }
 
-                window.onload = loadChart()
+
+
+
+
+
+
+
+
+                window.onload = updateData()
 
 
 

@@ -10,6 +10,7 @@ const Order = require('../models/orderModel');
 const { log } = require('console');
 const fsPromises = require('fs').promises;
 const excelJS = require('exceljs');
+const puppeteer = require('puppeteer')
 
 //!render login page
 
@@ -1218,10 +1219,13 @@ const getChartDataHandler = async (req, res, next) => {
 
     try {
 
-        let timeBaseForSalesChart = 'yearly';
-        let timeBaseForOrderNoChart = 'yearly';
-        let timeBaseForOrderTypeChart = 'yearly';
-        let timeBaseForCategoryBasedChart = 'yearly';
+        let timeBaseForSalesChart = req.query.salesChart;
+        let timeBaseForOrderNoChart = req.query.orderChart;
+        let timeBaseForOrderTypeChart = req.query.orderType;
+        let timeBaseForCategoryBasedChart = req.query.categoryChart;
+
+
+        console.log(timeBaseForCategoryBasedChart, timeBaseForOrderNoChart, timeBaseForOrderTypeChart, timeBaseForSalesChart)
 
 
 
@@ -1684,6 +1688,123 @@ const renderSalesReport = async (req, res, next) => {
     }
 };
 
+
+// ! render sales report pdf page
+
+
+
+const renderSalesReportPdfPage = async (req, res, next) => {
+
+    try {
+
+        let startingDate = new Date();
+        let endingDate = new Date();
+
+        console.log(req.query.startingDate)
+
+
+        if (req.query.startingDate) {
+
+            startingDate = new Date(req.query.startingDate);
+        }
+
+        if (req.query.endingDate) {
+
+            endingDate = new Date(req.query.endingDate);
+        }
+
+
+
+
+
+
+        startingDate.setUTCHours(0, 0, 0, 0);
+
+        endingDate.setUTCHours(23, 59, 59, 999);
+
+
+        console.log(startingDate, endingDate);
+
+
+
+
+        let orders = await Order.aggregate([
+            {
+                $match: {
+                    orderDate: { $gte: startingDate, $lt: endingDate },
+
+                }
+            },
+
+            {
+                $match: {
+                    orderStatus: {
+                        $ne: 'cancelled'
+                    }
+                }
+            }, {
+                $lookup: {
+                    from: 'orderitems',
+                    localField: 'orderItems',
+                    foreignField: '_id',
+                    as: 'orderedItems',
+                }
+            }, {
+                $unwind: '$orderedItems'
+            },
+
+
+
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'orderedItems.product',
+                    foreignField: '_id',
+                    as: 'orderedItems.productInfo'
+                }
+            }, {
+                $group: {
+                    _id: '$_id',
+                    userID: { $first: '$userID' },
+                    paymentMethod: { $first: '$paymentMethod' },
+                    paymentStatus: { $first: '$paymentStatus' },
+                    orderStatus: { $first: '$orderStatus' },
+                    shippingAddress: { $first: '$shippingAddress' },
+                    grossTotal: { $first: '$grossTotal' },
+                    couponApplied: { $first: '$couponApplied' },
+                    discountAmount: { $first: '$discountAmount' },
+                    finalPrice: { $first: '$finalPrice' },
+                    clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
+                    orderDate: { $first: '$orderDate' },
+                    orderedItems: { $push: '$orderedItems' }
+                }
+            }]);
+
+
+        startingDate = startingDate.getFullYear() + '-' + (("0" + (startingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + startingDate.getUTCDate()).slice(-2));
+
+        console.log(endingDate.getDate());
+
+
+        endingDate = endingDate.getFullYear() + '-' + (("0" + (endingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + endingDate.getUTCDate()).slice(-2));
+
+
+
+        console.log(startingDate, endingDate);
+
+
+        res.render('admin/salesReportPdf.ejs', { orders, startingDate, endingDate });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
 // ! sales report in excel
 
 const salesReportInExcel = async (req, res, next) => {
@@ -1845,6 +1966,73 @@ const salesReportInExcel = async (req, res, next) => {
         next(err);
     }
 }
+
+// ! sales report in pdf 
+
+const salesReportInPdf = async (req, res, next) => {
+
+    try {
+
+        let startingDate = req.query.startingDate;
+
+        let endingDate = req.query.endingDate;
+
+        const browser = await puppeteer.launch({ headless: false });
+        const page = await browser.newPage();
+
+
+        await page.setViewport({
+            width: 1680,
+            height: 800,
+        });
+
+        await page.goto(`${req.protocol}://${req.get('host')}` + '/admin/salesReport/pdfRender' + `?startingDate=${startingDate}&endingDate=${endingDate}`, { waitUntil: 'networkidle2' });
+
+
+
+
+        await page.waitForSelector('th');
+
+
+
+
+        const date = new Date();
+
+        const pdfn = await page.pdf({
+            path: `${path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf')}`,
+            printBackground: true,
+            format: "A4"
+        })
+
+        setTimeout(async () => {
+            await browser.close();
+
+
+            const pdfURL = path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf');
+
+
+
+
+            res.download(pdfURL, function (err) {
+
+                if (err) {
+                    console.log(err)
+                }
+            })
+
+
+        }, 1000);
+
+
+
+
+
+    }
+    catch (err) {
+
+        next(err);
+    }
+}
 module.exports = {
     renderLoginPage,
     renderUsersList,
@@ -1874,6 +2062,8 @@ module.exports = {
     renderAdminDashboard,
     getChartDataHandler,
     renderSalesReport,
-    salesReportInExcel
+    salesReportInExcel,
+    renderSalesReportPdfPage,
+    salesReportInPdf
 
 }

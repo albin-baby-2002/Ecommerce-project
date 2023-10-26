@@ -21,6 +21,9 @@ router.post('/login', adminController.loginHandler);
 
 router.get('/logout', adminController.logoutHandler)
 
+
+router.get('/salesReport/pdfRender', adminController.renderSalesReportPdfPage)
+
 // ! middleware for validating admin login 
 
 router.use(adminLoginValidation)
@@ -123,6 +126,14 @@ router.get('/salesReport', adminController.renderSalesReport)
 
 // ! excel sales report
 router.get('/salesReport/excel', adminController.salesReportInExcel)
+
+// ! sales report PDF render 
+
+
+
+// ! sales report PDF download 
+
+router.get('/salesReport/pdf/download', adminController.salesReportInPdf)
 
 // ! for rendering error page for unknown / critical error
 

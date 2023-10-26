@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <section class="ftco-section ftco-cart h-100">
+            <section class="ftco-section ftco-cart ">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12 ftco-animate fadeInUp ftco-animated">
@@ -47,12 +47,12 @@
                                     <table class="table mt-4">
                                         <thead class="thead-primary wishlist001">
                                             <tr class="text-center" style="background-color: burlywood;">
-                                                <th>No Of Products</th>
-                                                <th>Items</th>
-                                                <th>Order Status</th>
-                                                <th>Price</th>
-                                                <th>Payment Method</th>
-                                                <th>Options</th>
+                                                <th>S.No</th>
+                                                <th>PRODUCTS</th>
+                                                <th>ORDER STATUS</th>
+                                                <th>PRICE</th>
+                                                <th>PAYMENT</th>
+                                                <th>OPTIONS</th>
 
                                             </tr>
                                         </thead>
@@ -65,7 +65,7 @@
                                                 <tr data-id="<%=orders[i]._id%>" class="text-center border-bottom">
 
                                                     <td>
-                                                        <%=orders[i].orderedItems.length %>
+                                                        <%=(i+1)%>
                                                     </td>
 
 
@@ -91,13 +91,21 @@
 
                                                     </td>
 
-                                                    <td class="text-uppercase " style="letter-spacing: 2px;">
+                                                    <td class="text-uppercase "
+                                                        style="letter-spacing: 2px; max-width: 130px;">
 
 
 
 
 
-                                                        <%=orders[i].orderStatus %>
+                                                        <%if(orders[i].orderStatus==='shipmentProcessing') { %>
+
+                                                            Processing
+                                                            <%} else {%>
+
+                                                                <%= orders[i].orderStatus%>
+
+                                                                    <%} %>
                                                     </td>
 
                                                     <td class="text-uppercase " style="letter-spacing: 2px;">
@@ -105,16 +113,32 @@
                                                     </td>
 
                                                     <td class="text-uppercase " style="letter-spacing: 2px;">
-                                                        <%=orders[i].paymentMethod %>
+
+
+                                                        <%if(orders[i].paymentMethod==='onlinePayment') { %>
+
+                                                            prepaid
+                                                            <%} else {%>
+
+                                                                <%= orders[i].paymentMethod%>
+
+                                                                    <%} %>
                                                     </td>
 
 
 
                                                     <td class="">
-                                                        <button class="cancelOrderBtn" order-id="<%=orders[i]._id%>"
-                                                            class=" text-uppercase  p-2"
+                                                        <button class="cancelOrderBtn text-uppercase  p-2 border-0 mr-4"
+                                                            order-id="<%=orders[i]._id%>"
                                                             style="letter-spacing: 2px; background-color: rgb(31, 30, 30); color: rgb(243, 5, 5);">
                                                             cancel</button>
+
+                                                        <button class=" text-uppercase  p-2 border-0"
+                                                            style="letter-spacing: 2px; background-color: rgb(31, 30, 30); color: rgb(5, 243, 144);">
+                                                            <a class="nav-link"
+                                                                href="/user/orderDetails/<%=orders[i]._id%>">
+                                                                DETAILS</a>
+                                                        </button>
                                                     </td>
 
 
