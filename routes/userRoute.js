@@ -175,6 +175,14 @@ router.post('/user/razorPay/payment-success', userController.paymentSuccessHandl
 
 router.get('/user/orderDetails/:orderID', userController.renderOrderDetails)
 
+// ! invoice page render 
+
+router.get('/user/invoice/:orderID', userController.renderInvoicePage)
+
+// !download invoice 
+
+router.get('/user/invoice/download/:orderID', userController.downloadInvoice)
+
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.userErrorHandler);

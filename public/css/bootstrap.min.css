@@ -1998,7 +1998,7 @@ pre code {
 
 .table thead th {
     vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6
+    border-bottom: 1px solid #000000
 }
 
 .table tbody+tbody {

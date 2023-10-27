@@ -2817,7 +2817,7 @@ ol {
 }
 
 .checkout__order {
-	background: #f3f2ee;
+	background: #ffffff;
 	padding: 30px;
 }
 
@@ -2874,8 +2874,12 @@ ol {
 	float: right;
 }
 
+.checkout {
+	background-color: #f3f2ee;
+}
+
 .checkout__total__all {
-	border-top: 1px solid #d7d7d7;
+
 	border-bottom: 1px solid #d7d7d7;
 	padding: 15px 0;
 	margin-bottom: 26px;
@@ -3532,6 +3536,10 @@ ol {
 .contact__form button {
 	letter-spacing: 4px;
 	padding: 14px 35px;
+}
+
+.invoiceColor {
+	background-color: #f3f2ee !important;
 }
 
 /*--------------------------------- Responsive Media Quaries -----------------------------*/

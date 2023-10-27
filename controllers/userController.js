@@ -8,7 +8,9 @@ const Address = require('../models/addressModel');
 const Order = require('../models/orderModel');
 const Cart = require('../models/cartModel');
 const CartItem = require('../models/cartItemModel');
-const Product = require('../models/productModel')
+const Product = require('../models/productModel');
+const puppeteer = require('puppeteer');
+const path = require('path');
 const userVerificationHelper = require('../helpers/userVerificationHelpers');
 
 const dotenv = require('dotenv').config()
@@ -1723,7 +1725,7 @@ const renderOrderDetails = async (req, res, next) => {
 
             req.session.message = {
                 type: 'danger',
-                message: 'session time out login to got to payment page  !',
+                message: 'session time out login to got to order details page  !',
 
             };
 
@@ -1858,6 +1860,221 @@ const renderOrderDetails = async (req, res, next) => {
     }
 }
 
+// ! render invoice page 
+
+const renderInvoicePage = async (req, res, next) => {
+
+    try {
+
+
+
+
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
+
+        if (!orderID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+        }
+
+
+
+        const orderData = await Order.findById(orderID);
+
+
+        let productsData = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedProducts',
+            }
+        }, {
+            $unwind: "$orderedProducts"
+        }, {
+            $replaceRoot: {
+                newRoot: "$orderedProducts"
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'productInfo'
+
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        { _id: "$_id", userID: "$userID", product: "$product", quantity: "$quantity", totalPrice: "$totalPrice", __v: "$__v" },
+                        { productInfo: { $arrayElemAt: ["$productInfo", 0] } }
+                    ]
+                }
+            }
+        }
+
+        ]).exec();
+
+
+        console.log('\n\n\n' + JSON.stringify(productsData, null, 2) + '\n\n\n');
+
+
+        let address = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'addresses',
+                localField: 'shippingAddress',
+                foreignField: '_id',
+                as: 'address',
+            }
+        }, {
+
+            $unwind: "$address"
+        }, {
+
+            $replaceRoot: {
+                newRoot: "$address"
+            }
+        }
+
+        ]).exec();
+
+
+        address = address[0];
+
+        // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
+
+
+        if (orderData && productsData && address) {
+
+
+
+
+
+            res.render('users/invoicePage.ejs', { address, orderData, productsData });
+
+
+
+
+        } else {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.log(err)
+    }
+}
+
+// ! download sales invoice handler
+
+const downloadInvoice = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'session time out login to got to render invoice  !',
+
+            };
+
+            res.redirect('/');
+
+            return;
+        }
+
+        let orderID = req.params.orderID;
+
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+
+        await page.setViewport({
+            width: 1680,
+            height: 800,
+        });
+
+        await page.goto(`${req.protocol}://${req.get('host')}` + '/user/invoice/' + `${orderID}`, { waitUntil: 'networkidle2' });
+
+
+
+
+
+
+
+
+
+        const date = new Date();
+
+        const pdfn = await page.pdf({
+            path: `${path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf')}`,
+            printBackground: true,
+            format: "A4"
+        })
+
+        setTimeout(async () => {
+            await browser.close();
+
+
+            const pdfURL = path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf');
+
+
+
+
+            res.download(pdfURL, function (err) {
+
+                if (err) {
+                    console.log(err)
+                }
+            })
+
+
+        }, 1000);
+
+
+
+
+
+    }
+    catch (err) {
+
+        next(err);
+    }
+}
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
@@ -1884,5 +2101,7 @@ module.exports = {
     cancelOrderHandler,
     razorPayCreateOrder,
     paymentSuccessHandler,
-    renderOrderDetails
+    renderOrderDetails,
+    renderInvoicePage,
+    downloadInvoice
 }
