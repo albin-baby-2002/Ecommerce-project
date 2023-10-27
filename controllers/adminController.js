@@ -2033,6 +2033,63 @@ const salesReportInPdf = async (req, res, next) => {
         next(err);
     }
 }
+
+// ! render product offers page 
+
+const renderProductOffersPage = async (req, res, next) => {
+
+    try {
+
+        const products = await Product.aggregate([{
+            $match: {
+                onOffer: true
+            }
+        }]);
+
+        console.log(products);
+
+        res.render('admin/ProductOffersPage.ejs', { products });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+// !modify or add product offer
+const addOrModifyProductOffer = async (req, res, next) => {
+    try {
+        let { productID, rateOfDiscount } = req.body;
+        rateOfDiscount = Number(rateOfDiscount);
+
+        let productData;
+
+        try {
+            productData = await Product.findById(productID);
+        } catch (err) {
+            return res.status(400).json({ success: false, message: 'Enter a valid productID' });
+        }
+
+        if (!productID || isNaN(rateOfDiscount)) {
+            return res.status(400).json({ success: false, message: 'All Fields Are Mandatory And Rate Of Discount Should Be a Number' });
+        } else if (rateOfDiscount < 0) {
+            return res.status(400).json({ success: false, message: 'Rate of Discount Should Be a Non-Negative Integer' });
+        } else if (!(productData instanceof Product)) {
+            return res.status(500).json({ success: false, message: 'Server is facing issues' });
+        }
+
+        // If none of the conditions were met, proceed with your logic here
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ success: false, message: 'Server is facing issues: ' + err });
+    }
+};
+
 module.exports = {
     renderLoginPage,
     renderUsersList,
@@ -2064,6 +2121,8 @@ module.exports = {
     renderSalesReport,
     salesReportInExcel,
     renderSalesReportPdfPage,
-    salesReportInPdf
+    salesReportInPdf,
+    renderProductOffersPage,
+    addOrModifyProductOffer
 
 }

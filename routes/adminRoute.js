@@ -19,14 +19,21 @@ router.post('/login', adminController.loginHandler);
 
 // ! logout request handler
 
-router.get('/logout', adminController.logoutHandler)
+router.get('/logout', adminController.logoutHandler);
 
 
-router.get('/salesReport/pdfRender', adminController.renderSalesReportPdfPage)
+
+
+// ! render sales report page for pdf download
+
+router.get('/salesReport/pdfRender', adminController.renderSalesReportPdfPage);
 
 // ! middleware for validating admin login 
 
-router.use(adminLoginValidation)
+router.use(adminLoginValidation);
+
+
+
 
 // ! render user list page
 
@@ -127,19 +134,26 @@ router.get('/salesReport', adminController.renderSalesReport)
 // ! excel sales report
 router.get('/salesReport/excel', adminController.salesReportInExcel)
 
-// ! sales report PDF render 
-
-
-
 // ! sales report PDF download 
 
-router.get('/salesReport/pdf/download', adminController.salesReportInPdf)
+router.get('/salesReport/pdf/download', adminController.salesReportInPdf);
+
+// ! products offer page render and add or modify product offer
+
+router.route('/productsOffers')
+    .get(adminController.renderProductOffersPage)
+    .post(adminController.addOrModifyProductOffer)
+
+
+
+
+
+
+
 
 // ! for rendering error page for unknown / critical error
 
 router.use(errorHandler.adminErrorHandler);
-
-
 
 // ! exporting admin routes 
 
