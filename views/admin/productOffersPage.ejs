@@ -25,17 +25,17 @@
             <div class="container">
 
                 <div>
-                    <form id="offerForm" class="d-flex justify-content-center flex-column align-items-center">
+                    <!-- <div class="d-flex justify-content-center flex-column align-items-center">
 
                         <H3 class="font-weight-bold mb-3">Modify Or Create A Product Offer</H3>
 
                         <div class="mb-4">
-                            <input type="text" name="productID" placeholder="PRODUCT ID" class="mr-3 text-center">
-                            <input type="number" name="rateOfDiscount" placeholder="RATE OF DISCOUNT"
+                            <input type="text" id="productID" placeholder="PRODUCT ID" class="mr-3 text-center">
+                            <input type="number" id="rateOfDiscount" placeholder="RATE OF DISCOUNT"
                                 class="ml-3 text-center">
                         </div>
 
-                        <div class="mb-5"><button type="submit" class="px-2 "
+                        <div class="mb-5"><button id="btnForSubmit" class="px-2 "
                                 style="background-color: black; color:white; border: none;">Make An
                                 Offer</button>
                         </div>
@@ -44,7 +44,7 @@
 
 
 
-                    </form>
+                    </div> -->
 
                 </div>
 
@@ -68,9 +68,9 @@
                                         class="sorting">
                                         GroupID</th>
 
-                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    <!-- <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting">
-                                        Category</th>
+                                        Category</th> -->
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting">
@@ -85,16 +85,29 @@
                                     </th>
 
 
-                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
-                                        Price
-                                    </th>
+
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
                                         OnSale
                                     </th>
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
-                                        Actions
+                                        Price
                                     </th>
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Discount(%)
+                                    </th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Offer Price
+                                    </th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Amount Of Discount
+                                    </th>
+
+                                    <!-- <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Actions
+                                    </th> -->
 
                                 </tr>
                             </thead>
@@ -119,9 +132,9 @@
                                             <%= products[i].groupingID %>
                                         </td>
 
-                                        <td data-title="Mobile">
+                                        <!-- <td data-title="Mobile">
                                             <%= products[i].category %>
-                                        </td>
+                                        </td> -->
 
                                         <td data-title="Mobile">
                                             <%= products[i].size %>
@@ -131,15 +144,29 @@
                                         <td data-title="Mobile">
                                             <%= products[i].stock %>
                                         </td>
-                                        <td data-title="Mobile">
-                                            <%= products[i].price %>
-                                        </td>
+
                                         <td data-title="Mobile">
                                             <%= products[i].onSale %>
                                         </td>
 
+                                        <td data-title="Mobile">
+                                            <%= products[i].price %>
+                                        </td>
 
-                                        <td data-title="Actions "
+                                        <td data-title="Mobile">
+                                            <%= products[i].rateOfDiscount %>
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%= products[i].offerPrice %>
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%= (products[i].price - products[i].offerPrice) %>
+                                        </td>
+
+
+                                        <!-- <td data-title="Actions "
                                             class="d-flex justify-content-center align-items-center "
                                             style="font-size: 10px; height:145px;">
 
@@ -150,7 +177,7 @@
 
 
 
-                                        </td>
+                                        </td> -->
                                     </tr>
                                     <% } %>
 
@@ -182,6 +209,5 @@
 
             <script src="/js/dataTables.js"></script>
 
-            <script src="/js/admin/productList.js"></script>
 
             <%- include('../layouts/footer.ejs') %>

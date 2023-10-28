@@ -164,8 +164,30 @@
                                                     <i class="fa fa-star-o"></i>
                                                     <i class="fa fa-star-o"></i>
                                                 </div>
-                                                <h5>Rs.<%=products[i].price%>
-                                                </h5>
+
+                                                <div class="d-flex">
+                                                    <h5 class=" mr-3" <% if(products[i].onOffer &&
+                                                        products[i].rateOfDiscount>0){ %>
+
+
+                                                        style="color:grey;text-decoration: line-through;"
+
+                                                        <%}%>
+
+                                                            >₹<%=products[i].price%>
+                                                    </h5>
+
+                                                    <% if(products[i].onOffer && products[i].rateOfDiscount>0){ %>
+
+                                                        <h5>
+                                                            ₹ <%=products[i].offerPrice%>
+                                                        </h5>
+
+                                                        <%}%>
+
+
+                                                </div>
+
 
 
 

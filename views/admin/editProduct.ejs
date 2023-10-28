@@ -97,6 +97,8 @@
                         <label class="form-label mt-2" for="stock">Stock no </label>
                     </div>
 
+
+
                     <div class="form-outline mb-4 d-flex flex-column ">
 
                         <select name="onSale" id="onSale">
@@ -111,17 +113,46 @@
                                 False
                             </option>
 
-
-
-
-
-
-
                         </select>
 
                         <label class="   mt-2" for="onSale">onSale</label>
 
                     </div>
+
+                    <div class="form-outline mb-4 d-flex flex-column ">
+
+                        <select name="onOffer" id="onOffer">
+
+
+
+                            <option value="true" <%=product.onOffer ? 'selected' :'' %> >
+                                True
+                            </option>
+
+                            <option value="false" <%=product.onOffer? '' :' selected' %> >
+                                False
+                            </option>
+
+                        </select>
+
+                        <label class="   mt-2" for="onSale">onOffer</label>
+
+                    </div>
+
+                    <div class="form-outline mb-4">
+                        <input type="number" id="rateOfDiscount" class="form-control" name="rateOfDiscount" required
+                            value="<%= product.rateOfDiscount%>" />
+                        <label class="form-label mt-2" for="rateOfDiscount">Rate Of Discount </label>
+                    </div>
+
+                    <div class="form-outline mb-4">
+                        <input type="number" disabled class="form-control" required value="<%= product.offerPrice%>" />
+                        <label class="form-label mt-2" for="offerPrice">Offer Price </label>
+                    </div>
+
+
+
+
 
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
@@ -197,31 +228,7 @@
                     </div>
 
 
-                    <!-- fourth image -->
 
-
-                    <!-- <div class="input-group mb-4">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="fourthIMG">Upload</span>
-                        </div>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="fourthImg" aria-describedby="fourthIMG"
-                                name="fourthImg" >
-                            <label class="custom-file-label" for="fourthImg"> Fourth Image</label>
-                        </div>
-                    </div>
-
-
-                    <div class="input-group mb-4">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="fourthIMGThumbnail">Upload</span>
-                        </div>
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="fourthImgThumbnail"
-                                aria-describedby="fourthIMGThumbnail" name="fourthImgThumbnail" >
-                            <label class="custom-file-label" for="fourthImgThumbnail"> Fourth Image Thumbnail</label>
-                        </div>
-                    </div> -->
 
 
 

@@ -56,7 +56,17 @@ app.use((req, res, next) => {
 //middleware for req data parsing
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+
+app.use((error, req, res, next) => {
+    if (error instanceof SyntaxError) {
+        // Handle JSON parsing errors
+        console.error('JSON parsing error:', error);
+        res.status(400).json({ error: 'Invalid JSON data' });
+    } else {
+        next(error);
+    }
+});
 
 
 //middleware for serving static files

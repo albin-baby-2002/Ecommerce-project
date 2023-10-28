@@ -7,7 +7,7 @@ const Product = require('../models/productModel');
 const Coupon = require('../models/couponModel')
 const path = require('path');
 const Order = require('../models/orderModel');
-const { log } = require('console');
+const { log, Console } = require('console');
 const fsPromises = require('fs').promises;
 const excelJS = require('exceljs');
 const puppeteer = require('puppeteer')
@@ -483,7 +483,8 @@ const editProductHandler = async (req, res, next) => {
         console.log(infoOfUpdatedImgs);
 
 
-        let { name, category, price, stock, description, onSale, groupingID, size, color } = req.body;
+        let { name, category, price, stock, description, onSale, groupingID, size, color, onOffer,
+            rateOfDiscount } = req.body;
 
         groupingID = Number(groupingID)
 
@@ -496,9 +497,10 @@ const editProductHandler = async (req, res, next) => {
         stock = Number(stock);
         onSale = onSale.trim();
         size = size.trim();
+        rateOfDiscount = Number(rateOfDiscount)
 
 
-        if (!name || !category || !groupingID || !description || !price || !onSale || !size || !color) {
+        if (!name || !category || !groupingID || !description || !price || !onSale || !size || !color || !onOffer) {
 
             res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
 
@@ -508,15 +510,25 @@ const editProductHandler = async (req, res, next) => {
 
             res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
 
-        } else if (Number.isNaN(price) || Number.isNaN(stock) || price < 0 || stock < 0) {
+        } else if (Number.isNaN(price) || Number.isNaN(stock) || Number.isNaN(rateOfDiscount) || price < 0 || stock < 0 || rateOfDiscount < 0) {
 
-            res.status(400).json({ "success": false, "message": " Price and stock value should be non negative numerical values. Try Again !" })
+            res.status(400).json({ "success": false, "message": " Price , rate of discount and stock value should be non negative numerical values. Try Again !" })
 
             return;
 
         }
 
         onSale = onSale === 'true' ? true : false;
+        onOffer = onOffer === 'true' ? true : false;
+
+
+        const productPrice = price;
+        const discountAmount = (productPrice * rateOfDiscount) / 100;
+
+        let offerPrice = productPrice - discountAmount;
+
+        offerPrice = Math.ceil(offerPrice);
+
 
 
         const existingProductData = await Product.findById(productId).lean();
@@ -574,7 +586,7 @@ const editProductHandler = async (req, res, next) => {
 
 
 
-        const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: { name: name, price: price, stock: stock, description: description, category: category, onSale: onSale, images: images, groupingID, size: size.toLowerCase(), color: color.toLowerCase() } })
+        const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: { name: name, price: price, stock: stock, description: description, category: category, onSale: onSale, images: images, groupingID, size: size.toLowerCase(), color: color.toLowerCase(), onOffer: onOffer, rateOfDiscount: rateOfDiscount, offerPrice: offerPrice } })
 
 
         if (updatedProduct) {
@@ -2061,32 +2073,76 @@ const renderProductOffersPage = async (req, res, next) => {
 };
 
 // !modify or add product offer
+
 const addOrModifyProductOffer = async (req, res, next) => {
+
+
     try {
-        let { productID, rateOfDiscount } = req.body;
+
+        console.log(req.body);
+
+        let { rateOfDiscount } = req.body;
+
+        let product = req.params.productID
+
+        let productID;
+
+
         rateOfDiscount = Number(rateOfDiscount);
 
         let productData;
 
+
         try {
+            productID = new mongoose.Types.ObjectId(product.trim());
+
+            console.log(productID)
+
             productData = await Product.findById(productID);
+
+            console.log(productData)
+
         } catch (err) {
+
+            console.log(err);
+
             return res.status(400).json({ success: false, message: 'Enter a valid productID' });
+
         }
 
         if (!productID || isNaN(rateOfDiscount)) {
+
             return res.status(400).json({ success: false, message: 'All Fields Are Mandatory And Rate Of Discount Should Be a Number' });
+
         } else if (rateOfDiscount < 0) {
+
             return res.status(400).json({ success: false, message: 'Rate of Discount Should Be a Non-Negative Integer' });
+
         } else if (!(productData instanceof Product)) {
+
             return res.status(500).json({ success: false, message: 'Server is facing issues' });
+
         }
 
-        // If none of the conditions were met, proceed with your logic here
+        const productPrice = productData.price;
+        const discountAmount = (productPrice * rateOfDiscount) / 100;
+
+        let offerPrice = productPrice - discountAmount;
+
+        offerPrice = Math.ceil(offerPrice);
+
+        const updateProduct = await Product.findByIdAndUpdate(productID, { $set: { onOffer: true, offerPrice, rateOfDiscount } });
+
+        if (!(updateProduct instanceof Product)) {
+
+            return res.status(500).json({ success: false, message: 'Server is facing issues Updating Product Data' });
+        }
+
 
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ success: false, message: 'Server is facing issues: ' + err });
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
 };
 

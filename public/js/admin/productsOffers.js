@@ -1,22 +1,30 @@
 
-const form = document.getElementById('offerForm');
 
-form.addEventListener('submit', function (event) {
+
+const btn = document.getElementById('btnForSubmit');
+
+btn.addEventListener('click', function (event) {
 
     event.preventDefault();
 
-    const formData = new FormData(form);
 
 
-    const formDataJSON = {};
+    const productID = document.getElementById("productID").value.trim();
 
-    formData.forEach((value, key) => {
-        formDataJSON[key] = value;
-    });
+    console.log(typeof productID)
 
 
+    const rateOfDiscount = document.getElementById('rateOfDiscount').value.trim();
 
-    fetch('http://localhost:2500/admin/productsOffers', {
+    const formDataJSON = { rateOfDiscount };
+
+    console.log(JSON.stringify(formDataJSON));
+
+
+
+
+
+    fetch('http://localhost:2500/admin/productsOffers/' + productID, {
 
         method: 'POST',
         headers: {

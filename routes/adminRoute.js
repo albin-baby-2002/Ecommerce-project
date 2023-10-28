@@ -141,10 +141,10 @@ router.get('/salesReport/pdf/download', adminController.salesReportInPdf);
 // ! products offer page render and add or modify product offer
 
 router.route('/productsOffers')
-    .get(adminController.renderProductOffersPage)
-    .post(adminController.addOrModifyProductOffer)
+    .get(adminController.renderProductOffersPage);
 
 
+router.post('/productsOffers/:productID', adminController.addOrModifyProductOffer)
 
 
 

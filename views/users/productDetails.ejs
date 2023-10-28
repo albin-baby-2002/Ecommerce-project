@@ -124,7 +124,30 @@
                                             <i class="fa fa-star-o"></i>
                                             <span> - 5 Reviews</span>
                                         </div>
-                                        <h3>₹ <%=product.price%> <span></span></h3>
+
+                                        <div class="d-flex justify-content-center">
+                                            <h3 class="mr-3" <% if(product.onOffer && product.rateOfDiscount>
+                                                0){%>
+                                                style="color:grey;text-decoration: line-through;"
+
+                                                <%}%>
+
+                                                    >
+                                                    ₹ <%=product.price%>
+
+                                            </h3>
+
+                                            <% if(product.onOffer && product.rateOfDiscount>0){ %>
+
+                                                <h3>
+                                                    ₹ <%=product.offerPrice%>
+                                                </h3>
+                                                <%}%>
+
+
+                                        </div>
+
+
                                         <p>
                                             <%=product.description%>
                                         </p>
