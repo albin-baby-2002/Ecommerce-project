@@ -2054,7 +2054,7 @@ const renderProductOffersPage = async (req, res, next) => {
 
         const products = await Product.aggregate([{
             $match: {
-                onOffer: true
+                rateOfDiscount: { $exists: true }
             }
         }]);
 
@@ -2079,7 +2079,7 @@ const addOrModifyProductOffer = async (req, res, next) => {
 
     try {
 
-        console.log(req.body);
+        console.log("add or modify", req.body);
 
         let { rateOfDiscount } = req.body;
 
@@ -2139,7 +2139,7 @@ const addOrModifyProductOffer = async (req, res, next) => {
         }
 
 
-        return res.status(200).json({ success: false, message: 'Success' });
+        return res.status(200).json({ success: true, message: 'Success' });
 
 
 
@@ -2150,6 +2150,111 @@ const addOrModifyProductOffer = async (req, res, next) => {
         return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
 };
+
+// ! activate a product offer
+
+const activateProductOffer = async (req, res, next) => {
+
+
+    try {
+
+        console.log(req.body);
+
+        let { productID } = req.body;
+
+        let productData;
+
+
+        try {
+            productID = new mongoose.Types.ObjectId(productID.trim());
+
+            console.log(productID)
+
+            productData = await Product.findById(productID);
+
+            console.log(productData)
+
+        } catch (err) {
+
+            console.log(err);
+
+            return res.status(500).json({ success: false, message: 'Server facing issues finding the Product Data' });
+
+        }
+
+
+        const updateProduct = await Product.findByIdAndUpdate(productID, { $set: { onOffer: true } });
+
+        if (!(updateProduct instanceof Product)) {
+
+            return res.status(500).json({ success: false, message: 'Server is facing issues Updating Product Data' });
+        }
+
+
+        return res.status(200).json({ success: true, message: 'Success' });
+
+
+
+
+    } catch (err) {
+        console.log(err);
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
+    }
+};
+
+
+
+const deactivateProductOffer = async (req, res, next) => {
+
+
+    try {
+
+        console.log('deactivate', req.body);
+
+        let { productID } = req.body;
+
+        let productData;
+
+
+        try {
+            productID = new mongoose.Types.ObjectId(productID.trim());
+
+            console.log(productID)
+
+            productData = await Product.findById(productID);
+
+            console.log(productData)
+
+        } catch (err) {
+
+            console.log(err);
+
+            return res.status(500).json({ success: false, message: 'Server facing issues finding the Product Data' });
+
+        }
+
+
+        const updateProduct = await Product.findByIdAndUpdate(productID, { $set: { onOffer: false } });
+
+        if (!(updateProduct instanceof Product)) {
+
+            return res.status(500).json({ success: false, message: 'Server is facing issues Updating Product Data' });
+        }
+
+
+        return res.status(200).json({ success: true, message: 'Success' });
+
+
+
+
+    } catch (err) {
+        console.log(err);
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
+    }
+};
+
 
 module.exports = {
     renderLoginPage,
@@ -2184,6 +2289,8 @@ module.exports = {
     renderSalesReportPdfPage,
     salesReportInPdf,
     renderProductOffersPage,
-    addOrModifyProductOffer
+    addOrModifyProductOffer,
+    activateProductOffer
+    , deactivateProductOffer
 
 }

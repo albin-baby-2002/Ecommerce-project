@@ -143,13 +143,17 @@ router.get('/salesReport/pdf/download', adminController.salesReportInPdf);
 router.route('/productsOffers')
     .get(adminController.renderProductOffersPage);
 
+// ! add or modify product offer
 
 router.post('/productsOffers/:productID', adminController.addOrModifyProductOffer)
 
+// ! activate product offer 
 
+router.post('/productsOffer/activate', adminController.activateProductOffer)
 
+// ! deactivate product offer 
 
-
+router.post('/productsOffer/deactivate', adminController.deactivateProductOffer)
 
 // ! for rendering error page for unknown / critical error
 
