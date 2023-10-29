@@ -93,9 +93,22 @@
                                                     </td>
 
                                                     <td class="">
-                                                        <p>
-                                                            <%=itemsInCart[i].cartProductData.price%>
-                                                        </p>
+
+                                                        <% if(itemsInCart[i].cartProductData.onOffer &&
+                                                            itemsInCart[i].cartProductData.rateOfDiscount>0){ %>
+
+
+                                                            <p>
+                                                                <%=itemsInCart[i].cartProductData.offerPrice%>
+                                                            </p>
+
+                                                            <%} else {%>
+
+                                                                <p>
+                                                                    <%=itemsInCart[i].cartProductData.price%>
+                                                                </p>
+
+                                                                <%}%>
                                                     </td>
 
                                                     <td class="">

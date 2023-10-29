@@ -547,9 +547,14 @@ const renderCheckOutPage = async (req, res, next) => {
             }, {
 
                 $addFields: {
+
                     totalPriceOfTheProduct: {
-                        $multiply: ["$quantity", "$price"]
-                    }
+                        $cond: {
+                            if: { $eq: ['$cartProductData.onOffer', true] },
+                            then: { $multiply: ["$quantity", '$cartProductData.offerPrice'] },
+                            else: { $multiply: ["$quantity", "$price"] },
+                        },
+                    },
                 }
             },
 
@@ -585,11 +590,35 @@ const renderCheckOutPage = async (req, res, next) => {
                         newRoot: '$cartItems'
                     }
                 }, {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'product',
+                        foreignField: '_id',
+                        as: 'cartProductData'
+
+                    }
+                }, {
+                    $replaceRoot: {
+                        newRoot: {
+                            $mergeObjects: [
+                                { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
+                                { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
+                            ]
+                        }
+                    }
+                },
+
+                {
 
                     $addFields: {
+
                         totalPriceOfTheProduct: {
-                            $multiply: ["$quantity", "$price"]
-                        }
+                            $cond: {
+                                if: { $eq: ['$cartProductData.onOffer', true] },
+                                then: { $multiply: ["$quantity", '$cartProductData.offerPrice'] },
+                                else: { $multiply: ["$quantity", "$price"] },
+                            },
+                        },
                     }
                 },
                 {
@@ -604,10 +633,12 @@ const renderCheckOutPage = async (req, res, next) => {
             ]).exec()
 
 
+            console.log('itemsInCart\n\n', totalPriceOfCart);
 
             totalPriceOfCart = totalPriceOfCart[0].totalAmount;
 
         }
+
 
 
 

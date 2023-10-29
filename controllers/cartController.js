@@ -267,11 +267,35 @@ const renderCartPage = async (req, res, next) => {
                         newRoot: '$cartItems'
                     }
                 }, {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'product',
+                        foreignField: '_id',
+                        as: 'cartProductData'
+
+                    }
+                }, {
+                    $replaceRoot: {
+                        newRoot: {
+                            $mergeObjects: [
+                                { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
+                                { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
+                            ]
+                        }
+                    }
+                },
+
+                {
 
                     $addFields: {
+
                         totalPriceOfTheProduct: {
-                            $multiply: ["$quantity", "$price"]
-                        }
+                            $cond: {
+                                if: { $eq: ['$cartProductData.onOffer', true] },
+                                then: { $multiply: ["$quantity", '$cartProductData.offerPrice'] },
+                                else: { $multiply: ["$quantity", "$price"] },
+                            },
+                        },
                     }
                 },
                 {
@@ -531,11 +555,35 @@ const getTotalCartPrice = async (req, res, next) => {
                     newRoot: '$cartItems'
                 }
             }, {
+                $lookup: {
+                    from: 'products',
+                    localField: 'product',
+                    foreignField: '_id',
+                    as: 'cartProductData'
+
+                }
+            }, {
+                $replaceRoot: {
+                    newRoot: {
+                        $mergeObjects: [
+                            { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
+                            { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
+                        ]
+                    }
+                }
+            },
+
+            {
 
                 $addFields: {
+
                     totalPriceOfTheProduct: {
-                        $multiply: ["$quantity", "$price"]
-                    }
+                        $cond: {
+                            if: { $eq: ['$cartProductData.onOffer', true] },
+                            then: { $multiply: ["$quantity", '$cartProductData.offerPrice'] },
+                            else: { $multiply: ["$quantity", "$price"] },
+                        },
+                    },
                 }
             },
             {

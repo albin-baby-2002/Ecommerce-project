@@ -79,6 +79,8 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
     try {
 
+        console.log('add coupon and items ');
+
         if (!req.session.userID) {
 
             res.status(401).json({ "success": false, "message": "Your session timedOut login to access checkout page" })
@@ -171,9 +173,14 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
             }, {
 
                 $addFields: {
+
                     totalPriceOfTheProduct: {
-                        $multiply: ["$quantity", "$price"]
-                    }
+                        $cond: {
+                            if: { $eq: ['$cartProductData.onOffer', true] },
+                            then: { $multiply: ["$quantity", '$cartProductData.offerPrice'] },
+                            else: { $multiply: ["$quantity", "$price"] },
+                        },
+                    },
                 }
             },
 
@@ -182,6 +189,8 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
         ]).exec()
 
         let totalPriceOfCart;
+
+
 
 
         if (itemsInCart.length > 0) {
@@ -209,11 +218,33 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
                         newRoot: '$cartItems'
                     }
                 }, {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'product',
+                        foreignField: '_id',
+                        as: 'cartProductData'
+
+                    }
+                }, {
+                    $replaceRoot: {
+                        newRoot: {
+                            $mergeObjects: [
+                                { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
+                                { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
+                            ]
+                        }
+                    }
+                }, {
 
                     $addFields: {
+
                         totalPriceOfTheProduct: {
-                            $multiply: ["$quantity", "$price"]
-                        }
+                            $cond: {
+                                if: { $eq: ['$cartProductData.onOffer', true] },
+                                then: { $multiply: ["$quantity", '$cartProductData.offerPrice'] },
+                                else: { $multiply: ["$quantity", "$price"] },
+                            },
+                        },
                     }
                 },
                 {
@@ -225,7 +256,9 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
 
 
-            ]).exec()
+            ]).exec();
+
+            console.log('total\n', totalPriceOfCart)
 
 
 
