@@ -14,6 +14,18 @@ const categorySchema = new mongoose.Schema({
     blocked: {
         type: Boolean,
         default: false
+    },
+    onDiscount: {
+        type: Boolean,
+        default: false
+    },
+    discountName: {
+        type: String,
+        default: 'Category Discount'
+    },
+    discountAmount: {
+        type: Number,
+        default: 0,
     }
 
 });

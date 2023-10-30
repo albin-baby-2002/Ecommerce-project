@@ -127,6 +127,47 @@
         </div>
 
 
+
+        <div class="container">
+
+            <div class="col-xxl-12">
+                <div class="bg-secondary-soft px-4 py-5 rounded d-flex justify-content-center">
+                    <div class="row g-3 w-75">
+                        <h3 class="my-4 mb-5 mt-5 text-center font-weight-bold">Referral Details</h3>
+
+
+                        <input class="form-control" type="text" disabled value="<%-user.totalReferralReward%>">
+                        <label for="">Total Referral Rewards</label>
+
+
+                        <div class="form-control w-100" style="background-color: #e9ecef;">
+                            <% for(let i=0 ; i < user.successfulReferrals.length; i++ ){%>
+                                <%-user.successfulReferrals[i] %>
+
+
+                                    <%}%>
+
+
+
+                        </div>
+
+                        <label for="">Successful Referrals</label>
+
+
+
+
+
+                        <!-- Old password -->
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
         <div class="container">
 
             <div class="col-xxl-12">

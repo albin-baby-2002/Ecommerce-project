@@ -80,7 +80,15 @@ const signUpHandler = async (req, res, next) => {
 
     try {
 
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, referralEmail } = req.body;
+
+        let referrer;
+
+        if (referralEmail) {
+
+            referrer = await User.findOne({ email: referralEmail });
+
+        }
 
         // validating input data before creating the user
 
@@ -112,6 +120,12 @@ const signUpHandler = async (req, res, next) => {
                 type: 'danger',
                 message: 'Invalid Email: make sure email id is entered correctly'
             }
+        } else if (referralEmail && !(referrer instanceof User)) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Enter a valid referrer email ID'
+            }
         }
 
         // redirecting with error message if data validation failed 
@@ -140,11 +154,26 @@ const signUpHandler = async (req, res, next) => {
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const user = new User({ name, email, phone, password: hashedPassword });
+            const savedUser = new User({ name, email, phone, password: hashedPassword });
 
-            user.save()
+            savedUser.save()
 
-                .then((user) => {
+                .then((savedUser) => {
+
+                    if (referrer) {
+                        referrer.wallet += 10;
+
+                        referrer.totalReferralReward += 10;
+
+                        referrer.successfulReferrals.push(savedUser.email);
+
+                        referrer.save();
+
+                        savedUser.wallet += 10;
+
+                        savedUser.save();
+                    }
+
 
 
                     req.session.message = {
@@ -152,9 +181,9 @@ const signUpHandler = async (req, res, next) => {
                         message: 'Your Registration Is Successful !'
                     };
 
-                    req.session.verificationToken = user._id;
+                    req.session.verificationToken = savedUser._id;
 
-                    const isOtpSend = userVerificationHelper.sendOtpEmail(user, res);
+                    const isOtpSend = userVerificationHelper.sendOtpEmail(savedUser, res);
 
                     if (isOtpSend) {
                         res.redirect('/user/verifyOTP');

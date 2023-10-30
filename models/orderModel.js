@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+
+
 const orderSchema = new mongoose.Schema({
     userID: {
         type: mongoose.Schema.Types.ObjectId,
@@ -58,6 +60,11 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    categoryDiscount: {
+        type: Number,
+        default: 0
+    },
+
     finalPrice: {
         type: Number,
         required: true,

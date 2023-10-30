@@ -30,15 +30,21 @@
                     <table class="table table-striped bg-white" id="myTable">
                         <thead class=" ">
                             <tr class="text-center">
-                                <th class="bg-dark text-white" style="font-size: 15px ; width: 300px;" scope="col"
-                                    class="sorting ">
+                                <th class="bg-dark text-center text-white" style="font-size: 15px ; width: 200px;"
+                                    scope="col" class="sorting ">
                                     Name</th>
-                                <th class="bg-dark text-white" style="font-size: 15px ; width: 400px" scope="col"
+                                <th class="bg-dark text-center text-white" style="font-size: 15px ; " scope="col"
                                     class="sorting">
                                     Description</th>
+                                <th class="bg-dark text-center text-white" style="font-size: 15px ; " scope="col"
+                                    class="sorting">
+                                    On Discount</th>
+                                <th class="bg-dark text-center text-white" style="font-size: 15px ; " scope="col"
+                                    class="sorting">
+                                    Discount (Rs) </th>
 
-                                <th class="bg-dark text-white text-center" style="font-size: 15px; width: 300px"
-                                    scope="col">Actions
+                                <th class="bg-dark text-center text-white text-center"
+                                    style="font-size: 15px; width: 200px" scope="col">Actions
                                 </th>
 
                             </tr>
@@ -50,11 +56,17 @@
 
 
                                     <tr row-id="<%= categories[i]._id%>" class="text-center" style="font-size: medium;">
-                                        <td data-title="Name" style="width: 300px;">
+                                        <td data-title="Name" style="width: 200px;">
                                             <%= categories[i].name %>
                                         </td>
-                                        <td data-title="Email" style="width: 400px;">
+                                        <td data-title="Email" style="width: 300px;">
                                             <%= categories[i].description %>
+                                        </td>
+                                        <td data-title="Email">
+                                            <%= categories[i].onDiscount %>
+                                        </td>
+                                        <td data-title="Email">
+                                            <%= categories[i].discountAmount %>
                                         </td>
 
                                         <td>

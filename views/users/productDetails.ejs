@@ -113,98 +113,109 @@
 
                                     <% } %>
 
-                                        <h4>
-                                            <%=product.name%>
-                                        </h4>
-                                        <div class="rating">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <span> - 5 Reviews</span>
-                                        </div>
 
-                                        <div class="d-flex justify-content-center">
-                                            <h3 class="mr-3" <% if(product.onOffer && product.rateOfDiscount>
-                                                0){%>
-                                                style="color:grey;text-decoration: line-through;"
+                                        <% if(category.onDiscount){ %>
 
-                                                <%}%>
+                                            <h6 class="mb-4 " style="color: rgb(225, 145, 64);">Buy One And Get Flat
+                                                <%=category.discountAmount %>
+                                                    Off
+                                                    On Total
+                                                    Purchase</h6>
 
-                                                    >
-                                                    ₹ <%=product.price%>
+                                            <%}%>
 
-                                            </h3>
-
-                                            <% if(product.onOffer && product.rateOfDiscount>0){ %>
-
-                                                <h3>
-                                                    ₹ <%=product.offerPrice%>
-                                                </h3>
-                                                <%}%>
-
-
-                                        </div>
-
-
-                                        <p>
-                                            <%=product.description%>
-                                        </p>
-                                        <div class="product__details__option">
-                                            <div class="product__details__option__size">
-                                                <span>Size:</span>
-
-                                                <% for(let i=0; i < variants.length ;i++) { %>
-
-                                                    <% if(variants[i].color.toLowerCase()===currentColor.toLowerCase() )
-                                                        {%>
-
-                                                        <label
-                                                            class="size-button <% if(variants[i].size.toLowerCase() === currentSize.toLowerCase()){%> border-dark selected <%}%> "
-                                                            for="<%=variants[i].size %>"
-                                                            data-size="<%=variants[i].size %>">
-                                                            <%=variants[i].size %>
-                                                                <input class="size-radio" value="<%=variants[i].size %>"
-                                                                    name="size" type="radio"
-                                                                    id="<%=variants[i].size %>">
-                                                        </label>
-
-                                                        <% } %>
-
-                                                            <% }%>
-
-                                            </div>
-
-                                            <div class="product__details__option__size">
-                                                <span>Color:</span>
-
-
-                                                <% for(let i=0; i < colorList.length ;i++) { %>
-
-
-
-                                                    <label
-                                                        class="color-button <% if(colorList[i].toLowerCase() === currentColor.toLowerCase()){%> border-dark selected <%}%> "
-                                                        for="<%=colorList[i]%>" data-color="<%=colorList[i]%>">
-                                                        <%=colorList[i]%>
-                                                            <input class="color-radio" name="color"
-                                                                value="<%=colorList[i]%>" type="radio"
-                                                                id="<%=colorList[i]%>">
-                                                    </label>
-
-                                                    <% } %>
-
-                                            </div>
-
-                                        </div>
-                                        <div class="product__details__cart__option">
-                                            <div class="quantity">
-                                                <div class="pro-qty">
-                                                    <input data-id="quantity" type="text" value="1">
+                                                <h4>
+                                                    <%=product.name%>
+                                                </h4>
+                                                <div class="rating">
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star"></i>
+                                                    <i class="fa fa-star-o"></i>
+                                                    <span> - 5 Reviews</span>
                                                 </div>
-                                            </div>
-                                            <button onclick="addToCart('<%=product._id%>')" class="primary-btn 
+
+                                                <div class="d-flex justify-content-center">
+                                                    <h3 class="mr-3" <% if(product.onOffer && product.rateOfDiscount>
+                                                        0){%>
+                                                        style="color:grey;text-decoration: line-through;"
+
+                                                        <%}%>
+
+                                                            >
+                                                            ₹ <%=product.price%>
+
+                                                    </h3>
+
+                                                    <% if(product.onOffer && product.rateOfDiscount>0){ %>
+
+                                                        <h3>
+                                                            ₹ <%=product.offerPrice%>
+                                                        </h3>
+                                                        <%}%>
+
+
+                                                </div>
+
+
+                                                <p>
+                                                    <%=product.description%>
+                                                </p>
+                                                <div class="product__details__option">
+                                                    <div class="product__details__option__size">
+                                                        <span>Size:</span>
+
+                                                        <% for(let i=0; i < variants.length ;i++) { %>
+
+                                                            <% if(variants[i].color.toLowerCase()===currentColor.toLowerCase()
+                                                                ) {%>
+
+                                                                <label
+                                                                    class="size-button <% if(variants[i].size.toLowerCase() === currentSize.toLowerCase()){%> border-dark selected <%}%> "
+                                                                    for="<%=variants[i].size %>"
+                                                                    data-size="<%=variants[i].size %>">
+                                                                    <%=variants[i].size %>
+                                                                        <input class="size-radio"
+                                                                            value="<%=variants[i].size %>" name="size"
+                                                                            type="radio" id="<%=variants[i].size %>">
+                                                                </label>
+
+                                                                <% } %>
+
+                                                                    <% }%>
+
+                                                    </div>
+
+                                                    <div class="product__details__option__size">
+                                                        <span>Color:</span>
+
+
+                                                        <% for(let i=0; i < colorList.length ;i++) { %>
+
+
+
+                                                            <label
+                                                                class="color-button <% if(colorList[i].toLowerCase() === currentColor.toLowerCase()){%> border-dark selected <%}%> "
+                                                                for="<%=colorList[i]%>" data-color="<%=colorList[i]%>">
+                                                                <%=colorList[i]%>
+                                                                    <input class="color-radio" name="color"
+                                                                        value="<%=colorList[i]%>" type="radio"
+                                                                        id="<%=colorList[i]%>">
+                                                            </label>
+
+                                                            <% } %>
+
+                                                    </div>
+
+                                                </div>
+                                                <div class="product__details__cart__option">
+                                                    <div class="quantity">
+                                                        <div class="pro-qty">
+                                                            <input data-id="quantity" type="text" value="1">
+                                                        </div>
+                                                    </div>
+                                                    <button onclick="addToCart('<%=product._id%>')" class="primary-btn 
                                         
                                         <% if(product.stock <= 0){ %>
                                             
@@ -214,36 +225,37 @@
                                         
                                         " <% if(product.stock <=0){ %>
 
-                                                disabled
+                                                        disabled
 
-                                                <% } %>
+                                                        <% } %>
 
-                                                    >add to
-                                                    cart
-                                            </button>
-                                        </div>
+                                                            >add to
+                                                            cart
+                                                    </button>
+                                                </div>
 
-                                        <div class="product__details__btns__option d-flex justify-content-center">
+                                                <div
+                                                    class="product__details__btns__option d-flex justify-content-center">
 
-                                            <button onclick="addToWishList()" id="addToWishList"
-                                                class="nav-link add-hover-opacity" style="font-weight: bold;"><i
-                                                    class="fa fa-heart"></i>
-                                                <span>ADD
-                                                    TO WISHLIST</span>
-                                            </button>
+                                                    <button onclick="addToWishList()" id="addToWishList"
+                                                        class="nav-link add-hover-opacity" style="font-weight: bold;"><i
+                                                            class="fa fa-heart"></i>
+                                                        <span>ADD
+                                                            TO WISHLIST</span>
+                                                    </button>
 
-                                            <!-- <a href="#"><i class="fa fa-exchange"></i> Add To Compare</a> -->
-                                        </div>
+                                                    <!-- <a href="#"><i class="fa fa-exchange"></i> Add To Compare</a> -->
+                                                </div>
 
-                                        <div class="product__details__last__option">
-                                            <h5><span>Guaranteed Safe Checkout</span></h5>
-                                            <img src="img/shop-details/details-payment.png" alt="">
-                                            <ul>
-                                                <li><span>SKU:</span> 3812912</li>
-                                                <li><span>Categories:</span> Clothes</li>
-                                                <li><span>Tag:</span> Clothes, Skin, Body</li>
-                                            </ul>
-                                        </div>
+                                                <div class="product__details__last__option">
+                                                    <h5><span>Guaranteed Safe Checkout</span></h5>
+                                                    <img src="img/shop-details/details-payment.png" alt="">
+                                                    <ul>
+                                                        <li><span>SKU:</span> 3812912</li>
+                                                        <li><span>Categories:</span> Clothes</li>
+                                                        <li><span>Tag:</span> Clothes, Skin, Body</li>
+                                                    </ul>
+                                                </div>
                             </div>
                         </div>
                     </div>

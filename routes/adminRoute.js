@@ -143,6 +143,11 @@ router.get('/salesReport/pdf/download', adminController.salesReportInPdf);
 router.route('/productsOffers')
     .get(adminController.renderProductOffersPage);
 
+// ! category offer page render and add or modify product offer
+
+router.route('/categoryOffers')
+    .get(adminController.renderCategoryOffersPage);
+
 // ! add or modify product offer
 
 router.post('/productsOffers/:productID', adminController.addOrModifyProductOffer)
@@ -154,6 +159,16 @@ router.post('/productsOffer/activate', adminController.activateProductOffer)
 // ! deactivate product offer 
 
 router.post('/productsOffer/deactivate', adminController.deactivateProductOffer)
+
+
+
+// ! activate category offer 
+
+router.post('/categoryOffer/activate', adminController.activateCategoryOffer)
+
+// ! deactivate category offer 
+
+router.post('/categoryOffer/deactivate', adminController.deactivateCategoryOffer)
 
 // ! for rendering error page for unknown / critical error
 

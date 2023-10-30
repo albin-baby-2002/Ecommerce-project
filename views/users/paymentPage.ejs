@@ -141,7 +141,27 @@
                             <ul class="checkout__total__all">
 
                                 <li>Gross Total <span>Rs.<%=orderData.grossTotal %></span></li>
+
+
                                 <li>Coupon Discount <span>- <%=orderData.discountAmount %></span></li>
+
+
+                                <%if(categoryOffers.length> 0){%>
+
+                                    <%for(let i=0; i< categoryOffers.length; i++) {%>
+
+                                        <li>
+                                            <%=categoryOffers[i].discountName%> <span>-
+                                                    <%=categoryOffers[i].discountAmount%>
+                                                </span>
+                                        </li>
+
+                                        <%}%>
+
+
+
+
+                                            <%}%>
 
 
                             </ul>

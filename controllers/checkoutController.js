@@ -100,9 +100,9 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
         console.log(req.body);
 
-        let rateOfDiscount = null;
+        let rateOfCouponDiscount = null;
 
-        let maximumDiscount = null;
+        let maximumCouponDiscount = null;
 
         let couponID = null
 
@@ -119,8 +119,8 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
                 if (couponData.isActive && (currentDate < expiryDate)) {
 
-                    rateOfDiscount = couponData.rateOfDiscount;
-                    maximumDiscount = couponData.maximumDiscount;
+                    rateOfCouponDiscount = couponData.rateOfDiscount;
+                    maximumCouponDiscount = couponData.maximumDiscount;
                     couponID = couponData._id;
                 }
 
@@ -186,7 +186,93 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
 
 
-        ]).exec()
+        ]).exec();
+
+        const categoryOffers = await Cart.aggregate([{
+            $match: {
+                userID: userID,
+            },
+        }, {
+            $lookup: {
+                from: 'cartitems',
+                localField: 'items',
+                foreignField: '_id',
+                as: 'cartItems',
+            }
+        }, {
+
+            $unwind: "$cartItems"
+
+
+        }, {
+            $replaceRoot: {
+                newRoot: '$cartItems'
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'cartProductData'
+
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+
+                        { category: { $arrayElemAt: ["$cartProductData.category", 0] } }
+                    ]
+                }
+            }
+        }
+            , {
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'category',
+            }
+        },
+        {
+            $project: {
+
+                category: { $arrayElemAt: ['$category', 0] }
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: '$category'
+            }
+        }, {
+            $match: {
+                onDiscount: true
+            }
+        }, {
+            $project: {
+                discountName: 1,
+                discountAmount: 1
+            }
+        }
+
+        ]);
+
+        console.log('category offers \n', categoryOffers);
+
+
+        let categoryDiscount = 0;
+
+        if (categoryOffers.length > 0) {
+
+            categoryOffers.forEach((offer) => {
+                categoryDiscount += offer.discountAmount;
+            })
+
+
+        }
+
+        console.log('category discount \n', categoryDiscount);
+
+
 
         let totalPriceOfCart;
 
@@ -266,29 +352,45 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
             let finalPrice = totalPriceOfCart;
 
-            let discountAmount = 0;
+            let couponDiscountAmount = 0;
 
-            if (rateOfDiscount && maximumDiscount && couponID) {
 
-                let discountAsPerRateOfDiscount = (totalPriceOfCart * rateOfDiscount) / 100;
 
-                discountAmount = discountAsPerRateOfDiscount > maximumDiscount ? maximumDiscount : discountAsPerRateOfDiscount;
+            if (rateOfCouponDiscount && maximumCouponDiscount && couponID) {
 
-                finalPrice = totalPriceOfCart - discountAmount;
+                let discountAsPerRateOfDiscount = (totalPriceOfCart * rateOfCouponDiscount) / 100;
 
-                if (!(totalPriceOfCart === (finalPrice + discountAmount))) {
+                couponDiscountAmount = discountAsPerRateOfDiscount > maximumCouponDiscount ? maximumCouponDiscount : discountAsPerRateOfDiscount;
+
+                finalPrice = totalPriceOfCart - couponDiscountAmount;
+
+                if (!(totalPriceOfCart === (finalPrice + couponDiscountAmount))) {
                     throw new Error(' failed to calculate the discount . Issues in business logic')
                 }
 
             }
 
+
+            if (categoryDiscount > 0) {
+
+                finalPrice -= categoryDiscount;
+
+                if (!(totalPriceOfCart === (finalPrice + couponDiscountAmount + categoryDiscount))) {
+                    throw new Error(' failed to calculate the discount . Issues in business logic')
+                }
+
+
+            }
+
+
+
             let newOrder;
 
 
             if (couponID) {
-                newOrder = new Order({ userID, paymentMethod, paymentStatus, orderStatus: 'clientSideProcessing', shippingAddress: deliveryAddressID, grossTotal: totalPriceOfCart, couponApplied: couponID, discountAmount, finalPrice })
+                newOrder = new Order({ userID, paymentMethod, paymentStatus, orderStatus: 'clientSideProcessing', shippingAddress: deliveryAddressID, grossTotal: totalPriceOfCart, couponApplied: couponID, discountAmount: couponDiscountAmount, finalPrice, categoryDiscount })
             } else {
-                newOrder = new Order({ userID, paymentMethod, paymentStatus, orderStatus: 'clientSideProcessing', shippingAddress: deliveryAddressID, grossTotal: totalPriceOfCart, discountAmount, finalPrice })
+                newOrder = new Order({ userID, paymentMethod, paymentStatus, orderStatus: 'clientSideProcessing', shippingAddress: deliveryAddressID, grossTotal: totalPriceOfCart, discountAmount: couponDiscountAmount, finalPrice, categoryDiscount });
             }
 
 
@@ -403,6 +505,8 @@ const renderPaymentPage = async (req, res, next) => {
             return;
         }
 
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
 
         const orderID = new mongoose.Types.ObjectId(req.params.orderID);
 
@@ -509,13 +613,83 @@ const renderPaymentPage = async (req, res, next) => {
         console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
 
 
-        if (orderData && productsData && address) {
+
+        const categoryOffers = await Cart.aggregate([{
+            $match: {
+                userID: userID,
+            },
+        }, {
+            $lookup: {
+                from: 'cartitems',
+                localField: 'items',
+                foreignField: '_id',
+                as: 'cartItems',
+            }
+        }, {
+
+            $unwind: "$cartItems"
+
+
+        }, {
+            $replaceRoot: {
+                newRoot: '$cartItems'
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'cartProductData'
+
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+
+                        { category: { $arrayElemAt: ["$cartProductData.category", 0] } }
+                    ]
+                }
+            }
+        }
+            , {
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'category',
+            }
+        },
+        {
+            $project: {
+
+                category: { $arrayElemAt: ['$category', 0] }
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: '$category'
+            }
+        }, {
+            $match: {
+                onDiscount: true
+            }
+        }, {
+            $project: {
+                discountName: 1,
+                discountAmount: 1
+            }
+        }
+
+        ]);
+
+
+        if (orderData && productsData && address && categoryOffers) {
 
 
 
 
 
-            res.render('users/paymentPage.ejs', { address, orderData, productsData });
+            res.render('users/paymentPage.ejs', { address, orderData, productsData, categoryOffers });
 
 
 

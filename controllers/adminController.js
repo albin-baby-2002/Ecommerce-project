@@ -740,9 +740,33 @@ const editCategoryHandler = async (req, res, next) => {
 
         const categoryId = req.params.categoryId;
 
-        const { name, description } = req.body;
+        let { name, description, onDiscount, discountName, discountAmount } = req.body;
 
-        const updatedCategory = await Category.findByIdAndUpdate(categoryId, { $set: { name: name, description: description } });
+        discountAmount = Number(discountAmount);
+
+        if (!name || !description || !onDiscount || !discountAmount) {
+
+            req.session.message = {
+                type: 'success',
+                message: 'All Fields Are Mandatory'
+            }
+
+            res.redirect(`/admin/editCategory/${categoryId}`)
+
+        } else if (Number.isNaN(discountAmount) || discountAmount < 0) {
+
+            req.session.message = {
+                type: 'success',
+                message: 'Discount Amount should be a non negative number'
+            }
+
+            res.redirect(`/admin/editCategory/${categoryId}`)
+
+        }
+
+        onDiscount = onDiscount === 'true' ? true : false;
+
+        const updatedCategory = await Category.findByIdAndUpdate(categoryId, { $set: { name: name, description: description, discountAmount, discountName, onDiscount } });
 
         if (updatedCategory) {
 
@@ -2203,7 +2227,7 @@ const activateProductOffer = async (req, res, next) => {
     }
 };
 
-
+// ! deactivate product offer
 
 const deactivateProductOffer = async (req, res, next) => {
 
@@ -2256,6 +2280,142 @@ const deactivateProductOffer = async (req, res, next) => {
 };
 
 
+// ! render category offers page 
+
+const renderCategoryOffersPage = async (req, res, next) => {
+
+    try {
+
+        const categories = await Category.aggregate([{
+            $match: {
+                discountAmount: { $exists: true }
+            }
+        }]);
+
+        console.log(categories);
+
+        res.render('admin/categoryOffers.ejs', { categories });
+
+        return;
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+
+// ! activate a category offer
+
+const activateCategoryOffer = async (req, res, next) => {
+
+
+    try {
+
+        console.log(req.body);
+
+        let { categoryID } = req.body;
+
+        let categoryData;
+
+
+        try {
+            categoryID = new mongoose.Types.ObjectId(categoryID.trim());
+
+
+
+            categoryData = await Product.findById(categoryID);
+
+            console.log(categoryData)
+
+        } catch (err) {
+
+            console.log(err);
+
+            return res.status(500).json({ success: false, message: 'Server facing issues finding the category Data' });
+
+        }
+
+
+        const updatedCategory = await Category.findByIdAndUpdate(categoryID, { $set: { onDiscount: true } });
+
+        if (!(updatedCategory instanceof Category)) {
+
+            return res.status(500).json({ success: false, message: 'Server is facing issues Updating category Data' });
+        }
+
+
+        return res.status(200).json({ success: true, message: 'Success' });
+
+
+
+
+    } catch (err) {
+        console.log(err);
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
+    }
+};
+
+
+// ! deactivate category offer
+
+const deactivateCategoryOffer = async (req, res, next) => {
+
+
+    try {
+
+
+        console.log(req.body);
+
+        let { categoryID } = req.body;
+
+        let categoryData;
+
+
+        try {
+            categoryID = new mongoose.Types.ObjectId(categoryID.trim());
+
+
+
+            categoryData = await Product.findById(categoryID);
+
+            console.log(categoryData)
+
+        } catch (err) {
+
+            console.log(err);
+
+            return res.status(500).json({ success: false, message: 'Server facing issues finding the category Data' });
+
+        }
+
+
+
+        const updatedCategory = await Category.findByIdAndUpdate(categoryID, { $set: { onDiscount: false } });
+
+        if (!(updatedCategory instanceof Category)) {
+
+            return res.status(500).json({ success: false, message: 'Server is facing issues Updating Category Data' });
+        }
+
+
+        return res.status(200).json({ success: true, message: 'Success' });
+
+
+
+
+    } catch (err) {
+        console.log(err);
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
+    }
+};
+
+
+
 module.exports = {
     renderLoginPage,
     renderUsersList,
@@ -2290,7 +2450,10 @@ module.exports = {
     salesReportInPdf,
     renderProductOffersPage,
     addOrModifyProductOffer,
-    activateProductOffer
-    , deactivateProductOffer
+    activateProductOffer,
+    deactivateProductOffer,
+    renderCategoryOffersPage,
+    activateCategoryOffer,
+    deactivateCategoryOffer
 
 }

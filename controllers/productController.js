@@ -160,6 +160,10 @@ const renderProductDetailsPage = async (req, res, next) => {
 
         const product = await Product.findOne(filterQuery).lean();
 
+        const CategoryID = product.category;
+
+        const CategoryData = await Category.findById(CategoryID);
+
 
 
 
@@ -177,7 +181,7 @@ const renderProductDetailsPage = async (req, res, next) => {
 
 
 
-        res.render('users/productDetails.ejs', { product, currentColor: color, currentSize: size, colorList, sizeList, variants });
+        res.render('users/productDetails.ejs', { product, currentColor: color, currentSize: size, colorList, sizeList, variants, category: CategoryData });
 
         return;
     }
