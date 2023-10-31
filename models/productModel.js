@@ -48,7 +48,19 @@ const productSchema = new mongoose.Schema({
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Review'
-    }]
+    }],
+    onOffer: {
+        type: Boolean,
+        default: false
+    },
+    rateOfDiscount: {
+        type: Number,
+        default: 0
+    },
+    offerPrice: {
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model('Product', productSchema)

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -60,6 +61,21 @@ const userSchema = new mongoose.Schema({
     verified: {
         type: Boolean,
         default: false
+    },
+    wallet: {
+        type: Number,
+        default: 0,
+    },
+    profileImg: {
+        type: String
+    },
+    successfulReferrals: [{
+        type: String,
+
+    }],
+    totalReferralReward: {
+        type: Number,
+        default: 0
     }
 })
 

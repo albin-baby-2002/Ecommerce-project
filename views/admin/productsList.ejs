@@ -29,24 +29,32 @@
                 <div class="table-responsive" id="no-more-tables">
                     <table class="table table-striped bg-white" id="myTable">
                         <thead class=" ">
-                            <tr class="text-center">
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting ">
+                            <tr class="">
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting ">
                                     Name</th>
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
                                     Image
                                 </th>
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
+                                    GroupID</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
                                     Category</th>
 
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
                                     Size
                                 </th>
 
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
-                                    Color
-                                </th>
 
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
+
+                                <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
+                                    class="sorting">
                                     Stock
                                 </th>
 
@@ -78,15 +86,17 @@
                                                 style=" height:80px;">
 
                                         </td>
+
+                                        <td data-title="Name">
+                                            <%= products[i].groupingID %>
+                                        </td>
+
                                         <td data-title="Mobile">
                                             <%= products[i].category %>
                                         </td>
 
                                         <td data-title="Mobile">
                                             <%= products[i].size %>
-                                        </td>
-                                        <td data-title="Mobile">
-                                            <%= products[i].color %>
                                         </td>
 
 
@@ -107,8 +117,8 @@
 
                                             <a class="btn btn-outline-primary btn-sm mx-3 "
                                                 href="/admin/editProduct/<%=products[i]._id%>">Edit</a>
-                                            <button class="btn btn-outline-danger btn-sm"
-                                                onclick="deleteProduct('<%=products[i]._id%>')">Delete</button>
+                                            <button class="deleteButton btn btn-outline-danger btn-sm"
+                                                data-id='<%=products[i]._id%>'>Delete</button>
 
 
 

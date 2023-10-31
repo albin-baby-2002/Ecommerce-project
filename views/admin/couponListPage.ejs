@@ -1,0 +1,147 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Coupon List</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Coupon List</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <a class="btn btn-outline-success mb-3" href="/admin/addCoupon">Add Coupon</a>
+
+                <div class="table-responsive" id="no-more-tables">
+                    <table class="table table-striped bg-white" id="myTable">
+                        <thead class=" ">
+                            <tr class="text-center">
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px ; width: 300px;"
+                                    scope="col" class="sorting ">
+                                    Code</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px ; width: 400px"
+                                    scope="col" class="sorting">
+                                    Description</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px ; width: 400px"
+                                    scope="col" class="sorting">
+                                    Rate of Discount</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px ; width: 400px"
+                                    scope="col" class="sorting">
+                                    Max Discount</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px ; width: 400px"
+                                    scope="col" class="sorting">
+                                    isActive</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px ; width: 400px"
+                                    scope="col" class="sorting">
+                                    Expiry Date</th>
+
+
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px; width: 300px"
+                                    scope="col">Actions
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <% if(coupons.length>0){ %>
+                                <% for(let i=0; i < coupons.length ;i++) { %>
+
+
+                                    <tr row-id="<%= coupons[i]._id%>" class="" style="font-size: medium;">
+                                        <td data-title="Name" style="width: 300px;">
+                                            <%= coupons[i].code %>
+                                        </td>
+                                        <td class="px-3" data-title="Email" style="width: 400px;">
+                                            <%= coupons[i].description %>
+                                        </td>
+                                        <td class="text-center" data-title="Email" style="width: 400px;">
+                                            <%= coupons[i].rateOfDiscount %>
+                                        </td>
+                                        <td class="text-center" data-title="Email" style="width: 400px;">
+                                            <%= coupons[i].maximumDiscount%>
+                                        </td>
+                                        <td class="text-center" data-title="Email" style="width: 400px;">
+                                            <%= coupons[i].isActive %>
+                                        </td>
+                                        <td data-title="Email" style="width: 400px;">
+
+                                            <% const options={ year: 'numeric' , month: 'short' , day: 'numeric' };
+                                                const shortDate=coupons[i].expirationDate.toLocaleDateString('en-US',
+                                                options); %>
+
+                                                <%=shortDate %>
+                                        </td>
+
+
+
+                                        <td>
+
+
+                                            <a class="btn btn-outline-success btn-sm"
+                                                href="/admin/editCoupon/<%=coupons[i]._id %>"> Edit
+                                            </a>
+
+
+
+
+
+                                        </td>
+
+
+
+
+
+                                    </tr>
+
+                                    <% } %>
+                                        <% } else { %>
+
+                                            <tr>
+
+                                                <td class="text-danger" colspan="5">Coupons Not Found</td>
+                                            </tr>
+
+                                            <% } %>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/dataTables.js"></script>
+
+            <script src="/js/admin/categoryList.js"></script>
+
+            <%- include('../layouts/footer.ejs') %>

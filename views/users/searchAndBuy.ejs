@@ -37,37 +37,45 @@
                             <div class="shop__sidebar__accordion">
                                 <div class="accordion" id="accordionExample">
 
-                                    <div class="filter-items filter-items-count" id="category-filters">
-
-                                        <p style="font-size: 1.2rem;font-weight: bold;">Categories</p>
 
 
+                                    <div class="position-relative w-100">
+                                        <div class="custom-selected w-100">
+                                            <button
+                                                class="select-button font-weight-bold d-flex justify-content-around align-items-center w-100">
+                                                <span>Categories </span><i
+                                                    class="fa-solid fa-caret-down ml-3"></i></button>
 
-                                        <% if(categories.length> 0){ %>
+                                        </div>
+                                        <ul class="select-options position-relative w-100">
 
 
-                                            <% for(let i=0;i<categories.length;i++){ %>
-                                                <div class="filter-item">
+                                            <% if(categories.length> 0){ %>
 
-                                                    <div class="custom-control custom-radio mb-1 dropdown">
 
-                                                        <input type="radio" name="category"
-                                                            value="<%= categories[i]._id %>"
-                                                            id="cat- <%= categories[i]._id %>-radio"
-                                                            class="custom-control-input category-radio"
-                                                            <%if(categories[i]._id.toString()===categoryID){%>checked
-                                                        <%}%>
-                                                            >
-                                                            <label class="custom-control-label"
-                                                                for="cat- <%= categories[i]._id %>-radio">
-                                                                <%= categories[i].name %>
-                                                            </label>
-                                                    </div>
-                                                </div>
-                                                <% } %>
+                                                <% for(let i=0;i<categories.length;i++){ %>
+                                                    <li class="filter-item">
+
+                                                        <div class="custom-control custom-radio mb-1 dropdown">
+
+                                                            <input type="radio" name="category"
+                                                                value="<%= categories[i]._id %>"
+                                                                id="cat- <%= categories[i]._id %>-radio"
+                                                                class="custom-control-input category-radio"
+                                                                <%if(categories[i]._id.toString()===categoryID){%>checked
+                                                            <%}%>
+                                                                >
+                                                                <label class="custom-control-label"
+                                                                    for="cat- <%= categories[i]._id %>-radio">
+                                                                    <%= categories[i].name %>
+                                                                </label>
+                                                        </div>
+                                                    </li>
                                                     <% } %>
+                                                        <% } %>
+                                        </ul>
 
-                                    </div> <!-- End of filter-items-->
+                                    </div>
 
 
 
@@ -116,11 +124,12 @@
 
 
                                     <div class="col-lg-4 col-md-4 col-sm-6 mx-1 pl-0" style="max-width: 262px;">
+
                                         <div class="product__item">
                                             <div click-id="productDetailsLink" group-id="<%=products[i].groupingID%>"
                                                 color-id="<%=products[i].color%>"
                                                 class="product__item__pic set-bg add-hover mt-1" data-id="bg-render"
-                                                data-for-bg="img/productImages/<%=products[i].images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
+                                                data-for-bg="/img/productImages/<%=products[i].images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
                                                 style="background-size: cover;background-position: top;
                                                 background-repeat: no-repeat;">
 
@@ -155,8 +164,30 @@
                                                     <i class="fa fa-star-o"></i>
                                                     <i class="fa fa-star-o"></i>
                                                 </div>
-                                                <h5>Rs.<%=products[i].price%>
-                                                </h5>
+
+                                                <div class="d-flex">
+                                                    <h5 class=" mr-3" <% if(products[i].onOffer &&
+                                                        products[i].rateOfDiscount>0){ %>
+
+
+                                                        style="color:grey;text-decoration: line-through;"
+
+                                                        <%}%>
+
+                                                            >₹<%=products[i].price%>
+                                                    </h5>
+
+                                                    <% if(products[i].onOffer && products[i].rateOfDiscount>0){ %>
+
+                                                        <h5>
+                                                            ₹ <%=products[i].offerPrice%>
+                                                        </h5>
+
+                                                        <%}%>
+
+
+                                                </div>
+
 
 
 
@@ -178,24 +209,31 @@
 
         <nav aria-label="Page navigation" id="pagination">
             <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <% if (currentPage> 1) { %>
-                        <a class="page-link page-link-prev"
-                            href="/?category=<%=categoryID%>&sortBy=<%=sortBy%>&search=<%= search %>&page=<%= previous %>"
-                            aria-label="Previous" tabindex="-1" aria-disabled="true">
-                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev</a>
-                        <%}%>
+                <li class=""
+                    style="width: 70px; background-color: black; padding: 8px ; text-align: center ; color: aliceblue;text-decoration: none;   border-radius: 10px 0 0 10px;    border: 1px solid #000;border-right: 1px solid gainsboro;  ">
+
+                    <a <% if (currentPage>1) { %>
+                        href="/?category=<%=categoryID%>&sortBy=<%=sortBy%>&search=<%= search %>&page=<%= previous %>"
+                                        <%}%>
+                                            class="nav-link"
+
+                                            aria-label="Previous" tabindex="-1" aria-disabled="true">
+                                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                    </a>
+
 
 
                 </li>
                 <%for(let i=1;i<=totalPages;i++){%>
                     <%if(i==currentPage){%>
-                        <li class="page-item active page-link" aria-current="page">
+                        <li style="width: 70px; background-color: rgb(26, 26, 26); padding: 8px ; text-align: center ; color: aliceblue;text-decoration: none; border-right: 1px solid gainsboro;"
+                            class="  " aria-current="page">
                             <%=i%>
                         </li>
                         <%}else{%>
-                            <li class="page-item active" aria-current="page">
-                                <a class="page-link"
+                            <li style="width: 70px; background-color: black; padding: 8px ; text-align: center ; color: aliceblue;text-decoration: none; border-right: 1px solid gainsboro;"
+                                class=" " aria-current="page">
+                                <a class="nav-link"
                                     href="?category=<%=categoryID%>&sortBy=<%=sortBy%>&search= <%=search%>&page=<%=i%>">
                                     <%= i %>
                                 </a>
@@ -205,15 +243,22 @@
                                 <%}%>
 
 
-                                    <li class="page-item">
-                                        <% if (currentPage < totalPages) { %>
-                                            <a class="page-link page-link-next"
-                                                href="/?category=<%=categoryID%>&sortBy=<%=sortBy%>&search=<%= search %>&page=<%= next %>"
-                                                aria-label="Next">Next
-                                                <span aria-hidden="true"><i class="icon-long-arrow-right"></i>
-                                                </span>
-                                            </a>
-                                            <%}%>
+                                    <li style="width: 70px; background-color: black; padding: 8px ; text-align: center ; color: aliceblue;text-decoration: none;   border-radius: 0px 10px 10px 0px;    border: 1px solid #000; "
+                                        class="">
+
+                                        <a class=" nav-link" <% if (currentPage < totalPages) { %>
+
+                                            href="/?category=<%=categoryID%>&sortBy=<%=sortBy%>&search=<%= search %>
+                                                        &page=<%= next %>"
+                                                            <%}%>
+
+
+                                                                aria-label="Next">Next
+                                                                <span aria-hidden="true"><i
+                                                                        class="icon-long-arrow-right"></i>
+                                                                </span>
+                                        </a>
+
 
 
                                     </li>

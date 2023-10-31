@@ -1,0 +1,225 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Product Offers</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Product Offers</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <div>
+                    <div class="d-flex justify-content-center flex-column align-items-center">
+
+                        <H3 class="font-weight-bold mb-3">Modify Or Create A Product Offer</H3>
+
+                        <div class="mb-4">
+                            <input type="text" id="productID" placeholder="PRODUCT ID" class="mr-3 text-center">
+                            <input type="number" id="rateOfDiscount" placeholder="RATE OF DISCOUNT"
+                                class="ml-3 text-center">
+                        </div>
+
+                        <div class="mb-5"><button id="btnForSubmit" class="px-2 "
+                                style="background-color: black; color:white; border: none;">Make An
+                                Offer</button>
+                        </div>
+
+
+
+
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="table-responsive" id="no-more-tables">
+                    <% if(products.length>0){ %>
+
+                        <table class="table table-striped bg-white" id="myTable">
+                            <thead class=" ">
+                                <tr class="">
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting ">
+                                        Name</th>
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        Image
+                                    </th>
+
+
+
+                                    <!-- <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        Category</th> -->
+
+
+
+
+                                    <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        Stock
+                                    </th>
+
+
+
+
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Price
+                                    </th>
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Discount(%)
+                                    </th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Offer Price
+                                    </th>
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Discount
+                                    </th>
+
+
+
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Actions
+                                    </th>
+
+
+
+                                    <!-- <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
+                                        Actions
+                                    </th> -->
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+                                <% for(let i=0; i < products.length ;i++) { %>
+
+                                    <tr data-id="<%=products[i]._id%>" class="text-center" style="font-size: medium;">
+                                        <td data-title="Name">
+                                            <%= products[i].name %>
+                                        </td>
+                                        <td data-title="Email">
+
+                                            <img src="/img/productImages/<%=products[i].images.find((img)=>
+                                            img.toLowerCase().includes('mainimgthumbnail')) %>" alt=""
+                                                style=" height:80px;">
+
+                                        </td>
+
+
+
+                                        <!-- <td data-title="Mobile">
+                                            <%= products[i].category %>
+                                        </td> -->
+
+
+
+                                        <td data-title="Mobile">
+                                            <%= products[i].stock %>
+                                        </td>
+
+
+
+                                        <td data-title="Mobile">
+                                            <%= products[i].price %>
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%= products[i].rateOfDiscount %>
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%= products[i].offerPrice %>
+                                        </td>
+
+                                        <td data-title="Mobile">
+                                            <%= (products[i].price - products[i].offerPrice) %>
+                                        </td>
+
+
+
+
+                                        <td data-title="Mobile">
+
+                                            <% if(products[i].onOffer===true){ %>
+
+                                                <button class="deactivate"
+                                                    data="<%=products[i]._id%>">Deactivate</button>
+                                                <%} else{%>
+
+                                                    <button data="<%=products[i]._id%>"
+                                                        class="activate">Activate</button>
+                                                    <%}%>
+
+
+
+                                        </td>
+
+
+                                        <!-- <td data-title="Actions "
+                                            class="d-flex justify-content-center align-items-center "
+                                            style="font-size: 10px; height:145px;">
+
+                                            <a class="btn btn-outline-primary btn-sm mx-3 "
+                                                href="/admin/editProduct/<%=products[i]._id%>">Edit</a>
+                                            <button class="deleteButton btn btn-outline-danger btn-sm"
+                                                data-id='<%=products[i]._id%>'>Delete</button>
+
+
+
+                                        </td> -->
+                                    </tr>
+                                    <% } %>
+
+
+
+
+
+
+
+                            </tbody>
+                        </table>
+
+
+                        <% } else { %>
+
+                            <h4 class="text-center font-weight-bold text-danger">No Products With Offers Were Found</h4>
+
+                            <% } %>
+                </div>
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/productsOffers.js"></script>
+
+            <script src="/js/dataTables.js"></script>
+
+
+            <%- include('../layouts/footer.ejs') %>

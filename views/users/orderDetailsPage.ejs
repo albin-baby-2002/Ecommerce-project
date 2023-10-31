@@ -1,0 +1,234 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../users/userHeader.ejs') %>
+
+
+        <!-- Breadcrumb Section Begin -->
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Order Details Page</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <a href="./shop.html">Shop</a>
+                                <span>Order Details Page</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Breadcrumb Section End -->
+
+        <!-- Checkout Section Begin -->
+        <section class=" spad p-0 mb-5">
+            <div class="container">
+
+
+                <div class="row  ">
+
+                    <h1 class="text-center my-5 font-weight-bold">ORDER DETAILS </h1>
+
+                    <div class="col-lg-12 col-md-12 h-auto">
+
+
+                        <div class="checkout__order checkout m-3">
+
+                            <h4 class="order__title">Delivery Details</h4>
+
+                            <div>
+                                <p>Order Status : <%=orderData.orderStatus%>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p>Payment Method : <%=orderData.paymentMethod%>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p>Order Date : <%=orderData.orderDate%>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p>Delivery Address:
+                                </p>
+                            </div>
+
+
+
+                            <div class="mt-4 " style="
+                            background-color: #f3f2ee;
+                         ">
+
+
+                                <P class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+                                    <%=address.fullName%>
+                                </P>
+
+
+
+
+
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+                                    <%=address.addressLine%>
+                                </p>
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+                                    <%=address.locality%>,
+                                        <%=address.city%>
+                                </p>
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+
+                                </p>
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+                                    <%=address.state%>, <%=address.country%>
+                                </p>
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+
+                                </p>
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+                                    PIN:
+                                    <%=address.pinCode%>
+                                </p>
+                                <p class=" mb-0" style="font-family:'Times New Roman', Times, serif; ">
+                                    phone:
+                                    <%=address.phone%>
+                                </p>
+
+
+
+
+
+
+
+                            </div>
+
+
+
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="col-lg-12 col-md-12">
+                        <div class="checkout__order checkout m-3 ">
+                            <h4 class=" order__title">Products Details</h4>
+                            <div class="checkout__order__products">Products <span>Total</span></div>
+                            <ul class="checkout__total__products">
+
+
+
+
+
+
+                                <% for(let i=0; i < productsData.length ; i++){ %>
+                                    <li>
+
+                                        <div class="d-flex  ">
+
+                                            <div class="" style="width: 74%;">
+
+                                                <div>
+                                                    <%=i+1%> .
+                                                        <a style="color: black;"
+                                                            href="/user/productDetails/<%=productsData[i].productInfo.groupingID%>/?color=<%=productsData[i].productInfo.color%>">
+
+                                                            <%=productsData[i].productInfo.name%>
+                                                        </a>
+                                                        (
+                                                        <%=productsData[i].quantity%> )
+                                                </div>
+
+                                                <!-- <div class="mt-2 ml-4">
+                                                    <img style="width: 70px; height:100px;"
+                                                        src="/img/productImages/<%=productsData[i].productInfo.images[0]%> "
+                                                        alt="">
+                                                </div> -->
+
+
+
+                                            </div>
+
+                                            <div style="width: 26%;" class="text-right d-inline-block">
+
+                                                <%=productsData[i].totalPrice%>.0
+
+                                            </div>
+
+                                        </div>
+
+                                    </li>
+
+                                    <%}%>
+
+
+                            </ul>
+                            <ul class="checkout__total__all">
+
+                                <li>Gross Total <span>Rs.<%=orderData.grossTotal %>
+                                    </span></li>
+                                <li>Coupon Discount <span>- <%=orderData.discountAmount %></span></li>
+
+                                <li>Flat Category Discount <span>- <%=orderData.categoryDiscount %></span></li>
+
+
+
+
+                            </ul>
+
+
+                            <ul class="checkout__total__all">
+
+                                <li class="font-weight-bold">Final Price <span style="color: rgb(0, 0, 0);">Rs.
+                                        <%=orderData.finalPrice %>
+                                    </span></li>
+
+
+                            </ul>
+
+                            <% if(orderData.orderStatus==='delivered' ) { %>
+                                <div class=" w-100 d-flex justify-content-center">
+                                    <button style="font-size: 1.1rem;" class="nav-link bg-dark text-white px-4 py-2">
+                                        <a class="nav-link" href="/user/invoice/download/<%=orderData._id%>">GET
+                                            INVOICE</a></button>
+                                </div>
+
+                                <%}%>
+
+
+
+
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+        </section>
+        <!-- Checkout Section End -->
+
+
+
+        <%- include('../users/userFooter.ejs') %>
+
+
+
+
+            <%- include('../layouts/footer.ejs') %>

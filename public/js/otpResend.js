@@ -13,7 +13,7 @@ switch (performance.navigation.type) {
 
         console.log('Page is initially loaded');
 
-        minutes = parseInt(localStorage.getItem('timerMinutes'), 10) === 0 ? 0 : parseInt(localStorage.getItem('timerMinutes'), 10) || 5;
+        minutes = parseInt(localStorage.getItem('timerMinutes'), 10) === 0 ? 0 : parseInt(localStorage.getItem('timerMinutes'), 10) || 2;
 
         seconds = parseInt(localStorage.getItem('timerSeconds'), 10) === 0 ? 0 : parseInt(localStorage.getItem('timerSeconds'), 10) || 0;
 
@@ -84,7 +84,7 @@ async function resendOTP() {
 
             if (res.success) {
 
-                minutes = 5;
+                minutes = 2;
                 seconds = 0;
 
                 localStorage.setItem('timerMinutes', minutes);
@@ -93,25 +93,69 @@ async function resendOTP() {
                 localStorage.setItem('timerSeconds', seconds);
 
 
-                window.alert("OTP SEND");
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = 'New OTP send ';
+
+                window.scrollTo(0, 0)
 
 
-                location.reload()
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
+
+
+                setTimeout(() => {
+                    location.reload()
+
+                }, 2000);
+
 
 
 
 
             } else {
-                window.alert("Failed to send the otp : Try again !")
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
             }
         } else {
 
-            window.alert("Failed to  send the otp")
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to send otp';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 3000)
+
         }
 
 
     } catch (error) {
-        window.alert("Failed to send the otp ");
+
         console.error(error);
     }
 };

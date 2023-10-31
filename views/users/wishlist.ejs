@@ -92,9 +92,23 @@
                                                     </td>
 
                                                     <td class="">
-                                                        <p>
-                                                            <%=products[i].price%>
-                                                        </p>
+
+                                                        <% if(products[i].onOffer && products[i].rateOfDiscount>0){ %>
+
+
+                                                            <p>
+                                                                <%=products[i].offerPrice%>
+                                                            </p>
+
+                                                            <%} else {%>
+
+                                                                <p>
+                                                                    <%=products[i].price%>
+                                                                </p>
+
+                                                                <%}%>
+
+
                                                     </td>
 
                                                     <td class="">

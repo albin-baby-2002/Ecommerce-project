@@ -1,0 +1,124 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Edit Coupon </h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Edit Coupon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <h2 class="text-center">Edit Coupon Details</h2>
+
+                <form class="container  w-50 my-5" id="editCouponForm" coupon-id="<%=coupon._id%>">
+
+
+                    <div class="form-outline mb-4">
+
+                        <input type="text" id="product-name" class="form-control" name="code" required
+                            title="should be unique code " value="<%=coupon.code%>" />
+
+                        <label class="form-label mt-2" for="product-name">Coupon Code </label>
+                    </div>
+
+                    <div class="form-outline mb-4">
+                        <input type="text" class="form-control" name="description" required
+                            value="<%=coupon.description%>" />
+
+                        <label class="form-label mt-2" for="groupingID">Description </label>
+                    </div>
+
+
+
+
+                    <div class="form-outline mb-4">
+
+                        <input type="number" id="size" class="form-control" name="rateOfDiscount" required
+                            value="<%=coupon.rateOfDiscount%>" />
+                        <label class="form-label mt-2" for="size">Rate of Discount</label>
+
+                    </div>
+
+                    <div class="form-outline mb-4">
+
+                        <input type="number" id="color" class="form-control" name="maximumDiscount" required
+                            value="<%=coupon.maximumDiscount%>" />
+
+                        <label class="form-label mt-2" for="color">Maximum Discount</label>
+
+                    </div>
+
+
+
+                    <div class="form-outline mb-4">
+                        <% const options={ day: '2-digit' , month: '2-digit' , year: 'numeric' }; %>
+                            <% const shortDate=coupon.expirationDate.toLocaleDateString('en-IN', options); %>
+
+                                <% const parts=shortDate.split('/'); %>
+                                    <% const yyyy=parts[2]; %>
+                                        <% const mm=parts[1]; %>
+                                            <% const dd=parts[0]; %>
+                                                <% const formattedDate=`${yyyy}-${mm}-${dd}`; %>
+
+
+
+                                                    <input type="date" id="price" class="form-control"
+                                                        name="expirationDate" required value="<%=formattedDate %>" />
+                                                    <label class="form-label mt-2" for="price">Expiration Date</label>
+
+                    </div>
+
+                    <div>
+
+
+
+                        <input type="radio" name="isActive" value="true" required>
+                        <label>True</label>
+
+                        <input type="radio" name="isActive" value="false">
+                        <label>False</label>
+
+                        <label class="d-block pb-3">Is Active</label>
+
+
+                    </div>
+
+
+
+
+
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-dark btn-block mb-4"> Edit Coupon</button>
+
+
+                </form>
+
+
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/editCoupon.js"></script>
+
+            <%- include('../layouts/footer.ejs') %>

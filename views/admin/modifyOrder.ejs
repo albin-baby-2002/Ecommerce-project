@@ -1,0 +1,97 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Edit Order</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Edit Order</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <h3 class="text-center m-3 font-weight-bold ">Modify The Order Status</h3>
+
+
+
+                <div class="container  w-50 mt-4 form-outline">
+                    <input class="form-control mt-4 " type="text" readonly value="<%=orderData[0]._id %>">
+                    <label for="">Order Id</label>
+
+
+                    <input class="form-control mt-4" type="text" readonly value="<%=orderData[0].paymentMethod %>">
+                    <label for="">Payment Method</label>
+
+                    <input class="form-control mt-4" type="text" readonly value="<%=orderData[0].paymentStatus %>">
+                    <label for="">Payment Status</label>
+
+                    <input class="form-control mt-4" type="text" readonly value="<%=orderData[0].orderDate %>">
+                    <label for="">Order Date</label>
+
+                </div>
+
+
+
+
+
+                <form id="changeStatusForm" order-id="<%=orderData[0]._id %>" class="container  w-50 mb-3">
+
+
+                    <div class="form-outline mb-4">
+
+                        <label for="orderStatus"></label>
+
+                        <select class="w-100" id="orderStatus" name="orderStatus">
+
+                            <% for(i=0 ; i< orderStatusEnum.length; i++) {%>
+                                <option value="<%=orderStatusEnum[i]%>" <%
+                                    if(orderData[0].orderStatus===orderStatusEnum[i] ){%>
+
+                                    selected <%}%>
+
+                                        >
+                                        <%=orderStatusEnum[i]%>
+                                </option>
+
+                                <%}%>
+
+                        </select>
+
+
+
+                    </div>
+
+
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-dark btn-block mb-4"> Change Status</button>
+
+
+                </form>
+
+
+            </div>
+        </main>
+
+
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/modifyOrder.js"></script>
+
+            <%- include('../layouts/footer.ejs') %>

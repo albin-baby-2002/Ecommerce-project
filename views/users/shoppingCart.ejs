@@ -93,9 +93,22 @@
                                                     </td>
 
                                                     <td class="">
-                                                        <p>
-                                                            <%=itemsInCart[i].cartProductData.price%>
-                                                        </p>
+
+                                                        <% if(itemsInCart[i].cartProductData.onOffer &&
+                                                            itemsInCart[i].cartProductData.rateOfDiscount>0){ %>
+
+
+                                                            <p>
+                                                                <%=itemsInCart[i].cartProductData.offerPrice%>
+                                                            </p>
+
+                                                            <%} else {%>
+
+                                                                <p>
+                                                                    <%=itemsInCart[i].cartProductData.price%>
+                                                                </p>
+
+                                                                <%}%>
                                                     </td>
 
                                                     <td class="">
@@ -107,17 +120,25 @@
                                                     <td class="">
 
                                                         <div class="d-flex justify-content-center">
-                                                            <button style="height: 25px;"
-                                                                class="d-flex align-items-center">
-                                                                <p class="m-0">-</p>
+                                                            <button reduceBtn-id="<%=itemsInCart[i]._id %>"
+                                                                onclick="reduceOneFromCart('<%=itemsInCart[i]._id %>')"
+                                                                style="height: 25px;" class="d-flex align-items-center"
+                                                                <% if(itemsInCart[i].quantity <=1){ %>
+
+                                                                disabled
+                                                                <% } %>
+
+                                                                    >
+                                                                    <p class="m-0">-</p>
                                                             </button>
 
-                                                            <p class="mx-3">
+                                                            <p quantity-id="<%=itemsInCart[i]._id %>" class="mx-3">
                                                                 <%=itemsInCart[i].quantity%>
                                                             </p>
 
-                                                            <button style="height: 25px;"
-                                                                class="d-flex align-items-center">
+                                                            <button addBtn-id="<%=itemsInCart[i]._id%>"
+                                                                onclick="addToCart('<%=itemsInCart[i].cartProductData._id%>','<%=itemsInCart[i]._id %>')"
+                                                                style="height: 25px;" class="d-flex align-items-center">
                                                                 <p class='m-0'>+</p>
                                                             </button>
                                                         </div>
@@ -134,8 +155,35 @@
                                                 <% } %>
 
 
+                                                    <tr style="font-size: 1.3rem;">
+                                                        <td class="text-center my-3 font-weight-bold">Grand Total</td>
+
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td id="grandTotal" class="text-center font-weight-bold">
+                                                            <%=grandTotal %>
+                                                        </td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+
+
                                         </tbody>
                                     </table>
+
+                                    <div class="d-flex justify-content-center mt-5">
+
+
+                                        <button
+                                            style="font-size: 1.5rem ; padding: .3rem;font-weight:400; border:2px solid black; color:rgb(28, 28, 27); background-color:#e3e1e1;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
+                                            <a href="/user/checkout" class="nav-link">PROCEED
+                                                TO PLACE ORDER</a>
+                                        </button>
+                                    </div>
+
+
+
+
 
                                     <% } else{ %>
 
@@ -152,5 +200,10 @@
 
 
 
+
+
+
             <%- include('../users/userFooter.ejs') %>
+
+                <script src="/js/user/shoppingCart.js"></script>
                 <%- include('../layouts/footer.ejs') %>

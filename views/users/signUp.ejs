@@ -16,39 +16,20 @@
                                 href="/user/login" role="tab" aria-controls="pills-login" aria-selected="true">Login</a>
                         </li>
                         <li class="nav-item color-01 text-white" role="presentation">
-                            <a class="nav-link" id="tab-register" data-mdb-toggle="pill" href="" role="tab"
+                            <a class="nav-link" id="tab-register" data-mdb-toggle="pill" role="tab"
                                 aria-controls="pills-register" aria-selected="false">Register</a>
                         </li>
                     </ul>
                     <!-- Pills navs -->
 
                     <!-- Pills content -->
-                    <div class="tab-content">
+                    <div class="tab-content mt-5">
 
 
 
                         <div class="" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
                             <form action="/user/signUp" method="post">
-                                <div class="text-center mb-3">
-                                    <p>Sign up with:</p>
-                                    <button type="button" class="btn  btn-floating mx-1">
-                                        <i class="fab fa-facebook-f"></i>
-                                    </button>
 
-                                    <button type="button" class="btn  btn-floating mx-1">
-                                        <i class="fab fa-google"></i>
-                                    </button>
-
-                                    <button type="button" class="btn  btn-floating mx-1">
-                                        <i class="fab fa-twitter"></i>
-                                    </button>
-
-                                    <button type="button" class="btn  btn-floating mx-1">
-                                        <i class="fab fa-github"></i>
-                                    </button>
-                                </div>
-
-                                <p class="text-center">or:</p>
 
                                 <!-- Name input -->
                                 <div class="form-outline mb-4 required">
@@ -68,29 +49,24 @@
                                     <label class="form-label" for="phone">Phone</label>
                                 </div>
 
+                                <div class="form-outline mb-4">
+                                    <input title='enter email id of referrer' type="email" id="referralEmail"
+                                        class="form-control" name="referralEmail" />
+                                    <label class="form-label" for="referralEmail">Referral Email</label>
+                                </div>
+
+
                                 <!-- Password input -->
                                 <div class="form-outline mb-4">
-                                    <input type="password" id="Password" class="form-control" name="password" />
+                                    <input type="text" id="Password" class="form-control" name="password" />
                                     <label class="form-label" for="Password">Password</label>
                                 </div>
 
-                                <!-- Repeat Password input
-                                <div class="form-outline mb-4">
-                                    <input type="password" id="registerRepeatPassword" class="form-control" />
-                                    <label class="form-label" for="registerRepeatPassword">Repeat password</label>
-                                </div> -->
 
-                                <!-- Checkbox -->
-                                <!-- <div class="form-check d-flex justify-content-center mb-4">
-                                    <input class="form-check-input me-2" type="checkbox" value="" id="registerCheck"
-                                        checked aria-describedby="registerCheckHelpText" />
-                                    <label class="form-check-label" for="registerCheck">
-                                        I have read and agree to the terms
-                                    </label>
-                                </div> -->
 
                                 <!-- Submit button -->
-                                <button type="submit" class="btn btn-dark btn-block mb-3">Sign in</button>
+                                <button data-id="signInBtn" type="submit" class="btn btn-dark btn-block mb-3">Sign
+                                    in</button>
                             </form>
                         </div>
                     </div>
@@ -110,4 +86,7 @@
 
 
         <%- include('../users/userFooter.ejs') %>
+
+            <script src="/js/user/removeResendData.js"></script>
+
             <%- include('../layouts/footer.ejs') %>

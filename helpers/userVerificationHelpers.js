@@ -8,6 +8,8 @@ const sendOtpEmail = async ({ _id, email }, res) => {
 
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`
 
+    console.log('otp', otp);
+
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,

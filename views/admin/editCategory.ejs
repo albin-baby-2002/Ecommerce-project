@@ -30,15 +30,48 @@
                     <div class="form-outline mb-4">
                         <input type="text" id="category-name" class="form-control" name="name" required
                             value="<%= category.name%>" />
-                        <label class="form-label mt-2" for="category-name">Category name </label>
+                        <label class="form-label mt-2" for="category-name">Category Name </label>
+                    </div>
+
+                    <div class="form-outline mb-4 d-flex flex-column ">
+
+                        <select name="onDiscount" id="onDiscount">
+
+
+
+                            <option value="true" <%=category.onDiscount ? 'selected' :'' %> >
+                                True
+                            </option>
+
+                            <option value="false" <%=category.onDiscount? '' :' selected' %> >
+                                False
+                            </option>
+
+                        </select>
+
+                        <label class="   mt-2" for="onSale">onDiscount</label>
+
+                    </div>
+
+
+                    <div class="form-outline mb-4">
+                        <input type="text" id="disountName" class="form-control" name="discountName" required
+                            value="<%= category.discountName%>" />
+                        <label class="form-label mt-2" for="discountName">Discount Name </label>
+                    </div>
+
+                    <div class="form-outline mb-4">
+                        <input type="text" id="discountAmount" class="form-control" name="discountAmount" required
+                            value="<%= category.discountAmount%>" />
+                        <label class="form-label mt-2" for="discountAmount">Discount Amount </label>
                     </div>
 
 
 
 
 
-                    <div class="form-outline mb-2">
-                        <textarea name="description" id="description" cols="49" rows="5"
+                    <div class="form-outline mb-2 w-100">
+                        <textarea class="w-100" name="description" id="description"
                             required><%= category.description %></textarea>
                         <label class="form-label mt-2" for="description">Description</label>
                     </div>

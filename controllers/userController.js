@@ -1,18 +1,27 @@
-// importing necessary libraries and files
+// ! importing necessary libraries and files
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
 const User = require('../models/userModel');
 const OtpData = require('../models/otpDataModel');
-const Product = require('../models/productModel');
-const Category = require('../models/categoryModel');
-const WishList = require('../models/wishListModel');
+const Address = require('../models/addressModel');
+const Order = require('../models/orderModel');
 const Cart = require('../models/cartModel');
 const CartItem = require('../models/cartItemModel');
+const Product = require('../models/productModel');
+const puppeteer = require('puppeteer');
+const path = require('path');
+const userVerificationHelper = require('../helpers/userVerificationHelpers');
 
-const userVerificationHelper = require('../helpers/userVerificationHelpers')
+const dotenv = require('dotenv').config()
 
+//! razorPay Instance
+
+const Razorpay = require('razorpay')
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 
 // !render Home page
@@ -21,76 +30,7 @@ const renderHomePage = async (req, res, next) => {
 
     try {
 
-        let search = '';
 
-        if (req.query.search) {
-
-            search = req.query.search.trim();
-        }
-
-        let page = 1;
-
-        if (req.query.page) {
-            page = req.query.page;
-        }
-
-        const categoryID = req.query.category;
-
-        const limit = 9;
-
-        const sortBy = req.query.sortBy;
-
-        let sortQuery = {};
-
-        if (sortBy) {
-
-            if (sortBy === 'lowPrice') {
-
-                sortQuery = { price: 1 };
-
-            } else if (sortBy === 'highPrice') {
-
-                sortQuery = { price: -1 };
-
-            }
-        }
-
-        let filterQuery = {};
-
-        if (search) {
-            filterQuery.name = { $regex: search, $options: "i" };
-        }
-
-        if (categoryID) {
-            filterQuery.category = categoryID;
-        }
-        const products = await Product.find(filterQuery)
-            .sort(sortQuery)
-            .skip((page - 1) * limit)
-            .limit(limit * 1)
-            .exec();
-
-
-
-        const count = await Product.find(filterQuery).countDocuments();
-
-        const categories = await Category.find({});
-
-        res.render('users/searchAndBuy.ejs', {
-            categories: categories,
-            sortBy, categoryID,
-            count,
-            products: products,
-            totalPages: Math.ceil(count / limit),
-            currentPage: page,
-            previous: page - 1,
-            next: Number(page) + 1,
-            limit: limit,
-            search: search,
-        });
-
-
-        return;
     }
     catch (err) {
         next(err);
@@ -136,9 +76,19 @@ const signUpHandler = async (req, res, next) => {
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
     try {
 
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, referralEmail } = req.body;
+
+        let referrer;
+
+        if (referralEmail) {
+
+            referrer = await User.findOne({ email: referralEmail });
+
+        }
 
         // validating input data before creating the user
 
@@ -149,11 +99,19 @@ const signUpHandler = async (req, res, next) => {
                 message: 'All Fields Are Mandatory'
             }
 
-        } else if (!nameRegex.test(name)) {
+        } else if (!passwordRegex.test(password)) {
 
             req.session.message = {
                 type: 'danger',
-                message: 'Invalid Name: make sure name only contain letters'
+                message: 'The password should contain at-least one capital letter one small letter and one symbol from (@, $, !, %, *, ?, or &) and should be eight character long '
+            }
+        }
+
+        else if (!nameRegex.test(name)) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Invalid Name: make sure name only contain  letters and first name and last name only'
             }
         }
         else if (!emailRegex.test(email)) {
@@ -161,6 +119,12 @@ const signUpHandler = async (req, res, next) => {
             req.session.message = {
                 type: 'danger',
                 message: 'Invalid Email: make sure email id is entered correctly'
+            }
+        } else if (referralEmail && !(referrer instanceof User)) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Enter a valid referrer email ID'
             }
         }
 
@@ -190,11 +154,26 @@ const signUpHandler = async (req, res, next) => {
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const user = new User({ name, email, phone, password: hashedPassword });
+            const savedUser = new User({ name, email, phone, password: hashedPassword });
 
-            user.save()
+            savedUser.save()
 
-                .then((user) => {
+                .then((savedUser) => {
+
+                    if (referrer) {
+                        referrer.wallet += 10;
+
+                        referrer.totalReferralReward += 10;
+
+                        referrer.successfulReferrals.push(savedUser.email);
+
+                        referrer.save();
+
+                        savedUser.wallet += 10;
+
+                        savedUser.save();
+                    }
+
 
 
                     req.session.message = {
@@ -202,9 +181,9 @@ const signUpHandler = async (req, res, next) => {
                         message: 'Your Registration Is Successful !'
                     };
 
-                    req.session.verificationToken = user._id;
+                    req.session.verificationToken = savedUser._id;
 
-                    const isOtpSend = userVerificationHelper.sendOtpEmail(user, res);
+                    const isOtpSend = userVerificationHelper.sendOtpEmail(savedUser, res);
 
                     if (isOtpSend) {
                         res.redirect('/user/verifyOTP');
@@ -250,7 +229,6 @@ const signUpHandler = async (req, res, next) => {
 
 // !otp verification page render 
 
-
 const renderOtpVerificationPage = async (req, res, next) => {
 
 
@@ -293,12 +271,14 @@ const otpVerificationHandler = async (req, res, next) => {
 
                     if (updateUser) {
 
-                        req.session.destroy();
+
 
                         req.session.message = {
                             type: 'success',
                             message: 'otp verification completed now you can login'
                         }
+
+                        req.session.destroy();
 
                         res.redirect('/user/login');
 
@@ -363,7 +343,17 @@ const resendOtpHandler = async (req, res, next) => {
 
     try {
 
-        const user = await User.findOne({ _id: req.session.verificationToken });
+
+        if (req.session.userID || (!req.session.passwordResetToken && !req.session.verificationToken)) {
+
+            res.status(500).json({ "success": false, 'message': "Error: Session Time Out Try Again !" });
+
+            return;
+        }
+
+        const userID = req.session.passwordResetToken ? req.session.passwordResetToken : req.session.verificationToken;
+
+        const user = await User.findOne({ _id: userID });
 
 
 
@@ -379,7 +369,7 @@ const resendOtpHandler = async (req, res, next) => {
 
         } else {
 
-            res.status(500).json({ "success": false });
+            res.status(500).json({ "success": false, 'message': "Server facing some issues try again  !" });
 
             console.log('failed')
 
@@ -392,7 +382,9 @@ const resendOtpHandler = async (req, res, next) => {
     }
 
     catch (err) {
-        next(err);
+
+        res.status(500).json({ "success": false, 'message': `${err}` });
+
     }
 }
 
@@ -658,74 +650,6 @@ const verifyEmailHandler = async (req, res, next) => {
     }
 }
 
-//! render product details page 
-
-const renderProductDetailsPage = async (req, res, next) => {
-
-
-    try {
-
-        const groupingID = req.params.groupingID;
-
-        let filterQuery = { groupingID: Number(groupingID) };
-
-        let color;
-        let size;
-
-        const colorList = await Product.find({ groupingID }).distinct('color');
-
-
-
-
-        if (req.query.color) {
-            color = req.query.color;
-
-            filterQuery.color = color;
-        }
-
-        const sizeList = await Product.find({ groupingID, color }).distinct('size');
-
-
-
-
-        if (req.query.size) {
-            size = req.query.size;
-            filterQuery.size = size;
-        } else {
-            size = sizeList[0];
-            filterQuery.size = size;
-
-        }
-
-
-
-        const product = await Product.findOne(filterQuery).lean();
-
-
-
-
-        const groupOfProducts = await Product.find({ groupingID }).lean();
-
-
-
-        const variants = groupOfProducts.map((product) => {
-
-            return { price: product.price, color: product.color, size: product.size, stock: product.stock }
-
-        });
-
-
-
-        res.render('users/productDetails.ejs', { product, currentColor: color, currentSize: size, colorList, sizeList, variants });
-
-        return;
-    }
-    catch (err) {
-        next(err);
-    }
-
-
-}
 
 //! forgot password page render 
 
@@ -780,7 +704,7 @@ const forgotPasswordHandler = async (req, res, next) => {
 
             if (otpSend) {
 
-                res.render('users/passwordResetOtpVerification.ejs')
+                res.redirect('/user/forgotPassword/verifyOTP');
                 return;
 
             } else {
@@ -821,12 +745,57 @@ const forgotPasswordHandler = async (req, res, next) => {
 
 }
 
-//!forgot password verify otp and render page to reset password
+// ! forgot password otp verify page render 
+
+const renderForgotPasswordVerifyOtpPage = async (req, res, next) => {
+
+
+    if (req.session.userID || !req.session.passwordResetToken) {
+
+        req.session.message = {
+            type: 'danger',
+            message: 'Session timeout try again !',
+
+        };
+
+        res.redirect('/');
+
+        return;
+
+    } else if (req.session.passwordResetToken && req.session.emailVerifiedForPasswordReset) {
+
+        res.redirect('/user/resetPassword');
+
+        return;
+    }
+
+
+    try {
+
+        res.render('users/passwordResetOtpVerification.ejs');
+
+        return;
+
+    }
+    catch (err) {
+        next(err);
+    }
+
+
+}
+
+//!forgot password verify otp and redirect to reset password page
 
 
 const forgotPasswordVerifyOtpHandler = async (req, res, next) => {
 
-    if (req.session.userID) {
+    if (req.session.userID || !req.session.passwordResetToken) {
+
+        req.session.message = {
+            type: 'danger',
+            message: 'Session timeout try again !',
+
+        };
 
         res.redirect('/');
 
@@ -898,7 +867,13 @@ const forgotPasswordVerifyOtpHandler = async (req, res, next) => {
 const renderResetPasswordPage = async (req, res, next) => {
 
 
-    if (req.session.userID || !req.session.passwordResetToken) {
+    if (req.session.userID || !req.session.passwordResetToken || !req.session.emailVerifiedForPasswordReset) {
+
+        req.session.message = {
+            type: 'danger',
+            message: 'Session timeout try again !',
+
+        };
 
         res.redirect('/');
 
@@ -924,15 +899,19 @@ const renderResetPasswordPage = async (req, res, next) => {
 
 const resetPasswordHandler = async (req, res, next) => {
 
-    if (req.session.userID) {
 
-        res.redirect('/');
-
-        return;
-    }
 
 
     try {
+
+        if (req.session.userID) {
+
+            res.redirect('/');
+
+            return;
+        }
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
         const { password } = req.body;
 
@@ -949,11 +928,22 @@ const resetPasswordHandler = async (req, res, next) => {
 
                 };
 
-                res.redirect('/user/forgotPassword');
+                res.redirect('/user/resetPassword');
                 return;
 
 
-            } else {
+            } else if (!passwordRegex.test(password)) {
+
+                req.session.message = {
+                    type: 'danger',
+                    message: 'The password should contain at-least one capital letter one small letter and one symbol(@$!%*?&) and should be eight character long'
+                }
+
+                res.redirect('/user/resetPassword');
+                return;
+            }
+
+            else {
 
                 const userId = req.session.passwordResetToken;
 
@@ -967,11 +957,15 @@ const resetPasswordHandler = async (req, res, next) => {
 
                     if (updateUser) {
 
+
+
                         req.session.message = {
                             type: 'success',
-                            message: 'Password reset successful now you can login ',
+                            message: 'Password reset successful now you can login '
 
                         };
+
+                        req.session.destroy();
 
                         res.redirect('/user/login');
                         return;
@@ -1021,191 +1015,57 @@ const resetPasswordHandler = async (req, res, next) => {
 
 }
 
-//! add to wishlist handler
+// ! add new delivery address handler
 
-const addToWishListHandler = async (req, res, next) => {
-
-
+const addNewDeliveryAddress = async (req, res, next) => {
 
     try {
+
 
         if (!req.session.userID) {
 
-            res.status(401).json({ "success": false, "message": "login to add product to wishlist" })
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to add New Address" })
 
             return;
         }
 
-
-        const { productID } = req.body;
-
-        const product = await Product.findById(productID).lean();
-
         const userID = req.session.userID;
 
-        const userData = await User.findById(userID).lean();
+        let { fullName, country, phone, locality, city, addressLine, state, pinCode } = req.body;
 
+        console.log(req.body);
 
+        if (!fullName || !country || !phone || !locality || !city || !addressLine || !state || !pinCode) {
 
-        if (!product) {
-
-            console.log("Error finding productData : " + err);
-
-            throw new Error();
-
+            res.status(400).json({ "success": false, "message": " Failed to create new Address all fields are mandatory  !" })
         }
 
+        const newAddress = new Address({ userID, fullName, country, phone, locality, city, addressLine, state, pinCode });
 
-        if (!userData) {
+        savedAddress = await newAddress.save();
 
-            console.log("Error finding userData : " + err);
+        if (savedAddress instanceof Address) {
 
-            throw new Error();
+            const updatedUser = await User.findByIdAndUpdate(userID, { $push: { addresses: savedAddress._id } });
 
-        }
+            if (updatedUser instanceof User) {
 
-        let userWishListID = userData.wishlist;
+                res.status(201).json({ "success": true, "message": " New Delivery Address Added successfully" })
+            }
+            else {
 
-
-        if (!userWishListID) {
-
-            const newWishList = new WishList({ userID });
-
-            await newWishList.save()
-
-            console.log('new wishlist created for user');
-
-            userWishListID = newWishList._id;
-
-            await User.findByIdAndUpdate(userID, { $set: { wishlist: userWishListID } });
+                res.status(500).json({ "success": false, "message": " Failed to create new Address . Server facing issues!" })
+            }
 
         }
+        else {
 
-
-        const userWishListData = await WishList.findById(userWishListID).lean();
-
-        if (!userWishListData) {
-
-            console.log("Error : failed to get userWishList data ");
-
-
-        }
-
-
-        const productsInWishList = userWishListData.products;
-
-
-
-        const productAlreadyInWishList = productsInWishList.find((existingProduct) => {
-
-
-            return existingProduct.equals(product._id)
-        });
-
-
-
-
-
-        if (productAlreadyInWishList) {
-
-
-
-            res.status(400).json({ "success": false, "message": "product already exists wishList!" });
-
-            return;
+            res.status(500).json({ "success": false, "message": " Failed to create new Address . Server facing issues!" })
 
         }
 
 
 
-        await WishList.findByIdAndUpdate(userWishListID, { $push: { products: product._id } });
-
-        res.status(201).json({ "success": true, "message": " Product Added to WishList !" });
-
-        return;
-
-
-    }
-    catch (err) {
-
-        console.log(err);
-
-        res.status(500).json({ "success": false, "message": "failed try again Hint: server facing issues !" })
-
-    }
-
-
-}
-
-//! render wishlistPage
-
-const renderWishListPage = async (req, res, next) => {
-
-
-    if (!req.session.userID) {
-
-
-
-        req.session.message = {
-            type: 'danger',
-            message: 'Login to view your wishlist'
-        }
-        res.redirect('/');
-
-        return;
-    }
-
-
-    try {
-
-        const userID = req.session.userID;
-
-        const userData = await User.findById(userID);
-
-        const userWishListID = userData.wishlist;
-
-
-        let productsInWishList;
-
-        let result;
-
-        try {
-
-            result = await WishList.aggregate([
-                {
-                    $match: {
-                        _id: userWishListID,
-                    },
-                },
-                {
-                    $lookup: {
-                        from: 'products',
-                        localField: 'products',
-                        foreignField: '_id',
-                        as: 'wishlistProducts',
-                    }
-                }
-
-            ])
-                .exec()
-
-
-
-
-        } catch (error) {
-            console.error(error);
-        }
-
-        result.forEach((val) => {
-
-            productsInWishList = val.wishlistProducts
-        })
-
-
-
-        res.render('users/wishlist.ejs', { products: productsInWishList });
-
-        return;
 
     }
     catch (err) {
@@ -1215,230 +1075,243 @@ const renderWishListPage = async (req, res, next) => {
 
 }
 
-// ! remove product from wishList Handler 
+// ! render user profile page 
 
-const removeFromWishListHandler = async (req, res, next) => {
-
-
-    if (!req.session.userID) {
-
-
-
-        req.session.message = {
-            type: 'danger',
-            message: 'Your session Timed out login to access wishlist'
-        }
-        res.redirect('/');
-
-        return;
-    }
-
+const renderUserProfile = async (req, res, next) => {
 
     try {
 
-        const { productID } = req.body;
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Login to view profile !',
+
+            };
+
+            res.redirect('/');
+            return;
+        }
 
         const userID = req.session.userID;
 
-        const userData = await User.findById(userID);
+        let user = await User.findById(userID).lean();
 
-        const userWishListID = userData.wishlist;
+        firstName = user.name.split(' ')[0];
 
-        const updatedWishList = await WishList.findByIdAndUpdate(userWishListID, { $pull: { products: productID } });
+        lastName = user.name.split(' ')[1];
 
-        if (updatedWishList) {
+        joined_date = user.joined_date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
 
-            res.status(201).json({
-                "success": true,
-                "message": "Removed item from wishlist"
-            })
-        } else {
-            res.status(500).json({
-                "success": true,
-                "message": "failed to remove product from wishlist try again"
-            })
-        }
+        user = { ...user, firstName, lastName, joined_date };
 
+
+
+        console.log(user);
+
+
+
+        res.render('users/myAccount.ejs', { user });
 
     }
     catch (err) {
 
-        res.status(500).json({
-            "success": true,
-            "message": "failed to remove product from wishlist try again"
-        })
+        console.log(err);
+
+        next(err)
     }
-
-
 }
 
-// ! add product to cart handler
+// !render edit profile page
 
-const addToCartHandler = async (req, res, next) => {
+const renderEditProfilePage = async (req, res, next) => {
+
+    try {
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Session time out login  profile !',
+
+            };
+
+            res.redirect('/');
+            return;
+        }
+
+
+        const userID = req.session.userID;
+
+        let user = await User.findById(userID).lean();
+
+        firstName = user.name.split(' ')[0];
+
+        lastName = user.name.split(' ')[1];
+
+        joined_date = user.joined_date.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
+
+        user = { ...user, firstName, lastName, joined_date };
+
+        res.render('users/editProfile.ejs', { user })
+
+    }
+    catch (err) {
+        console.log(err);
+
+        next(err)
+    }
+}
+
+// ! edit profile handler 
+
+const editProfileHandler = async (req, res, next) => {
 
 
     try {
 
         if (!req.session.userID) {
 
-            res.status(401).json({ "success": false, "message": "login to add product to cart" })
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to edit profile" })
 
             return;
         }
 
 
-        let { productID, quantity } = req.body;
 
-        quantity = Number(quantity);
+        const userID = req.session.userID;
 
-        if (!productID || !quantity || isNaN(quantity) || quantity <= 0) {
+        const { firstName, lastName, phone } = req.body;
 
-            res.status(400).json({ "success": false, "message": "All fields not received and quantity should be a value greater than 0 . Try Again" });
-
-            return;
-        }
+        const newName = firstName.trim() + " " + lastName.trim();
 
 
-        let productData = await Product.findById(productID);
-        let stock = productData.stock;
+        let DataForUpdate = {
 
+            $set: {
+                name: newName,
+                phone,
 
-        if (stock === 0) {
-
-            res.status(400).json({ "success": false, "message": " Product Out Of Stock" });
-
-            return;
-
-        } else if (stock < quantity) {
-
-
-            res.status(400).json({ "success": false, "message": `only ${stock} units left in stock.` });
-
-            return;
-        }
-
-
-        const userID = new mongoose.Types.ObjectId(req.session.userID);
-        const userData = await User.findById(userID);
-        let userCartID = userData.cart;
-
-
-        if (!userCartID) {
-
-            const newCart = new Cart({ userID });
-            await newCart.save();
-
-
-            const updatedUser = await User.findByIdAndUpdate(userID, { $set: { cart: newCart._id } }, { new: true });
-            userCartID = updatedUser.cart;
-
-
-            if (!userCartID) {
-
-                res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
-
-                return;
 
             }
         };
 
+        console.log(req.file);
 
+        let profileImg
 
-        let existingItemsInCart = await Cart.aggregate([
-            {
-                $match: {
-                    userID: userID,
-                },
-            }, {
-                $lookup: {
-                    from: 'cartitems',
-                    localField: 'items',
-                    foreignField: '_id',
-                    as: 'cartItems',
-                }
-            }
+        if (req.file) {
 
+            profileImg = req.file.filename;
 
-        ]).exec()
-
-
-
-        existingItemsInCart = existingItemsInCart[0].cartItems;
-
-        let ProductAlreadyInCart = existingItemsInCart.find((item) => {
-
-            return item.product.equals(productID);
-        })
-
-
-
-        if (ProductAlreadyInCart) {
-
-            const existingQuantityInCart = ProductAlreadyInCart.quantity;
-
-            if ((existingQuantityInCart + quantity) > stock) {
-
-
-                res.status(400).json({ "success": false, "message": `only ${stock} units left in stock and you already have ${existingQuantityInCart} of this in your cart ` });
-
-                return;
-            }
-
-
-
-            const QuantityIncrease = await CartItem.updateOne({ _id: ProductAlreadyInCart._id }, { $inc: { quantity: quantity } });
-
-            if (!QuantityIncrease) {
-                res.status(500).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
-
-                return;
-            }
-
-            res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
-
-            return;
-
-
+            DataForUpdate.$set.profileImg = profileImg;
         }
 
-        const cartItem = new CartItem({ cartID: userCartID, product: productID, quantity, price: productData.price });
-
-        await cartItem.save();
 
 
-        const updatedCart = await Cart.findByIdAndUpdate(userCartID, { $push: { items: cartItem._id } })
 
 
-        if (!updatedCart) {
-            res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart updating Try Again" });
+        const updatedUser = await User.findByIdAndUpdate(userID, DataForUpdate);
+
+        if (updatedUser instanceof User) {
+
+            res.status(201).json({ "success": true, "message": "Your profile is updated !" });
 
             return;
         }
 
-
-        res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
-
-        return;
-
+        res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
 
     }
-
-
     catch (err) {
 
         console.log(err);
 
-        res.status(500).json({ "success": false, "message": "failed try again Hint: server facing issues !" })
+        res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
 
     }
-
-
 }
 
-// ! render cart page 
+// ! change password handler 
 
-const renderCartPage = async (req, res, next) => {
+const changePasswordHandler = async (req, res, next) => {
 
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to edit profile" })
+
+            return;
+        }
+
+        const userID = req.session.userID;
+
+        const userData = await User.findById(userID);
+
+        const password = userData.password;
+
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        const { currentPassword, newPassword } = req.body;
+
+        if (! await bcrypt.compare(currentPassword, password)) {
+
+
+            res.status(401).json({ "success": false, "message": "Enter the right current password ! " })
+
+
+            return;
+        }
+
+
+        if (!passwordRegex.test(newPassword)) {
+
+            res.status(400).json({ "success": false, "message": "The new  password should contain at-least one capital letter one small letter and one symbol from (@, $, !, %, *, ?, or &) and should be eight character long  " });
+
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        if (!hashedPassword) {
+
+
+            res.status(500).json({ "success": false, "message": " Failed to change password due to server issues  " });
+
+            return;
+        }
+
+        const updatedData = await User.findByIdAndUpdate(userID, { $set: { password: hashedPassword } });
+
+
+        if (updatedData instanceof User) {
+
+            res.status(201).json({ "success": true, "message": " Your password is changed  !" });
+
+            return;
+
+        }
+
+
+        res.status(500).json({ "success": false, "message": " Failed to change password due to server issues  " });
+
+        return;
+
+    }
+    catch (err) {
+
+        res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
+
+    }
+}
+
+// ! render orders page 
+
+const orderPageRender = async (req, res, next) => {
 
     try {
 
@@ -1446,8 +1319,445 @@ const renderCartPage = async (req, res, next) => {
 
             req.session.message = {
                 type: 'danger',
-                message: 'Login to view your cart '
+                message: 'login to view your orders !',
+
+            };
+
+
+            res.redirect('/');
+
+
+            return;
+
+        }
+
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
+        let orders = await User.aggregate([{
+            $match: {
+                _id: userID,
             }
+        }, {
+            $lookup: {
+                from: 'orders',
+                localField: 'orders',
+                foreignField: '_id',
+                as: 'ordersPlaced',
+            }
+        }, {
+            $unwind: '$ordersPlaced'
+        },
+        {
+            $replaceRoot: {
+                newRoot: '$ordersPlaced'
+            }
+        }, {
+
+            $match: {
+
+                $and: [
+
+
+                    {
+                        orderStatus: {
+                            $nin: ['clientSideProcessing', 'cancelled']
+                        }
+                    },
+
+                    {
+                        paymentStatus: {
+                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                        }
+                    },
+                    { clientOrderProcessingCompleted: true }]
+            },
+
+        },
+
+        {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedItems',
+            }
+        }, {
+            $unwind: '$orderedItems'
+        },
+
+
+
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'orderedItems.product',
+                foreignField: '_id',
+                as: 'orderedItems.productInfo'
+            }
+        },
+
+        {
+            $group: {
+                _id: '$_id',
+                userID: { $first: '$userID' },
+                paymentMethod: { $first: '$paymentMethod' },
+                paymentStatus: { $first: '$paymentStatus' },
+                orderStatus: { $first: '$orderStatus' },
+                shippingAddress: { $first: '$shippingAddress' },
+                grossTotal: { $first: '$grossTotal' },
+                couponApplied: { $first: '$couponApplied' },
+                discountAmount: { $first: '$discountAmount' },
+                finalPrice: { $first: '$finalPrice' },
+                clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
+                orderDate: { $first: '$orderDate' },
+                orderedItems: { $push: '$orderedItems' }
+            }
+        }, {
+            $project: {
+                _id: 1,
+                userID: 1,
+                paymentMethod: 1,
+                paymentStatus: 1,
+                orderStatus: 1,
+                shippingAddress: 1,
+                grossTotal: 1,
+                couponApplied: 1,
+                discountAmount: 1,
+                finalPrice: 1,
+                clientOrderProcessingCompleted: 1,
+                orderDate: 1,
+                orderedItems: {
+                    $map: {
+                        input: "$orderedItems",
+                        as: "item",
+                        in: {
+                            _id: "$$item._id",
+                            userID: "$$item.userID",
+                            product: "$$item.product",
+                            quantity: "$$item.quantity",
+                            totalPrice: "$$item.totalPrice",
+                            productInfo: {
+                                name: { $arrayElemAt: ["$$item.productInfo.name", 0] },
+                                price: { $arrayElemAt: ["$$item.productInfo.price", 0] },
+                                color: { $arrayElemAt: ["$$item.productInfo.color", 0] }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        ]).exec()
+
+        console.log('\n\n\n' + JSON.stringify(orders, null, 2) + '\n\n\n');
+
+
+        res.render('users/allOrders.ejs', { orders });
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        next(err)
+    }
+}
+
+// ! cancel orders
+
+const cancelOrderHandler = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ "success": false, "message": "Your session timedOut login to cancel order" })
+
+            return;
+
+        }
+
+        const userID = req.session.userID;
+
+        const orderID = req.params.orderID;
+
+        const orderExist = await Order.findOne({ _id: orderID, userID });
+
+        const orderPrice = orderExist.finalPrice;
+
+        if (orderExist.orderStatus === 'delivered') {
+
+            res.status(400).json({ "success": false, "message": " The order is already delivered you can't cancel it " });
+
+            return;
+
+        }
+
+        if (orderExist instanceof Order && orderExist.paymentMethod === 'cod') {
+
+            const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled' } });
+
+            if (cancelledOrder instanceof Order) {
+
+                res.status(200).json({ "success": true, "message": " Order Cancelled successfully" })
+
+                return;
+
+            } else {
+
+                res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+
+                return;
+            }
+
+        } else if (orderExist instanceof Order && orderExist.paymentMethod === 'onlinePayment' && orderExist.paymentStatus === 'paid') {
+
+            const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled', paymentStatus: 'refunded' } });
+
+            if (cancelledOrder instanceof Order) {
+
+                const refund = await User.findByIdAndUpdate(userID, { $inc: { wallet: orderPrice } })
+
+                if (refund instanceof User) {
+                    res.status(200).json({ "success": true, "message": " Order Cancelled successfully and price refunded" });
+
+                    return
+                }
+                else {
+
+                    res.status(500).json({ "success": false, "message": " Order Cancelled successfully but failed to refund the price contact customer support" });
+
+                    return
+                }
+
+
+
+            } else {
+
+                res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+
+                return;
+            }
+
+
+        }
+        else {
+            res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+        }
+    }
+
+
+    catch (err) {
+
+        res.status(500).json({ "success": false, "message": "server facing issues try again " })
+
+        return;
+    }
+}
+
+// ! razor pay create order 
+
+const razorPayCreateOrder = async (req, res, next) => {
+
+    try {
+
+        if (!req.session.userID) {
+
+            res.status(401).json({ 'success': false, "message": 'session timeout login to continue purchasing' });
+
+            return;
+        }
+
+        const orderID = req.params.orderID;
+
+        const userID = req.session.userID;
+
+        const orderData = await Order.findById(orderID);
+
+        if (!orderData) {
+
+            res.status(500).json({ 'success': false, "message": ' server facing issue getting order data' });
+
+            return;
+
+        }
+
+
+        const amount = orderData.finalPrice * 100;
+
+        const receipt = orderData._id.toString();
+
+        const currency = 'INR';
+
+        const options = {
+            amount: amount,
+            currency: currency,
+            receipt: receipt
+        };
+
+        razorpay.orders.create(options, (err, order) => {
+
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ 'success': false, "message": 'server facing issues when creating order' });
+            }
+
+            console.log(order)
+            res.status(200).json({ 'success': true, "message": 'continue', order });
+        });
+
+
+    }
+    catch (err) {
+        console.log(err);
+
+        res.status(500).json({ 'success': false, "message": 'server facing issues when creating order' })
+    }
+}
+
+// !payment Success Handler
+
+const paymentSuccessHandler = async (req, res, next) => {
+
+
+    try {
+
+        const userID = req.session.userID;
+
+        console.log(req.body);
+
+        const { receipt, id } = req.body;
+
+        const orderID = new mongoose.Types.ObjectId(receipt);
+
+        let orderedItems = await Order.aggregate([{
+            $match: {
+                _id: orderID,
+            }
+        }
+
+            , {
+            $project: {
+                'orderItems': 1
+            }
+
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'items'
+            }
+        }, {
+            $unwind: '$items'
+        }, {
+            $replaceRoot: {
+                newRoot: '$items'
+            }
+        }, {
+            $project: {
+
+                product: 1,
+                quantity: 1
+            }
+        }, {
+            $project: {
+                _id: 0
+            }
+        }
+        ]).exec();
+
+
+        const updatedOrder = await Order.findByIdAndUpdate(orderID,
+            {
+                $set:
+                {
+                    paymentStatus: 'paid',
+                    orderStatus: 'shipmentProcessing', clientOrderProcessingCompleted: true, razorpayTransactionId: id
+                }
+            });
+
+        console.log('updateOrder', updatedOrder);
+
+        if (updatedOrder instanceof Order) {
+
+
+
+
+
+            const userDataUpdate = await User.findByIdAndUpdate(userID, { $push: { orders: updatedOrder._id } })
+
+            if (userDataUpdate instanceof User) {
+
+                res.status(200).json({ 'success': true, "message": ' order placed successfully' });
+
+                const userCart = await Cart.findOne({ userID: userID });
+
+                const itemsInCart = userCart.items;
+
+                console.log(itemsInCart);
+
+                for (const item of orderedItems) {
+
+                    const updateProductQuantity = await Product.findByIdAndUpdate(item.product, { $inc: { stock: -(item.quantity) } })
+
+                }
+
+
+                const deletedCartItems = await CartItem.deleteMany({ _id: { $in: itemsInCart } });
+
+                if (deletedCartItems.ok && deletedCartItems.n === itemsInCart.length && deletedCartItems.deletedCount === itemsInCart.length) {
+
+                    const updatedCart = await Cart.findByIdAndUpdate(userCart._id, { $set: { items: [] } });
+
+                    if (updatedCart instanceof Cart) {
+                        console.log('successfully removed from the cart');
+                    }
+
+                }
+
+            } else {
+                res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
+            }
+
+
+
+        } else {
+
+            res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
+        }
+
+    }
+    catch (err) {
+
+        console.log(err);
+
+        res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
+    }
+}
+
+// ! render order details page 
+
+const renderOrderDetails = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'session time out login to got to order details page  !',
+
+            };
+
             res.redirect('/');
 
             return;
@@ -1455,73 +1765,349 @@ const renderCartPage = async (req, res, next) => {
 
         const userID = new mongoose.Types.ObjectId(req.session.userID);
 
-        const userData = await User.findById(userID);
+
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
+
+        if (!orderID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+        }
 
 
 
-        let itemsInCart = await Cart.aggregate([
-            {
-                $match: {
-                    userID: userID,
-                },
-            }, {
-                $lookup: {
-                    from: 'cartitems',
-                    localField: 'items',
-                    foreignField: '_id',
-                    as: 'cartItems',
-                }
-            }, {
-
-                $unwind: "$cartItems"
+        const orderData = await Order.findById(orderID);
 
 
-            }, {
-                $replaceRoot: {
-                    newRoot: '$cartItems'
-                }
-            }, {
-                $lookup: {
-                    from: 'products',
-                    localField: 'product',
-                    foreignField: '_id',
-                    as: 'cartProductData'
+        let productsData = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedProducts',
+            }
+        }, {
+            $unwind: "$orderedProducts"
+        }, {
+            $replaceRoot: {
+                newRoot: "$orderedProducts"
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'productInfo'
 
-                }
-            }, {
-                $replaceRoot: {
-                    newRoot: {
-                        $mergeObjects: [
-                            { _id: "$_id", cartID: "$cartID", product: "$product", quantity: "$quantity", price: "$price", __v: "$__v" },
-                            { cartProductData: { $arrayElemAt: ["$cartProductData", 0] } }
-                        ]
-                    }
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        { _id: "$_id", userID: "$userID", product: "$product", quantity: "$quantity", totalPrice: "$totalPrice", __v: "$__v" },
+                        { productInfo: { $arrayElemAt: ["$productInfo", 0] } }
+                    ]
                 }
             }
+        }
+
+        ]).exec();
+
+
+        console.log('\n\n\n' + JSON.stringify(productsData, null, 2) + '\n\n\n');
+
+
+        let address = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'addresses',
+                localField: 'shippingAddress',
+                foreignField: '_id',
+                as: 'address',
+            }
+        }, {
+
+            $unwind: "$address"
+        }, {
+
+            $replaceRoot: {
+                newRoot: "$address"
+            }
+        }
+
+        ]).exec();
+
+
+        address = address[0];
+
+        // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
 
 
 
-        ]).exec()
 
-        console.log(itemsInCart)
-
+        if (orderData && productsData && address) {
 
 
 
 
 
+            res.render('users/orderDetailsPage.ejs', { address, orderData, productsData });
 
-        res.render('users/shoppingCart.ejs', { itemsInCart });
 
-        return;
+
+
+        } else {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.log(err)
+    }
+}
+
+// ! render invoice page 
+
+const renderInvoicePage = async (req, res, next) => {
+
+    try {
+
+
+
+
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
+
+        if (!orderID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+        }
+
+
+
+        const orderData = await Order.findById(orderID);
+
+
+        let productsData = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedProducts',
+            }
+        }, {
+            $unwind: "$orderedProducts"
+        }, {
+            $replaceRoot: {
+                newRoot: "$orderedProducts"
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'productInfo'
+
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        { _id: "$_id", userID: "$userID", product: "$product", quantity: "$quantity", totalPrice: "$totalPrice", __v: "$__v" },
+                        { productInfo: { $arrayElemAt: ["$productInfo", 0] } }
+                    ]
+                }
+            }
+        }
+
+        ]).exec();
+
+
+        console.log('\n\n\n' + JSON.stringify(productsData, null, 2) + '\n\n\n');
+
+
+        let address = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'addresses',
+                localField: 'shippingAddress',
+                foreignField: '_id',
+                as: 'address',
+            }
+        }, {
+
+            $unwind: "$address"
+        }, {
+
+            $replaceRoot: {
+                newRoot: "$address"
+            }
+        }
+
+        ]).exec();
+
+
+        address = address[0];
+
+        // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
+
+
+        if (orderData && productsData && address) {
+
+
+
+
+
+            res.render('users/invoicePage.ejs', { address, orderData, productsData });
+
+
+
+
+        } else {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            res.redirect('/user/orders');
+
+            return;
+
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.log(err)
+    }
+}
+
+// ! download sales invoice handler
+
+const downloadInvoice = async (req, res, next) => {
+
+    try {
+
+
+        if (!req.session.userID) {
+
+
+            req.session.message = {
+                type: 'danger',
+                message: 'session time out login to got to render invoice  !',
+
+            };
+
+            res.redirect('/');
+
+            return;
+        }
+
+        let orderID = req.params.orderID;
+
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+
+        await page.setViewport({
+            width: 1680,
+            height: 800,
+        });
+
+        await page.goto(`${req.protocol}://${req.get('host')}` + '/user/invoice/' + `${orderID}`, { waitUntil: 'networkidle2' });
+
+
+
+
+
+
+
+
+
+        const date = new Date();
+
+        const pdfn = await page.pdf({
+            path: `${path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf')}`,
+            printBackground: true,
+            format: "A4"
+        })
+
+        setTimeout(async () => {
+            await browser.close();
+
+
+            const pdfURL = path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf');
+
+
+
+
+            res.download(pdfURL, function (err) {
+
+                if (err) {
+                    console.log(err)
+                }
+            })
+
+
+        }, 1000);
+
+
+
+
 
     }
     catch (err) {
+
         next(err);
     }
-
-
 }
+
 module.exports = {
     renderLoginPage,
     renderSignUpPage,
@@ -1532,16 +2118,23 @@ module.exports = {
     verifyEmailHandler,
     logoutHandler,
     renderHomePage,
-    renderProductDetailsPage,
     resendOtpHandler,
     renderForgotPasswordPage,
     forgotPasswordHandler,
     forgotPasswordVerifyOtpHandler,
     renderResetPasswordPage,
     resetPasswordHandler,
-    addToWishListHandler,
-    renderWishListPage,
-    removeFromWishListHandler,
-    addToCartHandler,
-    renderCartPage
+    renderForgotPasswordVerifyOtpPage,
+    addNewDeliveryAddress,
+    renderUserProfile,
+    renderEditProfilePage,
+    editProfileHandler,
+    changePasswordHandler,
+    orderPageRender,
+    cancelOrderHandler,
+    razorPayCreateOrder,
+    paymentSuccessHandler,
+    renderOrderDetails,
+    renderInvoicePage,
+    downloadInvoice
 }

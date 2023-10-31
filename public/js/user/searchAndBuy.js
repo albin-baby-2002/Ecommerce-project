@@ -3,12 +3,35 @@ const sortSelect = document.getElementById('sortby');
 const searchProduct = document.getElementById('search');
 const wishListButtons = document.querySelectorAll('.wishListBtn');
 
+
+const customSelects = document.querySelectorAll(".custom-selected");
+
+
+customSelects.forEach((customSelect) => {
+    customSelect.addEventListener('click', function (e) {
+
+        e.preventDefault()
+
+        console.log('yes')
+
+        const selectOptions = customSelect.parentElement.querySelector(".select-options");
+
+        const selectButton = customSelect.querySelector(".select-button");
+
+        if (e.target === selectButton) {
+            // Toggle visibility of options when the button is clicked
+            selectOptions.style.display = selectOptions.style.display === "block" ? "none" : "block";
+        }
+    })
+})
+
+
 categoryRadios.forEach((radio) => {
     radio.addEventListener('change', () => {
         const categoryID = radio.value;
         const sortValue = sortSelect.value;
         const searchValue = searchProduct.value;
-        const url = `/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
+        const url = `/search/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
         searchProduct.value = ''; // clear search input
         window.location.href = url;
     });
@@ -18,7 +41,7 @@ sortSelect.addEventListener('change', () => {
     const categoryId = new URLSearchParams(window.location.search).get('category');
     const sortValue = sortSelect.value;
     const searchValue = searchProduct.value;
-    const url = `/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    const url = `/search/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
     window.location.href = url;
 });
 
@@ -33,7 +56,7 @@ form.addEventListener('submit', function (event) {
 
     const sortValue = sortSelect.value;
     const searchValue = searchProduct.value;
-    const url = `/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    const url = `/search/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
     searchProduct.value = ''; // clear search input
     window.location.href = url;
 
@@ -89,26 +112,73 @@ function addToWishList(id) {
         body: JSON.stringify(WishListData),
     })
         .then(response => response.json())
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to wish list due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 7000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
 
                 console.log('success')
 
-                window.alert(data.message);
+
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 7000)
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 7000)
+
             }
         })
-        .catch(error => {
 
-            alert('Failed to add category data due to local / network issues');
-            // Handle network or other errors here
-            console.error('Error:', error);
-        });
+        .catch((err) => {
+            console.log(err);
+        })
+
 
 
 
@@ -135,26 +205,70 @@ function addToCart(id) {
         body: JSON.stringify(cartData)
     })
         .then(response => response.json())
+
+        .catch(error => {
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = 'Failed to add to cart due to network/serverError';
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 7000)
+
+            console.error('Error:', error);
+        })
         .then(data => {
 
             if (data.success) {
 
                 console.log('success')
 
-                window.alert(data.message);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 7000)
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 7000)
             }
         })
         .catch(error => {
 
-            // alert('Failed to add to cart  due to local / network issues' + error);
 
-
-            // Handle network or other errors here
             console.error('Error:', error);
         });
 

@@ -1,6 +1,6 @@
-<div id="preloder">
+<!-- <div id="preloder">
     <div class="loader"></div>
-</div>
+</div> -->
 
 <!-- Offcanvas Menu Begin -->
 <div class="offcanvas-menu-overlay"></div>
@@ -70,29 +70,50 @@
                     <a href="./index.html"><img src="/img/logo.png" alt=""></a>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6">
+            <div class="col-lg-7 col-md-6">
                 <nav class="header__menu mobile-menu">
                     <ul>
-                        <li class=""><a href="./index.html">Home</a></li>
+                        <li class=""><a href="/admin/dashboard">Home</a></li>
                         <li><a href="/admin/usersList">Users</a></li>
-                        <li><a href="/admin/productList">Products</a>
-                            <!-- <ul class="dropdown"> -->
-                            <!-- <li><a href="./about.html"></a></li>
-                                <li><a href="./shop-details.html">Shop Details</a></li>
-                                <li><a href="./shopping-cart.html">Shopping Cart</a></li>
-                                <li><a href="./checkout.html">Check Out</a></li>
-                                <li><a href="./blog-details.html">Blog Details</a></li>
-                            </ul> -->
+
+
+
+                        <li><a href="#">Product</a>
+                            <ul class="dropdown mt-2 "
+                                style="background-color: #f3f2ee; color: black; border: 1px solid black;">
+
+                                <li><a style="color: black;" href="/admin/productList">Products</a> </li>
+                                <li><a style="color: rgb(4, 4, 4);" href="/admin/categoryList">Categories</a></li>
+                                <li><a style="color: rgb(4, 4, 4);" href="/admin/orders">Orders</a></li>
+                                <li><a style="color: rgb(4, 4, 4);" href="/admin/salesReport">Sales Report</a></li>
+
+                            </ul>
                         </li>
-                        <!-- <li><a href="./blog.html">Blog</a></li> -->
-                        <li><a href="/admin/categoryList">Categories</a></li>
+
+
+
+
+                        <li><a href="#">Offers </a>
+                            <ul class="dropdown mt-2 "
+                                style="background-color: #f3f2ee; color: black; border: 1px solid black;">
+
+                                <li><a style="color: rgb(4, 4, 4);" href="/admin/couponList">Coupons</a></li>
+
+
+                                <li><a style="color: rgb(4, 4, 4);" href="/admin/productsOffers">Product Offers</a></li>
+
+                                <li><a style="color: rgb(4, 4, 4);" href="/admin/categoryOffers">Category Offers</a>
+                                </li>
+
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
             </div>
-            <div class="col-lg-3 col-md-3">
+            <div class="col-lg-2 col-md-3">
                 <div class="header__nav__option fs-5">
 
-                    <a href="#"><i class="fa-solid fa-user" style="color: #0d0d0d;"></i></a>
+                    <!-- <a href="#"><i class="fa-solid fa-user" style="color: #0d0d0d;"></i></a> -->
                     <a class="font-weight-bolder text-dark" href="/admin/logout">Logout</a>
                     <!-- <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
                     <div class="price">$0.00</div> -->
@@ -119,3 +140,13 @@
         </strong>
     </div>
     <% } %>
+
+
+        <div hidden id="notification-message" class="container notification ">
+
+            <p id="messageLine"> </p>
+
+            <button class="close" id="notificationClose"><i class="fa-solid fa-xmark"
+                    style="color: #d2cfce;"></i></button>
+
+        </div>
