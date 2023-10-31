@@ -1407,6 +1407,7 @@ const orderPageRender = async (req, res, next) => {
                 grossTotal: { $first: '$grossTotal' },
                 couponApplied: { $first: '$couponApplied' },
                 discountAmount: { $first: '$discountAmount' },
+                categoryDiscount: { $first: '$categoryDiscount' },
                 finalPrice: { $first: '$finalPrice' },
                 clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
                 orderDate: { $first: '$orderDate' },
@@ -1422,6 +1423,7 @@ const orderPageRender = async (req, res, next) => {
                 shippingAddress: 1,
                 grossTotal: 1,
                 couponApplied: 1,
+                categoryDiscount: 1,
                 discountAmount: 1,
                 finalPrice: 1,
                 clientOrderProcessingCompleted: 1,
@@ -1445,6 +1447,10 @@ const orderPageRender = async (req, res, next) => {
                         }
                     }
                 }
+            }
+        }, {
+            $sort: {
+                finalPrice: -1
             }
         }
 
