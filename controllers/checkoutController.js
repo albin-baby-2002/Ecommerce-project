@@ -362,6 +362,8 @@ const addressCouponAndItemsInputHandler = async (req, res, next) => {
 
                 couponDiscountAmount = discountAsPerRateOfDiscount > maximumCouponDiscount ? maximumCouponDiscount : discountAsPerRateOfDiscount;
 
+                couponDiscountAmount = Math.ceil(couponDiscountAmount);
+
                 finalPrice = totalPriceOfCart - couponDiscountAmount;
 
                 if (!(totalPriceOfCart === (finalPrice + couponDiscountAmount))) {
