@@ -74,7 +74,7 @@
                                     <th class="bg-dark text-white text-center" style="font-size: 11px;" scope="col"
                                         class="sorting ">
                                         ORDER DATE </th>
-                                    <th class="bg-dark text-white text-center" style="font-size: 11px;min-width: 250px;"
+                                    <th class="bg-dark text-white text-center" style="font-size: 11px;min-width: 20px;"
                                         scope="col" class="sorting">
                                         PRODUCTS
                                     </th>
@@ -94,9 +94,13 @@
 
 
 
-                                    <th class="bg-dark text-white" text-center style="font-size: 11px;" scope="col"
+                                    <th class="bg-dark text-white text-center " style="font-size: 11px;" scope="col"
                                         class="sorting">
                                         DIS
+                                    </th>
+                                    <th class="bg-dark text-white text-center" style="font-size: 11px;" scope="col"
+                                        class="sorting">
+                                        CAT DIS
                                     </th>
 
 
@@ -167,6 +171,21 @@
                                             <%=orders[i].discountAmount%>
 
                                         </td>
+
+                                        <td data-title="Mobile" class="text-center">
+
+                                            <% if(orders[i].categoryDiscount ){%>
+                                                <%=orders[i].categoryDiscount%>
+                                                    <%} else {%>
+                                                        0
+
+                                                        <%}%>
+
+
+
+
+                                        </td>
+
                                         <td data-title="Mobile">
                                             <%=orders[i].finalPrice%>
 

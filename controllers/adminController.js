@@ -1922,6 +1922,7 @@ const salesReportInExcel = async (req, res, next) => {
                     shippingAddress: 1,
                     grossTotal: 1,
                     discountAmount: 1,
+                    categoryDiscount: 1,
                     finalPrice: 1,
                     clientOrderProcessingCompleted: 1,
                     orderDate: 1,
@@ -1950,6 +1951,7 @@ const salesReportInExcel = async (req, res, next) => {
                     grossTotal: { $first: '$grossTotal' },
                     couponApplied: { $first: '$couponApplied' },
                     discountAmount: { $first: '$discountAmount' },
+                    categoryDiscount: { $first: '$categoryDiscount' },
                     finalPrice: { $first: '$finalPrice' },
                     clientOrderProcessingCompleted: { $first: '$clientOrderProcessingCompleted' },
                     orderDate: { $first: '$orderDate' },
@@ -1974,6 +1976,7 @@ const salesReportInExcel = async (req, res, next) => {
             { header: 'gross Total', key: 'grossTotal' },
             { header: 'coupon Applied', key: 'couponApplied' },
             { header: 'discount Amount', key: 'discountAmount' },
+            { header: 'category Discount', key: 'categoryDiscount' },
             { header: 'final Price', key: 'finalPrice' },
             { header: 'client OrderProcessing Completed', key: 'clientOrderProcessingCompleted' },
             { header: 'order Date', key: 'orderDate' },
@@ -2013,7 +2016,7 @@ const salesReportInPdf = async (req, res, next) => {
 
         let endingDate = req.query.endingDate;
 
-        const browser = await puppeteer.launch({ headless: false });
+        const browser = await puppeteer.launch();
         const page = await browser.newPage();
 
 

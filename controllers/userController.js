@@ -1763,6 +1763,8 @@ const renderOrderDetails = async (req, res, next) => {
             return;
         }
 
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
+
 
         const orderID = new mongoose.Types.ObjectId(req.params.orderID);
 
@@ -1853,6 +1855,8 @@ const renderOrderDetails = async (req, res, next) => {
         address = address[0];
 
         // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
+
+
 
 
         if (orderData && productsData && address) {

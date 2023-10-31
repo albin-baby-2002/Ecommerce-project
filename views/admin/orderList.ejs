@@ -35,19 +35,19 @@
                                 <tr class="">
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting ">
-                                        Date </th>
+                                        DATE </th>
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting">
-                                        Products In Order
+                                        PRODUCTS
                                     </th>
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting">
-                                        Status</th>
+                                        STATUS</th>
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting">
-                                        pay status</th>
+                                        PAY</th>
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting">
@@ -58,18 +58,19 @@
 
                                     <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
                                         class="sorting">
-                                        Discount
+                                        DIS
+                                    </th>
+
+                                    <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
+                                        class="sorting">
+                                        CAT DIS
                                     </th>
 
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
-                                        Final
-                                        Price
+                                        FP
                                     </th>
-                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
-                                        Client
-                                        processing
-                                    </th>
+
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
                                         Actions
@@ -113,7 +114,16 @@
                                         </td>
 
                                         <td data-title="Name">
-                                            <%=orders[i].orderStatus%>
+
+                                            <% if(orders[i].orderStatus==='shipmentProcessing' ){%>
+                                                SP
+                                                <%} else {%>
+
+                                                    <%=orders[i].orderStatus%>
+
+                                                        <%}%>
+
+
                                         </td>
 
                                         <td data-title="Mobile">
@@ -131,12 +141,26 @@
 
                                         </td>
                                         <td data-title="Mobile">
+
+                                            <% if(orders[i].categoryDiscount ){%>
+                                                <%=orders[i].categoryDiscount%>
+                                                    <%} else {%>
+
+                                                        0
+
+                                                        <%}%>
+
+
+
+
+                                        </td>
+                                        <td data-title="Mobile">
                                             <%=orders[i].finalPrice%>
 
                                         </td>
 
 
-                                        <td data-title="Mobile">
+                                        <!-- <td data-title="Mobile">
                                             <% if(orders[i].clientOrderProcessingCompleted){%>
                                                 completed
 
@@ -144,14 +168,13 @@
 
                                                     pending <%}%>
 
-                                        </td>
+                                        </td> -->
 
 
                                         <td>
                                             <button style="background-color: rgb(29, 27, 27); color: aliceblue;"><a
                                                     class="nav-link"
-                                                    href="/admin/order/changeStatus/<%=orders[i]._id%>">change
-                                                    status/cancel</a></button>
+                                                    href="/admin/order/changeStatus/<%=orders[i]._id%>">Modify</a></button>
                                         </td>
 
 
