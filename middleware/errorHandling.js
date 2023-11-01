@@ -41,4 +41,18 @@ const multerErrorHandler = (err, req, res, next) => {
 
 }
 
-module.exports = { userPageNotFound, userErrorHandler, adminErrorHandler, adminPageNotFound, multerErrorHandler }
+
+const parsingErrorHandler = (error, req, res, next) => {
+    if (error instanceof SyntaxError) {
+
+        console.error('JSON parsing error:', error);
+        res.status(400).json({ error: 'Invalid JSON data' });
+
+    } else {
+        console.error('Non parsing Error:', error);
+
+        next(error);
+    }
+}
+
+module.exports = { userPageNotFound, userErrorHandler, adminErrorHandler, adminPageNotFound, multerErrorHandler, parsingErrorHandler }

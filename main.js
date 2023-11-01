@@ -14,7 +14,10 @@ const errorHandler = require('./middleware/errorHandling');
 
 // connecting to mongodb database using mongoose
 
-mongoose.connect(`mongodb+srv://albinbtg:${process.env.MONGODB_ATLAS_PASSWORD}@cluster0.9jzlkwx.mongodb.net/ecommerce?retryWrites=true&w=majority`)
+mongoose.connect(process.env.MONGODB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
     .then(() => {
         console.log('connected to mongodb database')
     })
@@ -34,16 +37,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 
-//session initialization
+// session initialization
 
 app.use(session({
-    secret: "secretkey",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
 
 
-//using session messages for rendering
+// using session messages for rendering
 
 app.use((req, res, next) => {
     res.locals.message = req.session.message;
@@ -53,28 +56,23 @@ app.use((req, res, next) => {
 });
 
 
-//middleware for req data parsing
+// middleware for request data parsing
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((error, req, res, next) => {
-    if (error instanceof SyntaxError) {
-        // Handle JSON parsing errors
-        console.error('JSON parsing error:', error);
-        res.status(400).json({ error: 'Invalid JSON data' });
-    } else {
-        next(error);
-    }
-});
+// middleware to check for syntax error causing parsing error
+
+app.use(errorHandler.parsingErrorHandler);
 
 
-//middleware for serving static files
+// middleware for serving static files
 
 app.use(express.static('public'));
 
 
 // middleware for no cache
+
 app.use(function (req, res, next) {
     res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
     next();
