@@ -690,13 +690,13 @@ const deleteProductHandler = async (req, res, next) => {
 
 
 
-            res.json({ 'success': true });
+            res.status(200).json({ 'success': true, 'message': 'successfully deleted the product' });
 
             return;
 
         } else {
 
-            res.json({ 'success': false });
+            res.status(500).json({ 'success': false, 'message': 'Failed to delete : Server facing issue modifying database' });
             return;
 
         }
@@ -706,7 +706,8 @@ const deleteProductHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        next(err)
+        res.status(500).json({ 'success': false, 'message': 'Failed to delete : Server facing issue modifying database' });
+        return;
     }
 };
 
@@ -744,23 +745,16 @@ const editCategoryHandler = async (req, res, next) => {
 
         discountAmount = Number(discountAmount);
 
-        if (!name || !description || !onDiscount || !discountAmount) {
+        if (!name || !description || !onDiscount) {
 
-            req.session.message = {
-                type: 'success',
-                message: 'All Fields Are Mandatory'
-            }
+            return res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" });
 
-            res.redirect(`/admin/editCategory/${categoryId}`)
+
 
         } else if (Number.isNaN(discountAmount) || discountAmount < 0) {
 
-            req.session.message = {
-                type: 'success',
-                message: 'Discount Amount should be a non negative number'
-            }
+            return res.status(400).json({ "success": false, "message": " Discount Amount should be a non negative number. Try Again !" });
 
-            res.redirect(`/admin/editCategory/${categoryId}`)
 
         }
 
@@ -770,37 +764,21 @@ const editCategoryHandler = async (req, res, next) => {
 
         if (updatedCategory) {
 
-            req.session.message = {
-                type: 'success',
-                message: 'category updated successfully'
-            }
 
-            res.redirect(`/admin/editCategory/${categoryId}`)
-
-            return;
+            return res.status(200).json({ "success": true, "message": " Category updated successfully !" });
 
 
         } else {
 
-            req.session.message = {
-                type: 'danger',
-                message: 'failed to update category'
-            }
-
-            res.redirect('/admin/categoryList');
-            return;
-
+            return res.status(500).json({ "success": true, "message": " Server Facing Issue Updating Data Base !" });
 
         }
-
 
     }
 
     catch (err) {
-
+        return res.status(500).json({ "success": false, "message": " Server Facing Issue Processing Request !" });
     }
-
-
 
 };
 
@@ -817,13 +795,13 @@ const deleteCategoryHandler = async (req, res, next) => {
 
         if (isDeleted) {
 
-            res.json({ 'success': true });
+            res.status(200).json({ 'success': true, 'message': 'successfully deleted the category' });
 
             return;
 
         } else {
 
-            res.json({ 'success': false });
+            res.status(500).json({ 'success': false, "message": 'Server Facing Issue Modifying DB: failed to delete ' });
 
             return;
 
@@ -832,7 +810,8 @@ const deleteCategoryHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        next(err)
+        res.status(500).json({ 'success': false, "message": 'Server Facing Issues: failed to delete ' });
+
     }
 };
 
@@ -975,7 +954,7 @@ const editCouponHandler = async (req, res, next) => {
 
         const couponID = req.params.couponID;
 
-        console.log(req.body);
+        console.log('edit coupon Handler \n \n ', req.body);
 
         let { code, description, rateOfDiscount, maximumDiscount, expirationDate, isActive } = req.body;
 

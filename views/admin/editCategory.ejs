@@ -24,7 +24,7 @@
         <main class="main my-5">
             <div class="container">
 
-                <form class="container  w-50 my-5" action="/admin/editCategory/<%=category._id%>" method="post">
+                <form class="container  w-50 my-5" id="myForm" data="<%=category._id%>">
 
 
                     <div class="form-outline mb-4">
@@ -99,5 +99,7 @@
 
 
         <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/editCategory.js"></script>
 
             <%- include('../layouts/footer.ejs') %>

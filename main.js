@@ -2,6 +2,7 @@
 
 const express = require("express");
 const session = require("express-session");
+const morgan = require('morgan');
 
 const dotenv = require('dotenv').config();
 const mongoose = require("mongoose");
@@ -10,6 +11,11 @@ const userRoute = require('./routes/userRoute');
 const adminRoute = require('./routes/adminRoute');
 
 const errorHandler = require('./middleware/errorHandling');
+
+
+
+
+
 
 
 // connecting to mongodb database using mongoose
@@ -30,6 +36,13 @@ mongoose.connect(process.env.MONGODB_URL, {
 // starting the express server application
 
 const app = express();
+
+// Create a Morgan logger with a specific format
+const logger = morgan('combined');
+
+// Use the logger middleware to log requests
+app.use(logger);
+
 
 
 //initialization of port for listening

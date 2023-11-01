@@ -1,5 +1,8 @@
 
-const form = document.getElementById('addCategoryForm');
+
+const form = document.getElementById('myForm');
+
+const categoryID = form.getAttribute('data');
 
 form.addEventListener('submit', function (event) {
 
@@ -7,6 +10,7 @@ form.addEventListener('submit', function (event) {
 
     const formData = new FormData(form);
 
+    console.log(formData);
 
     const formDataJSON = {};
 
@@ -14,11 +18,10 @@ form.addEventListener('submit', function (event) {
         formDataJSON[key] = value;
     });
 
+    fetch('http://localhost:2500/admin/editCategory/' + categoryID, {
 
+        method: 'PATCH',
 
-    fetch('http://localhost:2500/admin/addCategory', {
-
-        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -49,6 +52,7 @@ form.addEventListener('submit', function (event) {
 
             } else {
 
+
                 notificationMessage.hidden = false;
 
                 messageLine.classList.add('red');
@@ -66,9 +70,8 @@ form.addEventListener('submit', function (event) {
             }
         })
         .catch(error => {
-
-            alert('Failed to add category data due to local / network issues');
             // Handle network or other errors here
+            alert('Failed to add category data due to local / network issues');
             console.error('Error:', error);
         });
 });

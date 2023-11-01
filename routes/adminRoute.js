@@ -49,7 +49,7 @@ router.get('/productList', adminController.renderProductsPage);
 
 // ! block user request handler
 
-router.post('/blockUser', adminController.blockUserHandler);
+router.patch('/blockUser', adminController.blockUserHandler);
 
 // ! add category route handler 
 
@@ -61,12 +61,12 @@ router.route('/addCategory')
 
 router.route('/editCategory/:categoryId')
     .get(adminController.renderEditCategoryPage)
-    .post(adminController.editCategoryHandler);
+    .patch(adminController.editCategoryHandler);
 
 // ! delete category request handler
 
 router.route('/deleteCategory/:categoryId')
-    .post(adminController.deleteCategoryHandler)
+    .delete(adminController.deleteCategoryHandler)
 
 // ! edit product route handler 
 
@@ -77,7 +77,7 @@ router.route('/editProduct/:productId')
 // ! delete product request handler
 
 router.route('/deleteProduct/:productId')
-    .post(adminController.deleteProductHandler)
+    .delete(adminController.deleteProductHandler)
 
 // ! add product route handler
 
@@ -102,7 +102,7 @@ router.get('/couponList', adminController.renderCouponListPage)
 
 router.route('/editCoupon/:couponID')
     .get(adminController.renderEditCouponPage)
-    .put(adminController.editCouponHandler);
+    .patch(adminController.editCouponHandler);
 
 // ! render order page 
 

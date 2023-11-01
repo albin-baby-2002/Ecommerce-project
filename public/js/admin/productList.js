@@ -21,7 +21,7 @@ deleteBtnS.forEach((btn) => {
 async function deleteProduct(data) {
     try {
         const response = await fetch("http://localhost:2500/admin/deleteProduct/" + data, {
-            method: "POST",
+            method: "delete",
             headers: {
                 "Content-Type": "application/json",
             }
@@ -36,7 +36,21 @@ async function deleteProduct(data) {
 
             if (res.success) {
 
-                window.alert("product deleted");
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = res.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 2000)
+
 
                 const row = document.querySelector(`[data-id="${data}"]`);
 
@@ -44,15 +58,44 @@ async function deleteProduct(data) {
 
 
             } else {
-                window.alert("failed to  delete")
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = res.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 2000)
+
             }
         } else {
-            window.alert("failed to  delete")
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = "Failed to Delete ";
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 2000)
         }
 
 
     } catch (error) {
-        window.alert("Failed to delete");
+        window.alert("network/ local issues Failed to Delete");
         console.error(error);
     }
 }
