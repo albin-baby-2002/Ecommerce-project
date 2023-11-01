@@ -2,7 +2,6 @@
 
 const express = require('express');
 const router = express.Router();
-
 const userController = require('../controllers/userController');
 const errorHandler = require('../middleware/errorHandling');
 const productController = require('../controllers/productController')
@@ -12,13 +11,22 @@ const { upload } = require('../middleware/multerMiddlewareForProfile');
 
 
 
-// ! user home render 
+// ! user home page render 
 
 router.get('/', productController.renderHomePage);
 
 // ! search page render 
 
-router.get('/search', productController.renderSearchAndBuy)
+router.get('/search', productController.renderSearchAndBuy);
+
+// ! render single product details page
+
+router.route('/user/productDetails/:groupingID')
+    .get(productController.renderProductDetailsPage)
+
+
+
+
 
 
 // ! signUp render and validation
@@ -33,6 +41,10 @@ router.route('/user/signUp')
 router.route('/user/login')
     .get(userController.renderLoginPage)
     .post(userController.loginHandler);
+
+// ! user logout 
+
+router.get('/user/logout', userController.logoutHandler);
 
 
 // ! otp verification render and validation
@@ -54,15 +66,9 @@ router.route('/user/emailVerification')
     .get(userController.verifyEmailHandler)
 
 
-// ! render single product details page
-
-router.route('/user/productDetails/:groupingID')
-    .get(productController.renderProductDetailsPage)
 
 
-// ! user logout 
 
-router.get('/user/logout', userController.logoutHandler);
 
 
 // ! render forgot password page and handling forgot password req
@@ -84,6 +90,10 @@ router.route('/user/forgotPassword/verifyOTP')
 router.route('/user/resetPassword')
     .get(userController.renderResetPasswordPage)
     .post(userController.resetPasswordHandler)
+
+
+
+
 
 
 // ! add to wishlist handler 
@@ -116,6 +126,10 @@ router.route('/user/cart')
 
 router.get('/user/cartTotal', cartController.getTotalCartPrice);
 
+
+
+
+
 // ! render checkout page 
 
 router.get('/user/checkout', productController.renderCheckOutPage);
@@ -123,6 +137,9 @@ router.get('/user/checkout', productController.renderCheckOutPage);
 // ! add new delivery address handler
 
 router.post('/user/addNewAddress', userController.addNewDeliveryAddress);
+
+
+
 
 // ! render user profile page
 
@@ -137,6 +154,9 @@ router.route('/user/profile/edit')
 // ! change password handler 
 
 router.put('/user/password/change', userController.changePasswordHandler);
+
+
+
 
 
 // ! verify coupon handler 

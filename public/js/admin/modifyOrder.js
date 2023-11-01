@@ -29,7 +29,7 @@ form.addEventListener('submit', function (event) {
 
         fetch('http://localhost:2500/admin/order/changeStatus/' + orderID, {
 
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
