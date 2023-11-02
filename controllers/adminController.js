@@ -1530,7 +1530,6 @@ const getChartDataHandler = async (req, res, next) => {
 
 // ! render the sales report 
 
-
 const renderSalesReport = async (req, res, next) => {
 
     try {
@@ -1538,7 +1537,6 @@ const renderSalesReport = async (req, res, next) => {
         let startingDate = new Date();
         let endingDate = new Date();
 
-        console.log(req.query.startingDate)
 
 
         if (req.query.startingDate) {
@@ -1552,18 +1550,9 @@ const renderSalesReport = async (req, res, next) => {
         }
 
 
-
-
-
-
         startingDate.setUTCHours(0, 0, 0, 0);
 
         endingDate.setUTCHours(23, 59, 59, 999);
-
-
-        console.log(startingDate, endingDate);
-
-
 
 
         let orders = await Order.aggregate([
@@ -1621,19 +1610,14 @@ const renderSalesReport = async (req, res, next) => {
 
         startingDate = startingDate.getFullYear() + '-' + (("0" + (startingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + startingDate.getUTCDate()).slice(-2));
 
-        console.log(endingDate.getDate());
 
 
         endingDate = endingDate.getFullYear() + '-' + (("0" + (endingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + endingDate.getUTCDate()).slice(-2));
 
 
+        return res.render('admin/salesReport.ejs', { orders, startingDate, endingDate });
 
-        console.log(startingDate, endingDate);
 
-
-        res.render('admin/salesReport.ejs', { orders, startingDate, endingDate });
-
-        return;
 
     }
 
@@ -1646,8 +1630,6 @@ const renderSalesReport = async (req, res, next) => {
 
 // ! render sales report pdf page
 
-
-
 const renderSalesReportPdfPage = async (req, res, next) => {
 
     try {
@@ -1655,7 +1637,6 @@ const renderSalesReportPdfPage = async (req, res, next) => {
         let startingDate = new Date();
         let endingDate = new Date();
 
-        console.log(req.query.startingDate)
 
 
         if (req.query.startingDate) {
@@ -1678,7 +1659,6 @@ const renderSalesReportPdfPage = async (req, res, next) => {
         endingDate.setUTCHours(23, 59, 59, 999);
 
 
-        console.log(startingDate, endingDate);
 
 
 
@@ -1738,19 +1718,17 @@ const renderSalesReportPdfPage = async (req, res, next) => {
 
         startingDate = startingDate.getFullYear() + '-' + (("0" + (startingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + startingDate.getUTCDate()).slice(-2));
 
-        console.log(endingDate.getDate());
 
 
         endingDate = endingDate.getFullYear() + '-' + (("0" + (endingDate.getMonth() + 1)).slice(-2)) + '-' + (("0" + endingDate.getUTCDate()).slice(-2));
 
 
 
-        console.log(startingDate, endingDate);
 
 
-        res.render('admin/salesReportPdf.ejs', { orders, startingDate, endingDate });
+        return res.render('admin/salesReportPdf.ejs', { orders, startingDate, endingDate });
 
-        return;
+
 
     }
 
@@ -1783,16 +1761,9 @@ const salesReportInExcel = async (req, res, next) => {
 
 
 
-
-
-
         startingDate.setUTCHours(0, 0, 0, 0);
 
         endingDate.setUTCHours(23, 59, 59, 999);
-
-
-        console.log(startingDate, endingDate);
-
 
 
 
@@ -1880,7 +1851,6 @@ const salesReportInExcel = async (req, res, next) => {
 
         ]).exec();
 
-        console.log(orders);
 
         const workBook = new excelJS.Workbook();
         const worksheet = workBook.addWorksheet('Sales Report');
@@ -1918,6 +1888,7 @@ const salesReportInExcel = async (req, res, next) => {
         return workBook.xlsx.write(res).then(() => {
             res.status(200)
         })
+
 
     }
     catch (err) {
@@ -1974,7 +1945,8 @@ const salesReportInPdf = async (req, res, next) => {
             res.download(pdfURL, function (err) {
 
                 if (err) {
-                    console.log(err)
+
+                    console.log('Failed sending sales report pdf \n \n')
                 }
             })
 
@@ -2004,11 +1976,10 @@ const renderProductOffersPage = async (req, res, next) => {
             }
         }]);
 
-        console.log(products);
 
-        res.render('admin/ProductOffersPage.ejs', { products });
+        return res.render('admin/ProductOffersPage.ejs', { products });
 
-        return;
+
 
     }
 
@@ -2025,7 +1996,6 @@ const addOrModifyProductOffer = async (req, res, next) => {
 
     try {
 
-        console.log("add or modify", req.body);
 
         let { rateOfDiscount } = req.body;
 
@@ -2042,15 +2012,12 @@ const addOrModifyProductOffer = async (req, res, next) => {
         try {
             productID = new mongoose.Types.ObjectId(product.trim());
 
-            console.log(productID)
 
             productData = await Product.findById(productID);
 
-            console.log(productData)
 
         } catch (err) {
 
-            console.log(err);
 
             return res.status(400).json({ success: false, message: 'Enter a valid productID' });
 
@@ -2091,7 +2058,6 @@ const addOrModifyProductOffer = async (req, res, next) => {
 
 
     } catch (err) {
-        console.log(err);
 
         return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
@@ -2104,7 +2070,6 @@ const activateProductOffer = async (req, res, next) => {
 
     try {
 
-        console.log(req.body);
 
         let { productID } = req.body;
 
@@ -2114,15 +2079,12 @@ const activateProductOffer = async (req, res, next) => {
         try {
             productID = new mongoose.Types.ObjectId(productID.trim());
 
-            console.log(productID)
 
             productData = await Product.findById(productID);
 
-            console.log(productData)
 
         } catch (err) {
 
-            console.log(err);
 
             return res.status(500).json({ success: false, message: 'Server facing issues finding the Product Data' });
 
@@ -2143,7 +2105,6 @@ const activateProductOffer = async (req, res, next) => {
 
 
     } catch (err) {
-        console.log(err);
 
         return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
@@ -2156,7 +2117,6 @@ const deactivateProductOffer = async (req, res, next) => {
 
     try {
 
-        console.log('deactivate', req.body);
 
         let { productID } = req.body;
 
@@ -2166,15 +2126,12 @@ const deactivateProductOffer = async (req, res, next) => {
         try {
             productID = new mongoose.Types.ObjectId(productID.trim());
 
-            console.log(productID)
 
             productData = await Product.findById(productID);
 
-            console.log(productData)
 
         } catch (err) {
 
-            console.log(err);
 
             return res.status(500).json({ success: false, message: 'Server facing issues finding the Product Data' });
 
@@ -2195,7 +2152,6 @@ const deactivateProductOffer = async (req, res, next) => {
 
 
     } catch (err) {
-        console.log(err);
 
         return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
@@ -2214,7 +2170,6 @@ const renderCategoryOffersPage = async (req, res, next) => {
             }
         }]);
 
-        console.log(categories);
 
         res.render('admin/categoryOffers.ejs', { categories });
 
@@ -2236,7 +2191,6 @@ const activateCategoryOffer = async (req, res, next) => {
 
     try {
 
-        console.log(req.body);
 
         let { categoryID } = req.body;
 
@@ -2250,11 +2204,9 @@ const activateCategoryOffer = async (req, res, next) => {
 
             categoryData = await Product.findById(categoryID);
 
-            console.log(categoryData)
 
         } catch (err) {
 
-            console.log(err);
 
             return res.status(500).json({ success: false, message: 'Server facing issues finding the category Data' });
 
@@ -2275,7 +2227,6 @@ const activateCategoryOffer = async (req, res, next) => {
 
 
     } catch (err) {
-        console.log(err);
 
         return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
@@ -2290,7 +2241,6 @@ const deactivateCategoryOffer = async (req, res, next) => {
     try {
 
 
-        console.log(req.body);
 
         let { categoryID } = req.body;
 
@@ -2304,11 +2254,9 @@ const deactivateCategoryOffer = async (req, res, next) => {
 
             categoryData = await Product.findById(categoryID);
 
-            console.log(categoryData)
 
         } catch (err) {
 
-            console.log(err);
 
             return res.status(500).json({ success: false, message: 'Server facing issues finding the category Data' });
 
@@ -2330,7 +2278,6 @@ const deactivateCategoryOffer = async (req, res, next) => {
 
 
     } catch (err) {
-        console.log(err);
 
         return res.status(500).json({ success: false, message: 'Server is facing issues: ' });
     }
