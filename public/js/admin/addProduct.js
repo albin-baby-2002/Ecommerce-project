@@ -147,7 +147,7 @@ form.addEventListener('submit', function (event) {
 
                     notificationMessage.hidden = true;
                     messageLine.classList.remove('green');
-                }, 2000)
+                }, 4000)
 
             } else {
 
@@ -165,7 +165,7 @@ form.addEventListener('submit', function (event) {
 
                     notificationMessage.hidden = true;
                     messageLine.classList.remove('red');
-                }, 2000)
+                }, 4000)
             }
         })
         .catch(error => {

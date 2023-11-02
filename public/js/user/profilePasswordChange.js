@@ -20,7 +20,7 @@ form.addEventListener("submit", function (event) {
 
     fetch('http://localhost:2500/user/password/change', {
 
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
         },

@@ -57,7 +57,7 @@ router.route('/user/verifyOTP')
 // ! resend otp 
 
 router.route('/user/resendOTP')
-    .post(userController.resendOtpHandler);
+    .get(userController.resendOtpHandler);
 
 
 // ! email verification page using otp if failed to verify during signUp
@@ -120,7 +120,7 @@ router.route('/user/addToCart')
 router.route('/user/cart')
     .get(cartController.renderCartPage)
     .delete(cartController.deleteItemFromCartHandler)
-    .put(cartController.reduceCartItemQuantityHandler);
+    .patch(cartController.reduceCartItemQuantityHandler);
 
 // ! get total price of cart items 
 
@@ -153,7 +153,7 @@ router.route('/user/profile/edit')
 
 // ! change password handler 
 
-router.put('/user/password/change', userController.changePasswordHandler);
+router.patch('/user/password/change', userController.changePasswordHandler);
 
 
 
@@ -181,7 +181,7 @@ router.get('/user/orders', userController.orderPageRender);
 
 // ! cancel a order 
 
-router.put('/user/order/cancel/:orderID', userController.cancelOrderHandler);
+router.delete('/user/order/cancel/:orderID', userController.cancelOrderHandler);
 
 // ! route to create the razor Pay order 
 

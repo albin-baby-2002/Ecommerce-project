@@ -289,7 +289,7 @@ function reduceOneFromCart(id) {
 
     fetch('http://localhost:2500/user/cart', {
 
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
         },

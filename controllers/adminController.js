@@ -7,7 +7,6 @@ const Product = require('../models/productModel');
 const Coupon = require('../models/couponModel')
 const path = require('path');
 const Order = require('../models/orderModel');
-const { log, Console } = require('console');
 const fsPromises = require('fs').promises;
 const excelJS = require('exceljs');
 const puppeteer = require('puppeteer')
@@ -18,18 +17,13 @@ const renderLoginPage = async (req, res, next) => {
 
     if (req.session.adminLoggedIn && req.session.admin) {
 
-        res.redirect('/admin/usersList');
-
-        return;
+        return res.redirect('/admin/usersList');
 
     }
 
     try {
 
-
-        res.render('admin/adminLogin.ejs');
-
-        return;
+        return res.render('admin/adminLogin.ejs');
 
     }
     catch (err) {
@@ -37,6 +31,7 @@ const renderLoginPage = async (req, res, next) => {
         next(err)
     }
 }
+
 
 //!login handler
 
@@ -52,7 +47,7 @@ const loginHandler = async (req, res, next) => {
 
             req.session.message = {
                 type: 'danger',
-                message: 'All Fields Are Mandatory'
+                message: 'All Fields Are Mandatory !'
             }
 
         }
@@ -60,15 +55,16 @@ const loginHandler = async (req, res, next) => {
 
             req.session.message = {
                 type: 'danger',
-                message: 'Invalid Email: make sure email id is entered correctly'
+                message: 'Invalid Email: make sure email id is entered correctly !'
             }
         }
 
         // redirecting with error if data validation failed 
 
         if (req.session.message && req.session.message.type === 'danger') {
-            res.redirect('/admin');
-            return;
+
+            return res.redirect('/admin');
+
         }
 
 
@@ -81,34 +77,34 @@ const loginHandler = async (req, res, next) => {
                 req.session.admin = admin._id;
                 req.session.adminLoggedIn = true;
 
-                res.redirect('/admin/dashboard');
+                return res.redirect('/admin/dashboard');
 
-                return;
 
             } else {
 
                 req.session.message = {
                     type: 'danger',
-                    message: 'Failed to login : wrong password '
+                    message: 'Failed to login : wrong password ! '
                 };
 
-                res.redirect('/admin');
-                return;
+                return res.redirect('/admin');
+
 
             }
 
 
         }
+
         else {
 
 
             req.session.message = {
                 type: 'danger',
-                message: 'Failed to login : Invalid Email '
+                message: 'Failed to login : Invalid Email !'
             };
 
-            res.redirect('/admin');
-            return;
+            return res.redirect('/admin');
+
         }
 
     }
@@ -118,6 +114,7 @@ const loginHandler = async (req, res, next) => {
     }
 }
 
+
 //!logout handler 
 
 const logoutHandler = async (req, res, next) => {
@@ -126,9 +123,7 @@ const logoutHandler = async (req, res, next) => {
 
         req.session.destroy();
 
-        res.redirect('/admin');
-
-        return;
+        return res.redirect('/admin');
 
     }
     catch (err) {
@@ -140,16 +135,13 @@ const logoutHandler = async (req, res, next) => {
 
 //!render user list 
 
-
 const renderUsersList = async (req, res, next) => {
 
     try {
 
         const users = await User.find({});
 
-        res.render('admin/usersList.ejs', { users });
-
-        return;
+        return res.render('admin/usersList.ejs', { users });
 
     }
     catch (err) {
@@ -157,6 +149,7 @@ const renderUsersList = async (req, res, next) => {
         next(err)
     }
 }
+
 
 //! block user handler
 
@@ -171,38 +164,42 @@ const blockUserHandler = async (req, res, next) => {
 
 
         if (user) {
+
             if (user.blocked) {
 
 
                 const usersData = await User.findByIdAndUpdate(id, { $set: { blocked: false } });
+
                 if (usersData) {
 
-                    res.status(200).json({ 'success': true });
+                    return res.status(200).json({ 'success': true });
 
-                    return;
                 }
                 else {
-                    res.status(500).json({ 'success': false });
 
-                    return;
+                    return res.status(500).json({ 'success': false });
+
                 }
 
             } else {
-                const usersData = await User.findByIdAndUpdate(id, { $set: { blocked: true } });
-                if (usersData) {
-                    res.status(200).json({ 'success': true });
 
-                    return;
+                const usersData = await User.findByIdAndUpdate(id, { $set: { blocked: true } });
+
+                if (usersData) {
+                    return res.status(200).json({ 'success': true });
+
+
                 }
                 else {
-                    res.status(500).json({ 'success': false });
+                    return res.status(500).json({ 'success': false });
 
-                    return;
+
                 }
             }
         } else {
-            res.status(404).json({ 'success': false });
-            return;
+
+            return res.status(404).json({ 'success': false });
+
         }
 
     }
@@ -216,14 +213,12 @@ const blockUserHandler = async (req, res, next) => {
 
 //! Add new category page render
 
-
 const renderAddCategoryPage = async (req, res, next) => {
 
     try {
 
-        res.render('admin/addCategory.ejs');
+        return res.render('admin/addCategory.ejs');
 
-        return;
 
     }
     catch (err) {
@@ -232,23 +227,18 @@ const renderAddCategoryPage = async (req, res, next) => {
     }
 };
 
+
 //!add category handler 
 
 const addCategoryHandler = async (req, res, next) => {
 
     try {
 
-        console.log(req.body)
-
         const { name, description } = req.body;
-
-
 
         if (!name || !description) {
 
-            res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" });
-
-            return;
+            return res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" });
 
         }
 
@@ -258,8 +248,7 @@ const addCategoryHandler = async (req, res, next) => {
 
         if (existingCategory) {
 
-            res.status(409).json({ "success": false, "message": "failed  to add the category already exists!" });
-            return;
+            return res.status(409).json({ "success": false, "message": "failed  to add the category already exists!" })
 
         } else {
 
@@ -269,15 +258,14 @@ const addCategoryHandler = async (req, res, next) => {
 
                 await newCategory.save();
 
-                res.status(201).json({ "success": true, "message": "New category created successfully !" });
+                return res.status(201).json({ "success": true, "message": "New category created successfully !" });
 
-                return;
 
             }
+
             catch (err) {
 
-                res.status(500).json({ "success": false, "message": "Failed to add the category try again ! Hint : facing issue while saving data to database" });
-                return;
+                return res.status(500).json({ "success": false, "message": "Failed to add the category try again ! Hint : facing issue while saving data to database" });
 
             }
 
@@ -287,10 +275,11 @@ const addCategoryHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        res.status(500).json({ "success": false, "message": "Failed to add the category try again Hint: server side issue!" });
-        return;
+        return res.status(500).json({ "success": false, "message": "Failed to add the category try again Hint: server side issue!" })
+
     }
 };
+
 
 //!add product page render
 
@@ -300,9 +289,8 @@ const renderAddProductPage = async (req, res, next) => {
 
         const categories = await Category.find();
 
-        res.render('admin/addProduct.ejs', { categories });
+        return res.render('admin/addProduct.ejs', { categories });
 
-        return;
 
     }
     catch (err) {
@@ -311,6 +299,7 @@ const renderAddProductPage = async (req, res, next) => {
     }
 };
 
+
 //! add product handler
 
 const addProductHandler = async (req, res, next) => {
@@ -318,8 +307,6 @@ const addProductHandler = async (req, res, next) => {
     try {
 
         const files = req.files;
-
-        console.log(files);
 
         const listOfImageNames = Object.entries(files).map((arr) => arr[1][0].filename);
 
@@ -334,22 +321,22 @@ const addProductHandler = async (req, res, next) => {
 
         if (!name || !category || !description || !price || !groupingID || !size || !color) {
 
-            res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
+            return res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
 
-            return;
+
 
         } else if (isNaN(groupingID) || groupingID < 1000) {
 
-            res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
+            return res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
 
-            return;
+
 
         }
         else if (isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
 
-            res.status(400).json({ "success": false, "message": " Price and stock value should be non negative numerical values. Try Again !" })
+            return res.status(400).json({ "success": false, "message": " Price and stock value should be non negative numerical values. Try Again !" })
 
-            return;
+
         }
 
 
@@ -359,15 +346,14 @@ const addProductHandler = async (req, res, next) => {
 
             await newProduct.save();
 
-            res.status(201).json({ "success": true, "message": " New product successfully added " })
-            return;
+            return res.status(201).json({ "success": true, "message": " New product successfully added " })
+
         }
         catch (err) {
 
-            console.log(err);
 
-            res.status(500).json({ "success": false, "message": " Failed to add the product. Try again ! Hint: failed saving to database" })
-            return;
+            return res.status(500).json({ "success": false, "message": " Failed to add the product. Try again ! Hint: failed saving to database" })
+
 
 
         }
@@ -378,12 +364,12 @@ const addProductHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        console.log(err)
 
-        res.status(500).json({ "success": false, "message": " Failed to add the product. Try again ! Hint: server side error" })
+        return res.status(500).json({ "success": false, "message": " Failed to add the product. Try again ! Hint: server side error" })
 
     }
 };
+
 
 //! categories list render
 
@@ -393,9 +379,7 @@ const renderCategoriesPage = async (req, res, next) => {
 
         const categories = await Category.find();
 
-        res.render('admin/categoriesList.ejs', { categories });
-
-        return;
+        return res.render('admin/categoriesList.ejs', { categories });
 
     }
     catch (err) {
@@ -403,6 +387,7 @@ const renderCategoriesPage = async (req, res, next) => {
         next(err)
     }
 };
+
 
 //! product list render
 
@@ -410,19 +395,40 @@ const renderProductsPage = async (req, res, next) => {
 
     try {
 
-        let products = await Product.find().lean();
 
-        // find the list of products first then map all the products so that the category id can be used to find the category name and can be used to replace category id and use Promise.all because it need to await for all products category to be found;
+        let products = await Product.aggregate([{
 
-        products = await Promise.all(products.map(async (product) => {
+            $lookup: {
+                from: 'categories',
+                localField: 'category',
+                foreignField: '_id',
+                as: 'categoryData'
 
-            let category = await Category.findOne({ _id: product.category }, { name: 1, _id: 0 });
+            }
 
-            return { ...product, category: category.name }
-        }))
+        },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                groupingID: 1,
+                description: 1,
+                images: 1,
+                price: 1,
+                size: 1,
+                color: 1,
+                stock: 1,
+                onSale: 1,
+                reviews: 1,
+                __v: 1,
+                category: { $arrayElemAt: ['$categoryData.name', 0] }
+            }
+        }
+
+        ]);
 
 
-        res.render('admin/productsList.ejs', { products })
+        return res.render('admin/productsList.ejs', { products })
 
     }
     catch (err) {
@@ -430,6 +436,7 @@ const renderProductsPage = async (req, res, next) => {
         next(err)
     }
 };
+
 
 //!render edit product page
 
@@ -444,16 +451,10 @@ const renderEditProductPage = async (req, res, next) => {
 
         let productCategory = await Category.findOne({ _id: productData.category });
 
-
-
         productData = { ...productData, category: productCategory.name }
 
+        return res.render('admin/editProduct.ejs', { categories, product: productData });
 
-
-
-        res.render('admin/editProduct.ejs', { categories, product: productData });
-
-        return;
 
     }
     catch (err) {
@@ -465,14 +466,11 @@ const renderEditProductPage = async (req, res, next) => {
 
 //!edit product handler 
 
-
 const editProductHandler = async (req, res, next) => {
 
     try {
 
-        console.log('edit product handler \n \n', req.params.productId);
-
-        console.log(req.files);
+        // getting data of images and product to update
 
         const files = req.files;
 
@@ -480,47 +478,46 @@ const editProductHandler = async (req, res, next) => {
             return [arr[1][0].fieldname, arr[1][0].filename]
         });
 
-        console.log(infoOfUpdatedImgs);
-
-
-        let { name, category, price, stock, description, onSale, groupingID, size, color, onOffer,
-            rateOfDiscount } = req.body;
-
-        groupingID = Number(groupingID)
-
+        let { name, category, price,
+            stock, description, onSale,
+            groupingID, size, color,
+            onOffer, rateOfDiscount } = req.body;
 
 
         const productId = req.params.productId;
 
-
+        groupingID = Number(groupingID)
         price = Number(price);
         stock = Number(stock);
         onSale = onSale.trim();
         size = size.trim();
         rateOfDiscount = Number(rateOfDiscount)
 
+        // validation of product data for update
 
         if (!name || !category || !groupingID || !description || !price || !onSale || !size || !color || !onOffer) {
 
-            res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
 
-            return;
+            return res.status(400).json({ "success": false, "message": "All fields are mandatory. Try Again !" })
+
 
         } else if (isNaN(groupingID) || groupingID < 1000) {
 
-            res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
+
+            return res.status(400).json({ "success": false, "message": " Grouping ID should be a  numerical ID greater 1000. Hint: it is id used to group together different color and size variant of a product  !" })
+
 
         } else if (Number.isNaN(price) || Number.isNaN(stock) || Number.isNaN(rateOfDiscount) || price < 0 || stock < 0 || rateOfDiscount < 0) {
 
-            res.status(400).json({ "success": false, "message": " Price , rate of discount and stock value should be non negative numerical values. Try Again !" })
+            return res.status(400).json({ "success": false, "message": " Price , rate of discount and stock value should be non negative numerical values. Try Again !" })
 
-            return;
 
         }
 
         onSale = onSale === 'true' ? true : false;
         onOffer = onOffer === 'true' ? true : false;
 
+        //calculating product discount and offer price
 
         const productPrice = price;
         const discountAmount = (productPrice * rateOfDiscount) / 100;
@@ -530,14 +527,16 @@ const editProductHandler = async (req, res, next) => {
         offerPrice = Math.ceil(offerPrice);
 
 
+        // getting existing img data and finding images that need to be replaced
 
         const existingProductData = await Product.findById(productId).lean();
-
 
         let images = existingProductData.images;
 
         let oldImages = [];
 
+
+        // looping through new images to find the old images and updating images array to include new img and removing old images
 
         infoOfUpdatedImgs.forEach((info) => {
 
@@ -547,14 +546,12 @@ const editProductHandler = async (req, res, next) => {
 
             if (matchedImg) {
 
-                console.log(" \n matched" + matchedImg);
 
 
                 for (let i = 0; i < images.length; i++) {
 
                     if (images[i].toLowerCase() === matchedImg.toLowerCase()) {
 
-                        console.log('ok inside \n \n');
 
                         oldImages.push(images[i]);
 
@@ -565,55 +562,41 @@ const editProductHandler = async (req, res, next) => {
 
             } else {
 
-                console.log('image match not found');
-
-
-                res.status(500).json({ "success": false, "message": " failed to update the product !" })
-
-                return;
-
+                return res.status(500).json({ "success": false, "message": " failed to update the product !" })
 
             }
 
         })
 
 
-        console.log(images);
-
-        console.log(oldImages);
-
-
-
-
+        // updating product data with new image data and edited fields
 
         const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: { name: name, price: price, stock: stock, description: description, category: category, onSale: onSale, images: images, groupingID, size: size.toLowerCase(), color: color.toLowerCase(), onOffer: onOffer, rateOfDiscount: rateOfDiscount, offerPrice: offerPrice } })
 
 
         if (updatedProduct) {
 
-
-
+            // if update successful deleting the images in old images array 
 
             oldImages.forEach(async (img) => {
 
                 try {
                     await fsPromises.unlink(path.join(__dirname, '../public/img/productImages', img));
 
-                    console.log('deleted old images ');
                 }
                 catch (err) {
 
-                    console.log(err);
-                    console.log('failed deletion error');
 
                 }
             })
 
-            res.status(201).json({ "success": true, "message": " Product edited successfully  " })
+            return res.status(201).json({ "success": true, "message": " Product edited successfully  " })
 
-            return;
+
 
         } else {
+
+            // if not updated deleting new images that was saved as saved as replacement
 
             try {
 
@@ -623,36 +606,29 @@ const editProductHandler = async (req, res, next) => {
 
                     await fsPromises.unlink(imgPath);
 
-                    console.log('new images deleted due to failed update');
 
                 })
 
             } catch (err) {
 
-                console.log(err);
             }
 
 
 
-            res.status(500).json({ "success": false, "message": " failed to update the product !" })
+            return res.status(500).json({ "success": false, "message": " failed to update the product !" })
 
 
-            return;
+
         }
-
-
-
-
-
 
     }
     catch (err) {
-        console.log(err);
 
-        res.status(500).json({ "success": false, "message": " failed to update the product !" });
+        return res.status(500).json({ "success": false, "message": " failed to update the product !" });
 
     }
 };
+
 
 //! delete product handler
 
@@ -662,42 +638,31 @@ const deleteProductHandler = async (req, res, next) => {
 
         const productId = req.params.productId;
 
-
-
         const Deleted = await Product.findByIdAndDelete(productId);
+
 
         if (Deleted) {
 
             const oldImages = Deleted.images;
-            console.log(oldImages);
 
-            oldImages.forEach(async (img) => {
+            if (oldImages.length > 0) {
 
-                try {
+                oldImages.forEach(async (img) => {
+
                     await fsPromises.unlink(path.join(__dirname, '../public/img/productImages', img));
 
-                    console.log('deleted old images ');
-                }
-                catch (err) {
 
-                    console.log(err);
-                    console.log('failed deletion error');
+                })
+            }
 
-                    return;
-                }
-            })
+            return res.status(200).json({ 'success': true, 'message': 'successfully deleted the product' });
 
 
-
-
-            res.status(200).json({ 'success': true, 'message': 'successfully deleted the product' });
-
-            return;
 
         } else {
 
-            res.status(500).json({ 'success': false, 'message': 'Failed to delete : Server facing issue modifying database' });
-            return;
+            return res.status(500).json({ 'success': false, 'message': 'Failed to delete : Server facing issue modifying database' });
+
 
         }
 
@@ -706,8 +671,7 @@ const deleteProductHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        res.status(500).json({ 'success': false, 'message': 'Failed to delete : Server facing issue modifying database' });
-        return;
+        return res.status(500).json({ 'success': false, 'message': 'Failed to delete : Server facing issue modifying database' });
     }
 };
 
@@ -722,9 +686,8 @@ const renderEditCategoryPage = async (req, res, next) => {
 
         let categoryData = await Category.findOne({ _id: categoryId });
 
-        res.render('admin/editCategory.ejs', { category: categoryData });
+        return res.render('admin/editCategory.ejs', { category: categoryData });
 
-        return;
 
     }
     catch (err) {
@@ -795,22 +758,20 @@ const deleteCategoryHandler = async (req, res, next) => {
 
         if (isDeleted) {
 
-            res.status(200).json({ 'success': true, 'message': 'successfully deleted the category' });
+            return res.status(200).json({ 'success': true, 'message': 'successfully deleted the category' });
 
-            return;
 
         } else {
 
-            res.status(500).json({ 'success': false, "message": 'Server Facing Issue Modifying DB: failed to delete ' });
+            return res.status(500).json({ 'success': false, "message": 'Server Facing Issue Modifying DB: failed to delete ' });
 
-            return;
 
         }
 
     }
     catch (err) {
 
-        res.status(500).json({ 'success': false, "message": 'Server Facing Issues: failed to delete ' });
+        return res.status(500).json({ 'success': false, "message": 'Server Facing Issues: failed to delete ' });
 
     }
 };
@@ -890,7 +851,6 @@ const addCouponHandler = async (req, res, next) => {
 
     catch (err) {
 
-        console.log(err);
 
         res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
 
@@ -932,7 +892,6 @@ const renderEditCouponPage = async (req, res, next) => {
 
         const coupon = await Coupon.findById(couponID);
 
-        console.log(coupon)
 
         res.render('admin/editCoupon.ejs', { coupon });
 
@@ -954,7 +913,6 @@ const editCouponHandler = async (req, res, next) => {
 
         const couponID = req.params.couponID;
 
-        console.log('edit coupon Handler \n \n ', req.body);
 
         let { code, description, rateOfDiscount, maximumDiscount, expirationDate, isActive } = req.body;
 
@@ -1004,7 +962,6 @@ const editCouponHandler = async (req, res, next) => {
 
     catch (err) {
 
-        console.log(err);
 
         res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
 
@@ -1086,11 +1043,9 @@ const renderOrderEditPage = async (req, res, next) => {
             }
         }]).exec();
 
-        console.log(orderData);
 
         const orderStatusEnum = Order.schema.path('orderStatus').enumValues;
 
-        console.log(orderStatusEnum);
 
         res.render('admin/modifyOrder.ejs', { orderData, orderStatusEnum })
 
@@ -1110,22 +1065,18 @@ const modifyOrderStatusHandler = async (req, res, next) => {
 
         const { orderStatus } = req.body;
 
-        console.log(req.body);
-
         const orderID = req.params.orderID;
 
         const orderExist = await Order.findById(orderID);
 
-        console.log(orderExist)
-
         if (!orderExist) {
-            res.status(500).json({ "success": false, "message": 'server facing issues finding order data  try again' })
 
-            return;
+            return res.status(500).json({ "success": false, "message": 'server facing issues finding order data try again' })
+
         } else if (orderExist.orderStatus === 'delivered') {
-            res.status(400).json({ "success": false, "message": " The order is already delivered you can't change its status " });
 
-            return;
+            return res.status(400).json({ "success": false, "message": " The order is already delivered you can't change its status " });
+
         }
 
 
@@ -1134,16 +1085,17 @@ const modifyOrderStatusHandler = async (req, res, next) => {
 
         if (updatedOrder instanceof Order) {
 
-            res.status(200).json({ "success": true, "message": 'order status updated' })
+            return res.status(200).json({ "success": true, "message": 'order status updated' });
+
         } else {
-            res.status(500).json({ "success": false, "message": 'server facing issues try again' })
+
+            return res.status(500).json({ "success": false, "message": 'server facing issues try again' });
         }
 
     }
     catch (err) {
-        console.log(err);
 
-        res.status(500).json({ "success": false, "message": 'server facing issues try again' })
+        return res.status(500).json({ "success": false, "message": 'server facing issues try again' });
     }
 
 }
@@ -1154,12 +1106,9 @@ const renderAdminDashboard = async (req, res, next) => {
 
     try {
 
-
-
         let ProductsCount = await Product.aggregate([
 
             {
-
                 $match: { onSale: true }
 
             },
@@ -1170,38 +1119,41 @@ const renderAdminDashboard = async (req, res, next) => {
                     count: { $sum: 1 }
                 }
             }
+
         ]).exec();
 
-        let ordersData = await Order.aggregate([{
+
+        let ordersData = await Order.aggregate([
+
+            {
+
+                $match: {
+
+                    $and: [
 
 
-            $match: {
+                        {
+                            orderStatus: {
+                                $nin: ['clientSideProcessing', 'cancelled']
+                            }
+                        },
 
-                $and: [
+                        {
+                            paymentStatus: {
+                                $nin: ['pending', 'failed', 'refunded', 'cancelled']
+                            }
+                        },
+                        { clientOrderProcessingCompleted: true }]
+                },
 
+            }, {
 
-                    {
-                        orderStatus: {
-                            $nin: ['clientSideProcessing', 'cancelled']
-                        }
-                    },
-
-                    {
-                        paymentStatus: {
-                            $nin: ['pending', 'failed', 'refunded', 'cancelled']
-                        }
-                    },
-                    { clientOrderProcessingCompleted: true }]
-            },
-
-        }, {
-
-            $group: {
-                _id: null,
-                count: { $sum: 1 },
-                totalRevenue: { $sum: '$finalPrice' }
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                    totalRevenue: { $sum: '$finalPrice' }
+                }
             }
-        }
 
         ]).exec()
 
@@ -1214,7 +1166,6 @@ const renderAdminDashboard = async (req, res, next) => {
         let totalRevenue = ordersData[0].totalRevenue;
 
         let totalUsers = await User.countDocuments();
-
 
         res.render('admin/adminDashboard.ejs', { totalUsers, totalProducts, totalOrders, totalRevenue });
 
@@ -1238,10 +1189,6 @@ const getChartDataHandler = async (req, res, next) => {
         let timeBaseForOrderNoChart = req.query.orderChart;
         let timeBaseForOrderTypeChart = req.query.orderType;
         let timeBaseForCategoryBasedChart = req.query.categoryChart;
-
-
-        console.log(timeBaseForCategoryBasedChart, timeBaseForOrderNoChart, timeBaseForOrderTypeChart, timeBaseForSalesChart)
-
 
 
         function getDatesAndQueryData(timeBaseForChart, chartType) {
@@ -1294,7 +1241,6 @@ const getChartDataHandler = async (req, res, next) => {
                 endDate.setUTCMinutes(endDate.getUTCMinutes() + timezoneOffset);
 
 
-                console.log('final \n ', startDate, '\n', endDate);
 
 
                 groupingQuery = {
@@ -1322,7 +1268,6 @@ const getChartDataHandler = async (req, res, next) => {
 
                 const timezoneOffset = startDate.getTimezoneOffset();
 
-                console.log('offset', timezoneOffset);
 
 
                 startDate.setUTCHours(0, 0, 0, 0);
@@ -1332,14 +1277,11 @@ const getChartDataHandler = async (req, res, next) => {
                 endDate.setDate(endDate.getDate() + 1)
 
 
-                console.log('utcZero', startDate);
-                console.log('utcZero', endDate);
 
                 startDate.setUTCMinutes(startDate.getUTCMinutes() + timezoneOffset);
 
                 endDate.setUTCMinutes(endDate.getUTCMinutes() + timezoneOffset);
 
-                console.log('final', startDate, endDate);
 
                 groupingQuery = {
                     _id: { $hour: "$orderDate" },
@@ -1349,6 +1291,8 @@ const getChartDataHandler = async (req, res, next) => {
 
                 sortQuery = { '_id.hour': 1 }
             }
+
+
 
 
             if (chartType === 'sales') {
@@ -1370,7 +1314,12 @@ const getChartDataHandler = async (req, res, next) => {
             }
 
 
+
         }
+
+
+
+
 
         const salesChartInfo = getDatesAndQueryData(timeBaseForSalesChart, 'sales');
 
@@ -1557,15 +1506,6 @@ const getChartDataHandler = async (req, res, next) => {
 
 
 
-        console.log('sales \n \n', salesChartData, '\n\n\n')
-
-        console.log('orderType \n \n', orderChartData, '\n\n\n')
-
-        console.log('categoryBased \n \n', categoryWiseChartData, '\n\n\n')
-
-        console.log('orderNo \n \n', orderNoChartData, '\n\n\n')
-
-
         let saleChartInfo = { timeBasis: timeBaseForSalesChart, data: salesChartData };
 
         let orderTypeChartInfo = { timeBasis: timeBaseForOrderTypeChart, data: orderChartData };
@@ -1577,9 +1517,9 @@ const getChartDataHandler = async (req, res, next) => {
 
 
 
-        res.status(200).json({ saleChartInfo, orderTypeChartInfo, categoryChartInfo, orderQuantityChartInfo });
+        return res.status(200).json({ saleChartInfo, orderTypeChartInfo, categoryChartInfo, orderQuantityChartInfo });
 
-        return;
+
 
     }
     catch (err) {

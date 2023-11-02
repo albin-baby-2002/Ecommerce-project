@@ -1489,13 +1489,49 @@ const cancelOrderHandler = async (req, res, next) => {
 
         }
 
-        const userID = req.session.userID;
+        const userID = new mongoose.Types.ObjectId(req.session.userID);
 
-        const orderID = req.params.orderID;
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
 
         const orderExist = await Order.findOne({ _id: orderID, userID });
 
         const orderPrice = orderExist.finalPrice;
+
+        const products = await Order.aggregate([{
+            $match: {
+                _id: orderID,
+                userID: userID
+            }
+        }
+            , {
+            $project: {
+                orderItems: 1
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedProducts',
+            }
+        }, {
+            $unwind: '$orderedProducts'
+        }, {
+            $replaceRoot: {
+                newRoot: '$orderedProducts'
+            }
+        }, {
+            $project: {
+                product: 1,
+                quantity: 1
+            }
+        }
+
+        ])
+
+        console.log('cancel order \n \n', products);
+
+
 
         if (orderExist.orderStatus === 'delivered') {
 
@@ -1505,28 +1541,55 @@ const cancelOrderHandler = async (req, res, next) => {
 
         }
 
+
+        let cancelledOrder;
+
+
         if (orderExist instanceof Order && orderExist.paymentMethod === 'cod') {
 
-            const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled' } });
+            cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled' } });
 
-            if (cancelledOrder instanceof Order) {
+
+        } else if (orderExist instanceof Order && orderExist.paymentMethod === 'onlinePayment' && orderExist.paymentStatus === 'paid') {
+
+
+            cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled', paymentStatus: 'refunded' } });
+
+        }
+
+
+
+
+        if (cancelledOrder instanceof Order) {
+
+
+            console.log('cancelled')
+
+
+
+            for (const product of products) {
+
+                const updatedStock = await Product.findByIdAndUpdate(product.product, { $inc: { stock: product.quantity } });
+
+                if (updatedStock instanceof Product) {
+
+                    console.log('successfully changed stock');
+                } else {
+
+                    console.log('failed to  increase stock');
+                }
+
+            }
+
+            if (orderExist instanceof Order && orderExist.paymentMethod === 'cod') {
 
                 res.status(200).json({ "success": true, "message": " Order Cancelled successfully" })
 
                 return;
-
-            } else {
-
-                res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
-
-                return;
             }
 
-        } else if (orderExist instanceof Order && orderExist.paymentMethod === 'onlinePayment' && orderExist.paymentStatus === 'paid') {
 
-            const cancelledOrder = await Order.findByIdAndUpdate(orderExist._id, { $set: { orderStatus: 'cancelled', paymentStatus: 'refunded' } });
-
-            if (cancelledOrder instanceof Order) {
+            if (orderExist instanceof Order && orderExist.paymentMethod === 'onlinePayment') {
 
                 const refund = await User.findByIdAndUpdate(userID, { $inc: { wallet: orderPrice } })
 
@@ -1542,19 +1605,16 @@ const cancelOrderHandler = async (req, res, next) => {
                     return
                 }
 
-
-
-            } else {
-
-                res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
-
-                return;
             }
 
 
-        }
-        else {
+
+
+        } else {
+
             res.status(500).json({ "success": false, "message": "server while trying to cancel the order" });
+
+            return;
         }
     }
 

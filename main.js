@@ -41,7 +41,8 @@ const app = express();
 const logger = morgan('combined');
 
 // Use the logger middleware to log requests
-app.use(logger);
+
+// app.use(logger);
 
 
 
