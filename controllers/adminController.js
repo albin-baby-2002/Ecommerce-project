@@ -782,9 +782,9 @@ const addCouponPageRender = async (req, res, next) => {
 
     try {
 
-        res.render('admin/addCouponPage.ejs',);
+        return res.render('admin/addCouponPage.ejs',);
 
-        return;
+
 
     }
 
@@ -814,16 +814,16 @@ const addCouponHandler = async (req, res, next) => {
 
         if (!code || !description || !rateOfDiscount || !maximumDiscount || !expirationDate || !isActive) {
 
-            res.status(400).json({ "success": false, "message": "All fields are mandatory. and rate of discount and maximum discount should be above zero Try Again !" })
+            return res.status(400).json({ "success": false, "message": "All fields are mandatory. and rate of discount and maximum discount should be above zero Try Again !" })
 
-            return;
+
 
         }
         else if (isNaN(rateOfDiscount) || isNaN(maximumDiscount) || rateOfDiscount < 0 || maximumDiscount < 0) {
 
-            res.status(400).json({ "success": false, "message": " Rate of discount and maximum discount value should be non negative numerical values. Try Again !" })
+            return res.status(400).json({ "success": false, "message": " Rate of discount and maximum discount value should be non negative numerical values. Try Again !" })
 
-            return;
+
         }
 
         isActive = isActive === 'true' ? true : false;
@@ -836,15 +836,15 @@ const addCouponHandler = async (req, res, next) => {
 
         if (savedData instanceof Coupon) {
 
-            res.status(201).json({ "success": true, "message": " new coupon created !" });
+            return res.status(201).json({ "success": true, "message": " new coupon created !" });
 
-            return;
+
         }
 
 
-        res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
+        return res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
 
-        return;
+
 
 
     }
@@ -852,7 +852,7 @@ const addCouponHandler = async (req, res, next) => {
     catch (err) {
 
 
-        res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
+        return res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
 
     }
 };
@@ -867,9 +867,9 @@ const renderCouponListPage = async (req, res, next) => {
 
 
 
-        res.render('admin/couponListPage.ejs', { coupons });
+        return res.render('admin/couponListPage.ejs', { coupons });
 
-        return;
+
 
     }
 
@@ -893,9 +893,9 @@ const renderEditCouponPage = async (req, res, next) => {
         const coupon = await Coupon.findById(couponID);
 
 
-        res.render('admin/editCoupon.ejs', { coupon });
+        return res.render('admin/editCoupon.ejs', { coupon });
 
-        return;
+
 
     }
 
@@ -926,16 +926,16 @@ const editCouponHandler = async (req, res, next) => {
 
         if (!code || !description || !rateOfDiscount || !maximumDiscount || !expirationDate || !isActive) {
 
-            res.status(400).json({ "success": false, "message": "All fields are mandatory. and rate of discount and maximum discount should be above zero Try Again !" })
+            return res.status(400).json({ "success": false, "message": "All fields are mandatory. and rate of discount and maximum discount should be above zero Try Again !" })
 
-            return;
+
 
         }
         else if (isNaN(rateOfDiscount) || isNaN(maximumDiscount) || rateOfDiscount <= 0 || maximumDiscount <= 0) {
 
-            res.status(400).json({ "success": false, "message": " Rate of discount and maximum discount value should be non negative numerical values. Try Again !" })
+            return res.status(400).json({ "success": false, "message": " Rate of discount and maximum discount value should be non negative numerical values. Try Again !" })
 
-            return;
+
         }
 
         isActive = isActive === 'true' ? true : false;
@@ -947,15 +947,15 @@ const editCouponHandler = async (req, res, next) => {
 
         if (updatedCoupon instanceof Coupon) {
 
-            res.status(201).json({ "success": true, "message": " coupon updated Successfully !" });
+            return res.status(201).json({ "success": true, "message": " coupon updated Successfully !" });
 
-            return;
+
         }
 
 
-        res.status(500).json({ "success": false, "message": " Failed to edit coupon server facing issues !" })
+        return res.status(500).json({ "success": false, "message": " Failed to edit coupon server facing issues !" })
 
-        return;
+
 
 
     }
@@ -963,9 +963,8 @@ const editCouponHandler = async (req, res, next) => {
     catch (err) {
 
 
-        res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
+        return res.status(500).json({ "success": false, "message": " Failed to add new coupon server facing issues !" })
 
-        return;
 
     }
 };
@@ -1016,9 +1015,9 @@ const renderOrdersPage = async (req, res, next) => {
 
 
 
-        res.render('admin/orderList.ejs', { orders });
+        return res.render('admin/orderList.ejs', { orders });
 
-        return;
+
 
     }
 
@@ -1047,7 +1046,7 @@ const renderOrderEditPage = async (req, res, next) => {
         const orderStatusEnum = Order.schema.path('orderStatus').enumValues;
 
 
-        res.render('admin/modifyOrder.ejs', { orderData, orderStatusEnum })
+        return res.render('admin/modifyOrder.ejs', { orderData, orderStatusEnum })
 
     }
     catch (err) {
@@ -1167,7 +1166,7 @@ const renderAdminDashboard = async (req, res, next) => {
 
         let totalUsers = await User.countDocuments();
 
-        res.render('admin/adminDashboard.ejs', { totalUsers, totalProducts, totalOrders, totalRevenue });
+        return res.render('admin/adminDashboard.ejs', { totalUsers, totalProducts, totalOrders, totalRevenue });
 
     }
     catch (err) {
@@ -2171,9 +2170,9 @@ const renderCategoryOffersPage = async (req, res, next) => {
         }]);
 
 
-        res.render('admin/categoryOffers.ejs', { categories });
+        return res.render('admin/categoryOffers.ejs', { categories });
 
-        return;
+
 
     }
 

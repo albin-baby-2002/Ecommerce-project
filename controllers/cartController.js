@@ -183,7 +183,7 @@ const renderCartPage = async (req, res, next) => {
                 type: 'danger',
                 message: 'Login to view your cart '
             }
-            res.redirect('/');
+            return res.redirect('/');
 
 
         }
@@ -341,7 +341,7 @@ const deleteItemFromCartHandler = async (req, res, next) => {
 
         if (!req.session.userID) {
 
-            res.status(401).json({
+            return res.status(401).json({
                 "success": false,
                 "message": "session timedOut login to remove item from cart"
             })

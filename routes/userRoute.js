@@ -7,6 +7,7 @@ const errorHandler = require('../middleware/errorHandling');
 const productController = require('../controllers/productController')
 const cartController = require('../controllers/cartController');
 const checkoutController = require('../controllers/checkoutController');
+const ordersController = require('../controllers/ordersController')
 const { upload } = require('../middleware/multerMiddlewareForProfile');
 
 
@@ -132,11 +133,11 @@ router.get('/user/cartTotal', cartController.getTotalCartPrice);
 
 // ! render checkout page 
 
-router.get('/user/checkout', productController.renderCheckOutPage);
+router.get('/user/checkout', checkoutController.renderCheckOutPage);
 
 // ! add new delivery address handler
 
-router.post('/user/addNewAddress', userController.addNewDeliveryAddress);
+router.post('/user/addNewAddress', checkoutController.addNewDeliveryAddress);
 
 
 
@@ -177,31 +178,31 @@ router.post('/user/placeOrder/cod', checkoutController.placeCodOrderHandler)
 
 // ! orders page render 
 
-router.get('/user/orders', userController.orderPageRender);
+router.get('/user/orders', ordersController.orderPageRender);
 
 // ! cancel a order 
 
-router.delete('/user/order/cancel/:orderID', userController.cancelOrderHandler);
+router.delete('/user/order/cancel/:orderID', ordersController.cancelOrderHandler);
 
 // ! route to create the razor Pay order 
 
-router.post('/user/razorPay/createOrder/:orderID', userController.razorPayCreateOrder);
+router.post('/user/razorPay/createOrder/:orderID', ordersController.razorPayCreateOrder);
 
 // ! payment success req from client 
 
-router.post('/user/razorPay/payment-success', userController.paymentSuccessHandler)
+router.post('/user/razorPay/payment-success', ordersController.paymentSuccessHandler)
 
 // ! order Details page render 
 
-router.get('/user/orderDetails/:orderID', userController.renderOrderDetails)
+router.get('/user/orderDetails/:orderID', ordersController.renderOrderDetails)
 
 // ! invoice page render 
 
-router.get('/user/invoice/:orderID', userController.renderInvoicePage)
+router.get('/user/invoice/:orderID', ordersController.renderInvoicePage)
 
 // !download invoice 
 
-router.get('/user/invoice/download/:orderID', userController.downloadInvoice)
+router.get('/user/invoice/download/:orderID', ordersController.downloadInvoice)
 
 // ! for rendering error page for unknown / critical error
 
