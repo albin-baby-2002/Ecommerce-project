@@ -4,12 +4,14 @@ const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
 const Product = require('../models/productModel');
-const Coupon = require('../models/couponModel')
+const Coupon = require('../models/couponModel');
+const Banner = require('../models/bannerModel');
 const path = require('path');
 const Order = require('../models/orderModel');
 const fsPromises = require('fs').promises;
 const excelJS = require('exceljs');
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer');
+
 
 //!render login page
 
@@ -2282,6 +2284,121 @@ const deactivateCategoryOffer = async (req, res, next) => {
     }
 };
 
+// !render banner management page 
+
+const renderBannerManagementPage = async (req, res, next) => {
+
+    try {
+
+
+        const banners = await Banner.find();
+
+
+        return res.render('admin/bannerManagement.ejs', { banners });
+
+
+
+
+
+    }
+
+    catch (err) {
+
+        next(err)
+    }
+};
+
+// ! banner creation handler
+
+const bannerCreationHandler = async (req, res, next) => {
+
+    try {
+
+        const file = req.file;
+
+        const { name, description } = req.body;
+
+        console.log(file, name, description);
+
+        const newBanner = new Banner({ name, description, image: file.filename, active: true })
+
+
+        newBanner.save()
+            .then(async savedProduct => {
+
+                const updateOtherBanners = await Banner.updateMany({ _id: { $ne: savedProduct._id }, active: true }, { $set: { active: false } });
+
+
+
+                return res.status(200).json({ success: true, message: 'Success' });
+            })
+
+            .catch(error => {
+                return res.status(500).json({ success: false, message: 'Server is facing issues saving banner data into DB' });
+            });
+
+
+
+
+
+
+
+
+
+
+    }
+
+    catch (err) {
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: Failed to save the data  ' });
+    }
+};
+
+
+// ! banner change 
+
+const bannerChangeHandler = async (req, res, next) => {
+
+    try {
+
+        let bannerID = req.params.bannerID;
+
+        bannerID = bannerID.trim();
+
+        console.log('bannerId ', bannerID);
+
+        const activateNewBanner = await Banner.findByIdAndUpdate(bannerID, { $set: { active: true } });
+
+
+        if (activateNewBanner instanceof Banner) {
+
+            const deactivateOtherBanners = await Banner.updateMany(
+                { _id: { $ne: bannerID }, active: true },
+                { $set: { active: false } }
+            );
+
+
+            return res.status(200).json({ success: true, message: 'Success' });
+
+        }
+
+
+
+
+
+
+
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+        return res.status(500).json({ success: false, message: 'Server is facing issues: Failed to save the data  ' });
+    }
+};
+
 
 
 module.exports = {
@@ -2322,6 +2439,9 @@ module.exports = {
     deactivateProductOffer,
     renderCategoryOffersPage,
     activateCategoryOffer,
-    deactivateCategoryOffer
+    deactivateCategoryOffer,
+    renderBannerManagementPage,
+    bannerCreationHandler,
+    bannerChangeHandler
 
 }

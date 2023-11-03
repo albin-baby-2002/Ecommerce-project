@@ -24,16 +24,44 @@
 
         <!-- Shop Section Begin -->
         <section class="shop spad" style="background-color: rgba(255, 255, 255, 0.557);">
-            <div class="container">
-                <div class="row">
+            <div class="mx-5">
+                <div class="row ">
                     <div class="col-lg-3">
                         <div class="shop__sidebar">
+
+
                             <div class="shop__sidebar__search">
                                 <form action="#" id="searchBar">
                                     <input type="text" placeholder="Search..." id="search">
                                     <button type="submit"><span class="icon_search"></span></button>
                                 </form>
                             </div>
+
+                            <div class="shop__sidebar__search">
+                                <div class="w-100 d-flex justify-content-start ">
+
+                                    <div class="shop__product__option__right w-100 ">
+
+                                        <select name="sortby" id="sortby" class="sortby w-100" style="font-size: 1rem; font-weight: bold;padding: 10px; -webkit-appearance: none;
+                                            -moz-appearance: none;
+                                            text-indent: 1px;
+                                            text-overflow: '';
+                                            text-align: center;">
+
+                                            <option value="" <% if (!sortBy) { %> selected <% } %> disabled>SORT BY
+                                            </option>
+                                            <option value="lowPrice" <% if (sortBy==='lowPrice' ) { %> selected <% } %>
+                                                    >Price Low to High
+                                            </option>
+                                            <option value="highPrice" <% if (sortBy==='highPrice' ) { %> selected <% }
+                                                    %>>Price High to Low
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <div class="shop__sidebar__accordion">
                                 <div class="accordion" id="accordionExample">
 
@@ -42,9 +70,12 @@
                                     <div class="position-relative w-100">
                                         <div class="custom-selected w-100">
                                             <button
-                                                class="select-button font-weight-bold d-flex justify-content-around align-items-center w-100">
-                                                <span>Categories </span><i
-                                                    class="fa-solid fa-caret-down ml-3"></i></button>
+                                                class="select-button font-weight-bold d-flex justify-content-center align-items-center w-100">
+                                                <span>CATEGORIES </span>
+                                                <!-- <i
+                                                    class="fa-solid fa-caret-down ml-3"></i> -->
+
+                                            </button>
 
                                         </div>
                                         <ul class="select-options position-relative w-100">
@@ -80,6 +111,8 @@
 
 
 
+
+
                                 </div>
                             </div>
                         </div>
@@ -97,12 +130,12 @@
                                                             <%}%> of <%=count %> results</p>
                                     </div>
                                 </div>
-                                <p class="col-lg-2 col-md-2 col-sm-2 p-1 text-right">Sort by Price:</p>
+                                <!-- <p class="col-lg-2 col-md-2 col-sm-2 p-1 text-right">Sort by Price:</p> -->
                                 <div class="col-lg-3 col-md-3 col-sm-3 mt-1 d-flex justify-content-start ">
 
                                     <div class="shop__product__option__right  ">
 
-                                        <select name="sortby" id="sortby" class="sortby">
+                                        <select name="sortby" id="sortby" class="sortby" style="font-size: 1rem;">
 
                                             <option value="" <% if (!sortBy) { %> selected <% } %> disabled>Select
                                             </option>
@@ -115,15 +148,16 @@
                                         </select>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row justify-content-center">
 
                             <% if(products.length>0){ %>
                                 <% for(let i=0; i < products.length ;i++) { %>
 
 
-                                    <div class="col-lg-4 col-md-4 col-sm-6 mx-1 pl-0" style="max-width: 262px;">
+                                    <div class="col-lg-4 col-md-4 mx-1 pl-0" style="max-width: 262px;">
 
                                         <div class="product__item">
                                             <div click-id="productDetailsLink" group-id="<%=products[i].groupingID%>"
@@ -165,25 +199,31 @@
                                                     <i class="fa fa-star-o"></i>
                                                 </div>
 
-                                                <div class="d-flex">
-                                                    <h5 class=" mr-3" <% if(products[i].onOffer &&
-                                                        products[i].rateOfDiscount>0){ %>
+                                                <div class="d-flex product__text2">
+                                                    <h5 class="  w-100">
+
+                                                        <span class="mr-3" <% if(products[i].onOffer &&
+                                                            products[i].rateOfDiscount>0){ %>
 
 
-                                                        style="color:grey;text-decoration: line-through;"
+                                                            style="color:grey;text-decoration: line-through;"
 
-                                                        <%}%>
+                                                            <%}%>
+                                                                >
+                                                                ₹ <%=products[i].price%>
+                                                        </span>
 
-                                                            >₹<%=products[i].price%>
+
+
+
+                                                        <% if(products[i].onOffer && products[i].rateOfDiscount>
+                                                            0){ %>
+
+
+                                                            ₹ <%=products[i].offerPrice%>
                                                     </h5>
 
-                                                    <% if(products[i].onOffer && products[i].rateOfDiscount>0){ %>
-
-                                                        <h5>
-                                                            ₹ <%=products[i].offerPrice%>
-                                                        </h5>
-
-                                                        <%}%>
+                                                    <%}%>
 
 
                                                 </div>

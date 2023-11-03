@@ -4,7 +4,8 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const errorHandler = require('../middleware/errorHandling');
-const { upload } = require('../middleware/multerMiddlewares');
+const multerForProduct = require('../middleware/multerMiddlewares');
+const multerForBanner = require('../middleware/multerMiddlewareForBanner');
 const { adminLoginValidation } = require('../middleware/loginValidation')
 
 
@@ -86,7 +87,7 @@ router.get('/productList', adminController.renderProductsPage);
 
 router.route('/editProduct/:productId')
     .get(adminController.renderEditProductPage)
-    .post(upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.editProductHandler);
+    .post(multerForProduct.upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.editProductHandler);
 
 // ! delete product request handler
 
@@ -98,7 +99,7 @@ router.route('/deleteProduct/:productId')
 router.route('/addProduct')
     .get(adminController.renderAddProductPage)
 
-    .post(upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.addProductHandler);
+    .post(multerForProduct.upload.fields([{ name: 'mainImg', maxCount: 1 }, { name: 'mainImgThumbnail', maxCount: 1 }, { name: 'secondImg', maxCount: 1 }, { name: 'secondImgThumbnail', maxCount: 1 }, { name: 'thirdImg', maxCount: 1 }, { name: 'thirdImgThumbnail', maxCount: 1 }]), errorHandler.multerErrorHandler, adminController.addProductHandler);
 
 
 
@@ -210,6 +211,16 @@ router.patch('/categoryOffer/deactivate', adminController.deactivateCategoryOffe
 
 
 
+// ! render banner management 
+
+router.route('/banner')
+    .get(adminController.renderBannerManagementPage)
+    .post(multerForBanner.upload.single('image'), adminController.bannerCreationHandler);
+
+
+// ! banner change 
+
+router.patch('/bannerChange/:bannerID', adminController.bannerChangeHandler)
 
 
 // ! for rendering error page for unknown / critical error

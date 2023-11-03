@@ -5,7 +5,8 @@ const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 const WishList = require('../models/wishListModel');
 const Address = require('../models/addressModel');
-const Cart = require('../models/cartModel')
+const Banner = require('../models/bannerModel');
+const Cart = require('../models/cartModel');
 const { default: mongoose } = require('mongoose');
 
 
@@ -100,12 +101,14 @@ const renderHomePage = async (req, res, next) => {
 
     try {
 
+        const banner = await Banner.findOne({ active: true });
+
         const products = await Product.find()
 
             .limit(8)
             .exec();
 
-        res.render('users/home.ejs', { products });
+        res.render('users/home.ejs', { products, banner });
 
     }
     catch (err) {
