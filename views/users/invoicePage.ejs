@@ -225,7 +225,10 @@
                                     </span></li>
                                 <li>Coupon Discount <span>- <%=orderData.discountAmount %></span></li>
 
-                                <li>Flat Category Discount <span>- <%=orderData.categoryDiscount %></span></li>
+                                <% if(orderData.categoryDiscount> 0){%>
+                                    <li>Flat Category Discount <span>- <%=orderData.categoryDiscount %></span></li>
+                                    <%}%>
+
 
 
                             </ul>

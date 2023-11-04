@@ -32,10 +32,16 @@
 
                             <div class="shop__sidebar__search col-4 col-md-12 ">
                                 <form action="#" id="searchBar">
-                                    <input type="text" placeholder="Search..." id="search">
-                                    <button type="submit"><span class="icon_search"></span></button>
+                                    <input style="font-size: .8rem; " type="text" placeholder="Search..." id="search">
+
+                                    <button type="submit"><span class="icon_search ml-1"></span></button>
                                 </form>
                             </div>
+
+
+
+
+
 
                             <div class="shop__sidebar__search col-4 col-md-12">
                                 <div class="w-100 d-flex justify-content-start ">
@@ -46,7 +52,8 @@
                                             -moz-appearance: none;
                                             text-indent: 1px;
                                             text-overflow: '';
-                                            text-align: center;">
+                                            text-align: center;
+                                            min-height: 42px;">
 
                                             <option value="" <% if (!sortBy) { %> selected <% } %> disabled>SORT BY
                                             </option>
@@ -62,7 +69,49 @@
                             </div>
 
 
-                            <div class="shop__sidebar__accordion col-4 col-md-12 ">
+                            <div class="shop__sidebar__search col-4 col-md-12">
+                                <div class="w-100 d-flex justify-content-start ">
+
+                                    <div class="shop__product__option__right w-100  pt-0">
+
+                                        <select name="categories" id="categories" class="categories catSearch w-100"
+                                            style="font-size: .7rem; font-weight: bold;padding: 10px; -webkit-appearance: none;
+                                            -moz-appearance: none;
+                                            text-indent: 1px;
+                                            text-overflow: '';
+                                            text-align: center;
+                                            min-height: 42px;">
+
+                                            <option value="" <% if (!sortBy) { %> selected <% } %> disabled> CATEGORIES
+                                            </option>
+
+
+
+
+
+                                            <% for(let i=0;i<categories.length;i++){ %>
+
+                                                <option value="<%= categories[i]._id %>" <% if
+                                                    (categories[i]._id.toString()===categoryID ) { %> selected <% } %>
+                                                        ><%= categories[i].name %>
+                                                </option>
+
+
+
+
+                                                <% } %>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+                            <!-- <div class="shop__sidebar__accordion col-4 col-md-12 ">
                                 <div class="accordion" id="accordionExample">
 
 
@@ -72,8 +121,7 @@
                                             <button
                                                 class="select-button font-weight-bold d-flex justify-content-center align-items-center w-100">
                                                 <span>CATEGORIES </span>
-                                                <!-- <i
-                                                    class="fa-solid fa-caret-down ml-3"></i> -->
+                                                
 
                                             </button>
 
@@ -115,7 +163,8 @@
 
 
                                 </div>
-                            </div>
+                            </div> -->
+
                         </div>
                     </div>
                     <div class="col-md-9  mt-lg-0">

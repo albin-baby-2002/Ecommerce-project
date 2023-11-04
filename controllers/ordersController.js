@@ -155,7 +155,11 @@ const orderPageRender = async (req, res, next) => {
                             productInfo: {
                                 name: { $arrayElemAt: ["$$item.productInfo.name", 0] },
                                 price: { $arrayElemAt: ["$$item.productInfo.price", 0] },
-                                color: { $arrayElemAt: ["$$item.productInfo.color", 0] }
+                                color: { $arrayElemAt: ["$$item.productInfo.color", 0] },
+
+                                images: { $arrayElemAt: ["$$item.productInfo.images", 0] },
+                                onOffer: { $arrayElemAt: ["$$item.productInfo.onOffer", 0] },
+                                offerPrice: { $arrayElemAt: ["$$item.productInfo.offerPrice", 0] }
 
                             }
                         }
