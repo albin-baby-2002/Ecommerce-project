@@ -1,3 +1,1 @@
-let table = new DataTable('#myTable', {
-    scrollX: true
-});
+let table = new DataTable('#myTable');

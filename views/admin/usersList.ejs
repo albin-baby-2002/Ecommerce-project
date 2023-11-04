@@ -9,10 +9,10 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="breadcrumb__text">
-                            <h4>Users List</h4>
+                            <h4>User List</h4>
                             <div class="breadcrumb__links">
                                 <a href="./index.html">Home</a>
-                                <span>Users List</span>
+                                <span>User List</span>
                             </div>
                         </div>
                     </div>
@@ -23,20 +23,35 @@
 
         <main class="main my-5">
             <div class="container">
-                <div>
+
+
+                <div class="table-responsive" id="no-more-tables">
                     <table class="table table-striped bg-white" id="myTable">
                         <thead class=" ">
-                            <tr class="text-center">
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting ">
+                            <tr class="">
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting ">
                                     Name</th>
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
-                                    Email</th>
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
-                                    Mobile</th>
-                                <th class="bg-dark text-white" style="font-size: 15px;" scope="col" class="sorting">
-                                    Verified</th>
-                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">Actions
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
+                                    Email
                                 </th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
+                                    Mobile</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
+                                    Verified</th>
+
+                                <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
+                                    class="sorting">
+                                    Actions
+                                </th>
+
+
+
 
                             </tr>
                         </thead>
@@ -44,7 +59,6 @@
 
                             <% if(users.length>0){ %>
                                 <% for(let i=0; i < users.length ;i++) { %>
-
 
                                     <tr class="text-center" style="font-size: medium;">
                                         <td data-title="Name">
@@ -61,7 +75,7 @@
                                         </td>
 
 
-                                        <td data-title="Actions " class="d-flex h-100 justify-content-center "
+                                        <td data-title="Actions " class="d-flex justify-content-center "
                                             style="font-size: 10px;">
 
                                             <button class="btn btn-sm 
@@ -74,6 +88,8 @@
                                             </button>
 
 
+                                            <!-- <button class="btn  btn-sm btn-outline-danger" style="border-radius: 0;"
+                                                href="">remove</button> -->
 
                                         </td>
                                     </tr>
@@ -83,7 +99,8 @@
 
                                             <tr>
 
-                                                <td class="text-danger" colspan="5">Users Not Found</td>
+                                                <td class=" text-danger" colspan="5">Users List is Empty
+                                                </td>
                                             </tr>
 
                                             <% } %>
@@ -97,6 +114,7 @@
                 </div>
             </div>
         </main>
+
 
 
 

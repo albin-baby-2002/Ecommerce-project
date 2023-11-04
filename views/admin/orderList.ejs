@@ -22,7 +22,7 @@
 
 
         <main class="main my-5">
-            <div class="container">
+            <div class="container-lg">
 
                 <% if(orders.length>0) { %>
 
@@ -36,8 +36,8 @@
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
                                         class="sorting ">
                                         DATE </th>
-                                    <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col"
-                                        class="sorting">
+                                    <th class="bg-dark text-white text-center" style="font-size: 15px;min-width: 225px;"
+                                        scope="col" class="sorting">
                                         PRODUCTS
                                     </th>
 
@@ -56,7 +56,7 @@
 
 
 
-                                    <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
+                                    <!-- <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
                                         class="sorting">
                                         DIS
                                     </th>
@@ -64,7 +64,7 @@
                                     <th class="bg-dark text-white" text-center style="font-size: 15px;" scope="col"
                                         class="sorting">
                                         CAT DIS
-                                    </th>
+                                    </th> -->
 
 
                                     <th class="bg-dark text-white text-center" style="font-size: 15px;" scope="col">
@@ -94,7 +94,7 @@
                                                 <%=shortDate %>
 
                                         </td>
-                                        <td style="max-width: 200px;" data-title="Email">
+                                        <td data-title="Email">
 
                                             <ul>
                                                 <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
@@ -136,7 +136,7 @@
 
                                         </td>
 
-                                        <td data-title="Mobile">
+                                        <!-- <td data-title="Mobile">
                                             <%=orders[i].discountAmount%>
 
                                         </td>
@@ -153,7 +153,7 @@
 
 
 
-                                        </td>
+                                        </td> -->
                                         <td data-title="Mobile">
                                             <%=orders[i].finalPrice%>
 
