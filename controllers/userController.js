@@ -214,7 +214,7 @@ const signUpHandler = async (req, res, next) => {
 
     }
     catch (err) {
-        console.log(err)
+
         next(err)
     }
 }
@@ -363,7 +363,7 @@ const resendOtpHandler = async (req, res, next) => {
 
             return res.status(500).json({ "success": false, 'message': "Server facing some issues try again  !" });
 
-            console.log('failed')
+
 
 
         }
@@ -1038,7 +1038,7 @@ const renderUserProfile = async (req, res, next) => {
 
 
 
-        console.log(user);
+
 
 
 
@@ -1047,7 +1047,6 @@ const renderUserProfile = async (req, res, next) => {
     }
     catch (err) {
 
-        console.log(err);
 
         next(err)
     }
@@ -1089,7 +1088,7 @@ const renderEditProfilePage = async (req, res, next) => {
 
     }
     catch (err) {
-        console.log(err);
+
 
         next(err)
     }
@@ -1128,7 +1127,7 @@ const editProfileHandler = async (req, res, next) => {
             }
         };
 
-        console.log(req.file);
+
 
         let profileImg
 
@@ -1157,7 +1156,7 @@ const editProfileHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        console.log(err);
+
 
         return res.status(500).json({ "success": false, "message": "Failed to update the Profile Hint: server facing issues !" })
 

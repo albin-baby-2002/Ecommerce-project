@@ -178,7 +178,7 @@ const orderPageRender = async (req, res, next) => {
 
         ]).exec()
 
-        console.log('\n\n\n' + JSON.stringify(orders, null, 2) + '\n\n\n');
+
 
 
         return res.render('users/allOrders.ejs', { orders });
@@ -186,7 +186,7 @@ const orderPageRender = async (req, res, next) => {
     }
     catch (err) {
 
-        console.log(err);
+
 
         next(err)
     }
@@ -247,7 +247,7 @@ const cancelOrderHandler = async (req, res, next) => {
 
         ])
 
-        console.log('cancel order \n \n', products);
+
 
 
 
@@ -281,7 +281,6 @@ const cancelOrderHandler = async (req, res, next) => {
         if (cancelledOrder instanceof Order) {
 
 
-            console.log('cancelled')
 
 
 
@@ -289,13 +288,6 @@ const cancelOrderHandler = async (req, res, next) => {
 
                 const updatedStock = await Product.findByIdAndUpdate(product.product, { $inc: { stock: product.quantity } });
 
-                if (updatedStock instanceof Product) {
-
-                    console.log('successfully changed stock');
-                } else {
-
-                    console.log('failed to  increase stock');
-                }
 
             }
 
@@ -392,14 +384,14 @@ const razorPayCreateOrder = async (req, res, next) => {
                 return res.status(500).json({ 'success': false, "message": 'server facing issues when creating order' });
             }
 
-            console.log(order)
+
             return res.status(200).json({ 'success': true, "message": 'continue', order });
         });
 
 
     }
     catch (err) {
-        console.log(err);
+
 
         return res.status(500).json({ 'success': false, "message": 'server facing issues when creating order' })
     }
@@ -414,8 +406,6 @@ const paymentSuccessHandler = async (req, res, next) => {
     try {
 
         const userID = req.session.userID;
-
-        console.log(req.body);
 
         const { receipt, id } = req.body;
 
@@ -468,7 +458,6 @@ const paymentSuccessHandler = async (req, res, next) => {
                 }
             });
 
-        console.log('updateOrder', updatedOrder);
 
         if (updatedOrder instanceof Order) {
 
@@ -480,13 +469,13 @@ const paymentSuccessHandler = async (req, res, next) => {
 
             if (userDataUpdate instanceof User) {
 
-                return res.status(200).json({ 'success': true, "message": ' order placed successfully' });
+                res.status(200).json({ 'success': true, "message": ' order placed successfully' });
 
                 const userCart = await Cart.findOne({ userID: userID });
 
                 const itemsInCart = userCart.items;
 
-                console.log(itemsInCart);
+
 
                 for (const item of orderedItems) {
 
@@ -501,9 +490,7 @@ const paymentSuccessHandler = async (req, res, next) => {
 
                     const updatedCart = await Cart.findByIdAndUpdate(userCart._id, { $set: { items: [] } });
 
-                    if (updatedCart instanceof Cart) {
-                        console.log('successfully removed from the cart');
-                    }
+
 
                 }
 
@@ -521,7 +508,6 @@ const paymentSuccessHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        console.log(err);
 
         return res.status(500).json({ 'success': false, "message": ' Payment successful but server facing error updating order info contact customer service' })
     }
@@ -611,7 +597,6 @@ const renderOrderDetails = async (req, res, next) => {
         ]).exec();
 
 
-        console.log('\n\n\n' + JSON.stringify(productsData, null, 2) + '\n\n\n');
 
 
         let address = await Order.aggregate([{
@@ -640,7 +625,7 @@ const renderOrderDetails = async (req, res, next) => {
 
         address = address[0];
 
-        // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
+
 
 
 
@@ -675,7 +660,6 @@ const renderOrderDetails = async (req, res, next) => {
 
     catch (err) {
 
-        console.log(err)
     }
 }
 
@@ -748,8 +732,6 @@ const renderInvoicePage = async (req, res, next) => {
         ]).exec();
 
 
-        console.log('\n\n\n' + JSON.stringify(productsData, null, 2) + '\n\n\n');
-
 
         let address = await Order.aggregate([{
             $match: {
@@ -777,7 +759,6 @@ const renderInvoicePage = async (req, res, next) => {
 
         address = address[0];
 
-        // console.log('\n\n\n' + JSON.stringify(address, null, 2) + '\n\n\n');
 
 
         if (orderData && productsData && address) {
@@ -810,7 +791,7 @@ const renderInvoicePage = async (req, res, next) => {
 
     catch (err) {
 
-        console.log(err)
+        next(err)
     }
 }
 

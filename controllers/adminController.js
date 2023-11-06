@@ -2290,15 +2290,9 @@ const renderBannerManagementPage = async (req, res, next) => {
 
     try {
 
-
         const banners = await Banner.find();
 
-
         return res.render('admin/bannerManagement.ejs', { banners });
-
-
-
-
 
     }
 
@@ -2318,8 +2312,6 @@ const bannerCreationHandler = async (req, res, next) => {
 
         const { name, description } = req.body;
 
-        console.log(file, name, description);
-
         const newBanner = new Banner({ name, description, image: file.filename, active: true })
 
 
@@ -2328,23 +2320,12 @@ const bannerCreationHandler = async (req, res, next) => {
 
                 const updateOtherBanners = await Banner.updateMany({ _id: { $ne: savedProduct._id }, active: true }, { $set: { active: false } });
 
-
-
                 return res.status(200).json({ success: true, message: 'Success' });
             })
 
             .catch(error => {
                 return res.status(500).json({ success: false, message: 'Server is facing issues saving banner data into DB' });
             });
-
-
-
-
-
-
-
-
-
 
     }
 
@@ -2365,8 +2346,6 @@ const bannerChangeHandler = async (req, res, next) => {
 
         bannerID = bannerID.trim();
 
-        console.log('bannerId ', bannerID);
-
         const activateNewBanner = await Banner.findByIdAndUpdate(bannerID, { $set: { active: true } });
 
 
@@ -2383,17 +2362,9 @@ const bannerChangeHandler = async (req, res, next) => {
         }
 
 
-
-
-
-
-
-
     }
 
     catch (err) {
-
-        console.log(err);
 
         return res.status(500).json({ success: false, message: 'Server is facing issues: Failed to save the data  ' });
     }

@@ -108,7 +108,7 @@ const renderHomePage = async (req, res, next) => {
             .limit(8)
             .exec();
 
-        res.render('users/home.ejs', { products, banner });
+        return res.render('users/home.ejs', { products, banner });
 
     }
     catch (err) {
@@ -315,7 +315,7 @@ const renderWishListPage = async (req, res, next) => {
             type: 'danger',
             message: 'Login to view your wishlist'
         }
-        res.redirect('/');
+        return res.redirect('/');
 
 
     }
@@ -367,7 +367,7 @@ const renderWishListPage = async (req, res, next) => {
 
 
 
-        res.render('users/wishlist.ejs', { products: productsInWishList });
+        return res.render('users/wishlist.ejs', { products: productsInWishList });
 
 
 
@@ -392,7 +392,7 @@ const removeFromWishListHandler = async (req, res, next) => {
             type: 'danger',
             message: 'Your session Timed out login to access wishlist'
         }
-        res.redirect('/');
+        return res.redirect('/');
 
 
     }

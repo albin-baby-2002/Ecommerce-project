@@ -1,7 +1,6 @@
 const path = require('path');
 
 const multer = require('multer');
-const { log } = require('console');
 const imageTypes = /^(image\/(jpeg|png|svg|jpg|webp))$/i;
 
 
@@ -26,7 +25,7 @@ const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
 
-        console.log(path.extname(file.originalname), '  \n', file.mimetype);
+
 
         const extname = imageTypes.test(path.extname(file.originalname).toLowerCase());
 
