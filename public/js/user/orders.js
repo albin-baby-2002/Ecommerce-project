@@ -21,8 +21,8 @@ cancelOrderBtns.forEach((cancelOrderBtn) => {
 
 
 async function cancelTheOrder(idData) {
-
-    await fetch("http://localhost:2500/user/order/cancel/" + idData, {
+    const currentURL = window.location.origin;
+    await fetch(currentURL + "/user/order/cancel/" + idData, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",

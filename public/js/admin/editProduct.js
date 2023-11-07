@@ -123,8 +123,9 @@ form.addEventListener('submit', function (event) {
 
     console.log(formData);
 
+    const currentURL = window.location.origin;
 
-    fetch('http://localhost:2500/admin/editProduct/' + productID, {
+    fetch(currentURL + '/admin/editProduct/' + productID, {
         method: 'POST',
 
         body: formData,

@@ -17,8 +17,8 @@ form.addEventListener('submit', function (event) {
     formData.forEach((value, key) => {
         formDataJSON[key] = value;
     });
-
-    fetch('http://localhost:2500/admin/editCategory/' + categoryID, {
+    const currentURL = window.location.origin;
+    fetch(currentURL + '/admin/editCategory/' + categoryID, {
 
         method: 'PATCH',
 

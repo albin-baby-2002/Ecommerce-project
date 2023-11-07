@@ -17,8 +17,9 @@ form.addEventListener("submit", function (event) {
 
 
 
+    const currentURL = window.location.origin;
 
-    fetch('http://localhost:2500/user/password/change', {
+    fetch(currentURL + '/user/password/change', {
 
         method: 'PATCH',
         headers: {

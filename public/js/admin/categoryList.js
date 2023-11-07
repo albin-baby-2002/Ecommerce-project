@@ -29,8 +29,9 @@ async function deleteCategory(data) {
     try {
 
         console.log(data);
+        const currentURL = window.location.origin;
 
-        const response = await fetch("http://localhost:2500/admin/deleteCategory/" + data, {
+        const response = await fetch(currentURL + "/admin/deleteCategory/" + data, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

@@ -63,11 +63,11 @@ switch (performance.navigation.type) {
 }
 
 
-
+const currentURL = window.location.origin;
 
 async function resendOTP() {
     try {
-        const response = await fetch("http://localhost:2500/user/resendOTP/", {
+        const response = await fetch(currentURL + "/user/resendOTP/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

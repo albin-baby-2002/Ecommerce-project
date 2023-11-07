@@ -3,7 +3,9 @@ function removeFromCart(id) {
 
     const dataForDeletion = { cartItemID };
 
-    fetch('http://localhost:2500/user/cart', {
+    const currentURL = window.location.origin;
+
+    fetch(currentURL + '/user/cart', {
 
         method: 'DELETE',
         headers: {
@@ -46,7 +48,9 @@ function removeFromCart(id) {
 
 
 
-                fetch('http://localhost:2500/user/cartTotal', {
+                const currentURL = window.location.origin;
+
+                fetch(currentURL + '/user/cartTotal', {
 
                     method: 'GET'
 
@@ -135,7 +139,9 @@ function addToCart(id, cartItemID) {
 
     console.log(cartData)
 
-    fetch('http://localhost:2500/user/addToCart', {
+    const currentURL = window.location.origin;
+
+    fetch(currentURL + '/user/addToCart', {
 
         method: 'POST',
         headers: {
@@ -188,7 +194,9 @@ function addToCart(id, cartItemID) {
                 }
 
 
-                fetch('http://localhost:2500/user/cartTotal', {
+                const currentURL = window.location.origin;
+
+                fetch(currentURL + '/user/cartTotal', {
 
                     method: 'GET'
 
@@ -287,7 +295,9 @@ function reduceOneFromCart(id) {
 
     console.log(cartData)
 
-    fetch('http://localhost:2500/user/cart', {
+    const currentURL = window.location.origin;
+
+    fetch(currentURL + '/user/cart', {
 
         method: 'PATCH',
         headers: {
@@ -327,7 +337,9 @@ function reduceOneFromCart(id) {
 
                 quantityDiv.textContent = (quantity - 1);
 
-                fetch('http://localhost:2500/user/cartTotal', {
+                const currentURL = window.location.origin;
+
+                fetch(currentURL + '/user/cartTotal', {
 
                     method: 'GET'
 

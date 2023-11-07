@@ -40,8 +40,8 @@ addressForm.addEventListener("submit", function (event) {
 
 
 
-
-    fetch('http://localhost:2500/user/addNewAddress', {
+    const currentURL = window.location.origin;
+    fetch(currentURL + '/user/addNewAddress', {
 
         method: 'POST',
         headers: {
@@ -152,8 +152,8 @@ couponValidityForm.addEventListener("submit", function (event) {
 
 
 
-
-    fetch('http://localhost:2500/user/coupon/verify', {
+    const currentURL = window.location.origin;
+    fetch(currentURL + '/user/coupon/verify', {
 
         method: 'POST',
         headers: {
@@ -342,8 +342,8 @@ proceedToPayment.addEventListener('click', (e) => {
     const orderData = { deliveryAddressID, couponCodeApplied, paymentMethod };
 
     console.log(orderData);
-
-    fetch('http://localhost:2500/user/checkout/addressCouponAndItems', {
+    const currentURL = window.location.origin;
+    fetch(currentURL + '/user/checkout/addressCouponAndItems', {
 
         method: 'POST',
         headers: {
