@@ -18,20 +18,20 @@ form.addEventListener('submit', function (event) {
 
     console.log(formDataJSON);
 
-    console.log('http://localhost:2500/admin/editCoupon/' + couponID);
-
-
 
     fetch('http://localhost:2500/admin/editCoupon/' + couponID, {
 
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
         },
 
         body: JSON.stringify(formDataJSON),
     })
-        .then(response => response.json())
+        .then(response => {
+            console.log(response);
+            return response.json()
+        })
         .catch(error => {
 
             notificationMessage.hidden = false;
@@ -51,7 +51,9 @@ form.addEventListener('submit', function (event) {
 
             console.error('Error:', error);
         })
-        .then(data => {
+        .then((data) => {
+
+            console.log(data);
 
             if (data.success) {
 

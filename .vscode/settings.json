@@ -5,6 +5,7 @@
         "networkidle",
         "orderitems",
         "Razorpay",
-        "reciept"
+        "reciept",
+        "resave"
     ]
 }

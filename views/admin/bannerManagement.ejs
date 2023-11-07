@@ -1,0 +1,202 @@
+<%- include('../layouts/header.ejs') %>
+
+    <%- include('../admin/adminHeader.ejs') %>
+
+        <!-- Breadcrumb Section Begin -->
+
+        <section class="breadcrumb-option">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="breadcrumb__text">
+                            <h4>Banner Management</h4>
+                            <div class="breadcrumb__links">
+                                <a href="./index.html">Home</a>
+                                <span>Banner Management</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <main class="main my-5">
+            <div class="container">
+
+                <h1 class="text-center font-weight-bold">Add New Banner </h1>
+
+                <form class="container col-lg-8 my-5" id="myForm">
+
+
+                    <div class="form-outline mb-4">
+
+                        <input type="text" id="bannerName" class="form-control" name="name" required />
+
+                        <label class="form-label mt-2" for="bannerName">Banner Title </label>
+                    </div>
+
+
+
+                    <div class="input-group mb-4">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" span-id="image">Upload</span>
+                        </div>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input addProductImg" id="image"
+                                aria-describedby="UPLOADBASICIMG" name="image">
+                            <label class="custom-file-label" for="bannerImg"> Banner Img </label>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+                    <div class="form-outline mb-2 w-100">
+
+                        <textarea class="w-100" name="description" required></textarea>
+
+                        <label class="form-label mt-2" for="bannerDescription"> Banner Description </label>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-dark btn-block mb-4"> Create New Banner</button>
+
+
+                </form>
+
+
+            </div>
+
+
+
+            <div class="container table-responsive" id="no-more-tables">
+
+                <h2 class="text-center mb-5 font-weight-bold">Select The Banner Style</h2>
+
+                <table class="table table-striped bg-white" id="">
+                    <thead class=" ">
+                        <tr class="text-center">
+                            <th class="bg-dark text-center text-white" style="font-size: .8rem ; width: 200px;"
+                                scope="col" class="sorting ">
+                                Name</th>
+                            <th class="bg-dark text-center text-white" style="font-size: .8rem ; width: 200px;"
+                                scope="col" class="sorting ">
+                                Image</th>
+
+
+
+                            <th class="bg-dark text-center text-white" style="font-size: .8rem; max-width: 200px; "
+                                scope="col" class="sorting">
+                                Description</th>
+
+
+                            <th class="bg-dark text-center text-white text-center"
+                                style="font-size: .8rem; width: 200px" scope="col">Actions
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <% for(let i=0; i < banners.length ;i++) { %>
+
+
+                            <tr class="text-center" style="font-size: .8rem;">
+
+                                <td data-title="Name" style="min-width: 140px;">
+                                    <%= banners[i].name %>
+                                </td>
+
+                                <td data-title="Name" style="min-width: 160px;">
+                                    <img class="img-thumbnail" src="/img/hero/<%= banners[i].image %>" alt="">
+
+                                </td>
+
+                                <td data-title="Email" style="min-width: 140px;">
+                                    <%= banners[i].description %>
+                                </td>
+
+                                <td>
+
+
+
+
+                                    <button <% if(banners[i].active===true) {%>
+                                        disabled
+                                        <%}%>
+                                            data-id=" <%=banners[i]._id %>" class=" activateBtn btn
+                                                btn-sm mx-4 btn-outline-dark">
+                                                Activate
+
+                                    </button>
+
+                                </td>
+
+
+
+
+
+                            </tr>
+
+                            <% } %>
+
+
+
+
+
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+        <div id="modal"
+            style="position: absolute;top:0 ; z-index: 11; height: 100%; width: 100vw; background-color: rgba(0, 0, 0, 0.479);"
+            class="d-flex d-none justify-content-center align-items-center ">
+
+            <div class=" d-flex flex-column justify-content-center"
+                style=" background-color: rgb(255, 255, 255); height: 450px ; width: 50%; ">
+
+                <div style="height: 80%;" class="  d-flex justify-content-center align-items-center ">
+
+                    <img id="cropImg" style="height: 90% ;width:80%;" alt="">
+
+                </div>
+
+                <div class="d-flex  justify-content-center ">
+                    <button id="cropBtn" class="nav-link mt-4 mb-4"
+                        style="background-color: black; color:whitesmoke ;padding :10px"> CROP THE
+                        IMG</button>
+
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+
+
+        <%- include('../admin/adminFooter.ejs') %>
+
+            <script src="/js/admin/bannerManagement.js"></script>
+
+            <%- include('../layouts/footer.ejs') %>

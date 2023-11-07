@@ -1,5 +1,6 @@
 const categoryRadios = document.querySelectorAll('.category-radio');
 const sortSelect = document.getElementById('sortby');
+const categories = document.getElementById('categories');
 const searchProduct = document.getElementById('search');
 const wishListButtons = document.querySelectorAll('.wishListBtn');
 
@@ -7,38 +8,49 @@ const wishListButtons = document.querySelectorAll('.wishListBtn');
 const customSelects = document.querySelectorAll(".custom-selected");
 
 
-customSelects.forEach((customSelect) => {
-    customSelect.addEventListener('click', function (e) {
+// customSelects.forEach((customSelect) => {
+//     customSelect.addEventListener('click', function (e) {
 
-        e.preventDefault()
+//         e.preventDefault()
 
-        console.log('yes')
+//         console.log('yes')
 
-        const selectOptions = customSelect.parentElement.querySelector(".select-options");
+//         const selectOptions = customSelect.parentElement.querySelector(".select-options");
 
-        const selectButton = customSelect.querySelector(".select-button");
+//         const selectButton = customSelect.querySelector(".select-button");
 
-        if (e.target === selectButton) {
-            // Toggle visibility of options when the button is clicked
-            selectOptions.style.display = selectOptions.style.display === "block" ? "none" : "block";
-        }
-    })
-})
+//         if (e.target === selectButton) {
+//             // Toggle visibility of options when the button is clicked
+//             selectOptions.style.display = selectOptions.style.display === "block" ? "none" : "block";
+//         }
+//     })
+// })
 
 
-categoryRadios.forEach((radio) => {
-    radio.addEventListener('change', () => {
-        const categoryID = radio.value;
-        const sortValue = sortSelect.value;
-        const searchValue = searchProduct.value;
-        const url = `/search/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
-        searchProduct.value = ''; // clear search input
-        window.location.href = url;
-    });
+// categoryRadios.forEach((radio) => {
+//     radio.addEventListener('change', () => {
+//         const categoryID = radio.value;
+//         const sortValue = sortSelect.value;
+//         const searchValue = searchProduct.value;
+//         const url = `/search/?category=${categoryID || ''}&sortBy=${sortValue}&search=${searchValue}`;
+//         searchProduct.value = ''; // clear search input
+//         window.location.href = url;
+//     });
+// });
+
+categories.addEventListener('change', () => {
+    const categoryId = categories.value;
+    const sortValue = sortSelect.value;
+    const searchValue = searchProduct.value;
+    const url = `/search/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    window.location.href = url;
 });
 
+
+
+
 sortSelect.addEventListener('change', () => {
-    const categoryId = new URLSearchParams(window.location.search).get('category');
+    const categoryId = categories.value;
     const sortValue = sortSelect.value;
     const searchValue = searchProduct.value;
     const url = `/search/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
@@ -52,7 +64,7 @@ form.addEventListener('submit', function (event) {
 
     event.preventDefault();
 
-    const categoryID = new URLSearchParams(window.location.search).get('category');
+    const categoryID = categories.value
 
     const sortValue = sortSelect.value;
     const searchValue = searchProduct.value;

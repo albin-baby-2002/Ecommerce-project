@@ -23,7 +23,7 @@ cancelOrderBtns.forEach((cancelOrderBtn) => {
 async function cancelTheOrder(idData) {
 
     await fetch("http://localhost:2500/user/order/cancel/" + idData, {
-        method: "PUT",
+        method: "DELETE",
         headers: {
             "Content-Type": "application/json",
         }

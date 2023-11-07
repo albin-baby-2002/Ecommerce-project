@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <section class="ftco-section ftco-cart h-100">
+            <section class="ftco-section ftco-cart mb-5 " style="min-height: 100vh;">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12 ftco-animate fadeInUp ftco-animated">
@@ -44,142 +44,156 @@
 
                                 <% if(itemsInCart.length>0){ %>
 
-                                    <table class="table mt-4">
-                                        <thead class="thead-primary wishlist001">
-                                            <tr class="text-center">
-                                                <th></th>
-                                                <th>Image</th>
-                                                <th>Product</th>
-                                                <th>Price</th>
-                                                <th>size</th>
-                                                <th>Quantity </th>
+                                    <div class="mt-4">
+                                        <% for(let i=0; i<itemsInCart.length; i++) { %>
 
-
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            <% for(let i=0; i<itemsInCart.length; i++) { %>
-
-                                                <tr data-id="<%= itemsInCart[i]._id %>"
-                                                    class="text-center border-bottom">
-
-                                                    <td
-                                                        class="d-flex align-items-center justify-content-center td-height-wishlist border-0">
+                                            <div class="card shadow-0 border mb-4" data-id="<%=itemsInCart[i]._id %>">
+                                                <div class="card-body">
+                                                    <div class="row">
 
 
 
-                                                        <button class="nav-link"
-                                                            onclick="removeFromCart('<%=itemsInCart[i]._id %>')"><i
-                                                                class="fa-solid fa-2x fa-rectangle-xmark"
-                                                                style="color: #eac053;"></i></button>
+
+                                                        <div class="col-md-2 d-flex justify-content-center">
+
+                                                            <img src="/img/productImages/<%=itemsInCart[i].cartProductData.images.find((img)=>{
+                                                                        return img.toLowerCase().includes('mainimg')
+                                                                    }) %>" alt="" class="img-thumbnail mt-2"
+                                                                style="height: 140px;">
+
+                                                        </div>
+                                                        <div
+                                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
+
+                                                            <p>
+                                                                <%=itemsInCart[i].cartProductData.name%>
+                                                            </p>
 
 
 
-                                                    </td>
-
-
-                                                    <td class="td-height-wishlist ">
-                                                        <img src="/img/productImages/<%=itemsInCart[i].cartProductData.images.find((img)=>{
-                                                return img.toLowerCase().includes('mainimgthumbnail')
-                                            }) %>" alt="" class="img-thumbnail mt-2" style="height: 100px;">
-                                                    </td>
-
-                                                    <td class=" td-height-wishlist ">
-                                                        <p>
-                                                            <%=itemsInCart[i].cartProductData.name%>
-                                                        </p>
-
-                                                    </td>
-
-                                                    <td class="">
-
-                                                        <% if(itemsInCart[i].cartProductData.onOffer &&
-                                                            itemsInCart[i].cartProductData.rateOfDiscount>0){ %>
+                                                        </div>
+                                                        <div
+                                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
 
 
                                                             <p>
-                                                                <%=itemsInCart[i].cartProductData.offerPrice%>
+                                                                <%=itemsInCart[i].cartProductData.size%>
                                                             </p>
 
-                                                            <%} else {%>
-
-                                                                <p>
-                                                                    <%=itemsInCart[i].cartProductData.price%>
-                                                                </p>
-
-                                                                <%}%>
-                                                    </td>
-
-                                                    <td class="">
-                                                        <p>
-                                                            <%=itemsInCart[i].cartProductData.size%>
-                                                        </p>
-                                                    </td>
-
-                                                    <td class="">
-
-                                                        <div class="d-flex justify-content-center">
-                                                            <button reduceBtn-id="<%=itemsInCart[i]._id %>"
-                                                                onclick="reduceOneFromCart('<%=itemsInCart[i]._id %>')"
-                                                                style="height: 25px;" class="d-flex align-items-center"
-                                                                <% if(itemsInCart[i].quantity <=1){ %>
-
-                                                                disabled
-                                                                <% } %>
-
-                                                                    >
-                                                                    <p class="m-0">-</p>
-                                                            </button>
-
-                                                            <p quantity-id="<%=itemsInCart[i]._id %>" class="mx-3">
-                                                                <%=itemsInCart[i].quantity%>
-                                                            </p>
-
-                                                            <button addBtn-id="<%=itemsInCart[i]._id%>"
-                                                                onclick="addToCart('<%=itemsInCart[i].cartProductData._id%>','<%=itemsInCart[i]._id %>')"
-                                                                style="height: 25px;" class="d-flex align-items-center">
-                                                                <p class='m-0'>+</p>
-                                                            </button>
                                                         </div>
 
 
-
-                                                    </td>
-
-
-
-
-                                                </tr><!-- END TR-->
-
-                                                <% } %>
+                                                        <div
+                                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                            <% if(itemsInCart[i].cartProductData.onOffer &&
+                                                                itemsInCart[i].cartProductData.rateOfDiscount>0){ %>
 
 
-                                                    <tr style="font-size: 1.3rem;">
-                                                        <td class="text-center my-3 font-weight-bold">Grand Total</td>
+                                                                <p>
+                                                                    <%=itemsInCart[i].cartProductData.offerPrice%>
+                                                                </p>
 
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td id="grandTotal" class="text-center font-weight-bold">
-                                                            <%=grandTotal %>
-                                                        </td>
-                                                        <td></td>
-                                                        <td></td>
-                                                    </tr>
+                                                                <%} else {%>
 
+                                                                    <p>
+                                                                        <%=itemsInCart[i].cartProductData.price%>
+                                                                    </p>
 
-                                        </tbody>
-                                    </table>
+                                                                    <%}%>
 
-                                    <div class="d-flex justify-content-center mt-5">
+                                                        </div>
+                                                        <div
+                                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
 
 
-                                        <button
-                                            style="font-size: 1.5rem ; padding: .3rem;font-weight:400; border:2px solid black; color:rgb(28, 28, 27); background-color:#e3e1e1;font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
-                                            <a href="/user/checkout" class="nav-link">PROCEED
-                                                TO PLACE ORDER</a>
-                                        </button>
+
+
+                                                            <div class="d-flex justify-content-center">
+                                                                <button reduceBtn-id="<%=itemsInCart[i]._id %>"
+                                                                    onclick="reduceOneFromCart('<%=itemsInCart[i]._id %>')"
+                                                                    style="height: 25px;"
+                                                                    class="d-flex align-items-center" <%
+                                                                    if(itemsInCart[i].quantity <=1){ %>
+
+                                                                    disabled
+                                                                    <% } %>
+
+                                                                        >
+                                                                        <p class="m-0">-</p>
+                                                                </button>
+
+                                                                <p quantity-id="<%=itemsInCart[i]._id %>" class="mx-3">
+                                                                    <%=itemsInCart[i].quantity%>
+                                                                </p>
+
+                                                                <button addBtn-id="<%=itemsInCart[i]._id%>"
+                                                                    onclick="addToCart('<%=itemsInCart[i].cartProductData._id%>','<%=itemsInCart[i]._id %>')"
+                                                                    style="height: 25px;"
+                                                                    class="d-flex align-items-center">
+                                                                    <p class='m-0'>+</p>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="col-md-2 text-center d-flex justify-content-center align-items-center ">
+
+
+                                                            <button class="btn btn-outline-secondary mb-3  "
+                                                                onclick="removeFromCart('<%=itemsInCart[i]._id %>')"
+                                                                style="font-size: .9rem;">
+
+                                                                <i class="fa-solid fa-trash"
+                                                                    style="color: #030407;"></i>
+                                                                DELETE</button>
+
+
+
+                                                        </div>
+
+
+                                                    </div>
+
+
+
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            <% } %>
+
+
                                     </div>
+
+
+                                    <div class="d-flex justify-content-between px-3">
+
+                                        <p class=" font-weight-bold" style="color: rgb(147, 25, 25);">TOTAL : RS
+                                            <%=grandTotal %>
+                                        </p>
+
+                                        <P>
+                                            <a href="/user/checkout" class="nav-link font-weight-bold"
+                                                style="color: rgb(16, 109, 16);"> PLACE ORDER</a>
+
+                                        </P>
+
+
+                                    </div>
+
+
 
 
 

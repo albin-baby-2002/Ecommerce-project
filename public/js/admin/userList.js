@@ -1,7 +1,7 @@
 async function block(data) {
     try {
         const response = await fetch("http://localhost:2500/admin/blockUser", {
-            method: "POST",
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },

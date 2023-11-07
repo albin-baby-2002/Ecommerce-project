@@ -44,8 +44,7 @@
                          padding: 1rem;">
 
 
-                                <P class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <P class=" mb-0">
                                     <%=address.fullName%>
                                 </P>
 
@@ -53,33 +52,26 @@
 
 
 
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     <%=address.addressLine%>
                                 </p>
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     <%=address.locality%>
                                 </p>
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     <%=address.city%>
                                 </p>
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     <%=address.state%>
                                 </p>
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     <%=address.country%>
                                 </p>
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     Pincode:
                                     <%=address.pinCode%>
                                 </p>
-                                <p class=" mb-0"
-                                    style="font-family:'Times New Roman', Times, serif; font-weight: bold;">
+                                <p class=" mb-0">
                                     phone:
                                     <%=address.phone%>
                                 </p>
@@ -181,7 +173,7 @@
 
 
                             <% if(orderData.paymentMethod==='cod' ) { %>
-                                <div class=" w-100 d-flex justify-content-center">
+                                <div class=" w-100 d-flex justify-content-center mt-4">
                                     <button id="codOrderPlacement" order-id="<%=orderData._id %>"
                                         style="font-size: 1.1rem;" class="nav-link bg-dark text-white px-4 py-2">PLACE
                                         ORDER</button>
@@ -190,7 +182,7 @@
                                 <%}%>
 
                                     <% if(orderData.paymentMethod==='onlinePayment' ) { %>
-                                        <div class=" w-100 d-flex justify-content-center">
+                                        <div class=" w-100 d-flex justify-content-center mt-4">
                                             <button id="payButton" order-id="<%=orderData._id %>"
                                                 style="font-size: 1.1rem;"
                                                 class="nav-link bg-dark text-white px-4 py-2"> PAY NOW AND PLACE

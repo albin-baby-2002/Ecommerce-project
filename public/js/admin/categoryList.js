@@ -31,7 +31,7 @@ async function deleteCategory(data) {
         console.log(data);
 
         const response = await fetch("http://localhost:2500/admin/deleteCategory/" + data, {
-            method: "POST",
+            method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
             }
@@ -46,7 +46,24 @@ async function deleteCategory(data) {
 
             if (res.success) {
 
-                window.alert("Category deleted");
+                console.log('success')
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = res.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 2000)
+
+
 
                 const row = document.querySelector(`[row-id="${data}"]`);
 
@@ -54,15 +71,65 @@ async function deleteCategory(data) {
 
 
             } else {
-                window.alert("failed to  delete")
+
+
+
+
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = res.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 2000)
             }
         } else {
-            window.alert("failed to  delete")
+
+
+
+            notificationMessage.hidden = false;
+
+            messageLine.classList.add('red');
+
+            messageLine.innerText = "failed to delete"
+
+            window.scrollTo(0, 0)
+
+
+            setTimeout(() => {
+
+                notificationMessage.hidden = true;
+                messageLine.classList.remove('red');
+            }, 2000)
+
         }
 
 
     } catch (error) {
-        window.alert("Failed to delete");
+
+
+        notificationMessage.hidden = false;
+
+        messageLine.classList.add('red');
+
+        messageLine.innerText = "Network / local issues deleting category"
+
+        window.scrollTo(0, 0)
+
+
+        setTimeout(() => {
+
+            notificationMessage.hidden = true;
+            messageLine.classList.remove('red');
+        }, 2000)
+
         console.error(error);
     }
 }

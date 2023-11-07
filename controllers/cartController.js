@@ -17,9 +17,9 @@ const addToCartHandler = async (req, res, next) => {
 
         if (!req.session.userID) {
 
-            res.status(401).json({ "success": false, "message": "login to add product to cart" })
+            return res.status(401).json({ "success": false, "message": "login to add product to cart" })
 
-            return;
+
         }
 
 
@@ -29,9 +29,9 @@ const addToCartHandler = async (req, res, next) => {
 
         if (!productID || !quantity || isNaN(quantity) || quantity <= 0) {
 
-            res.status(400).json({ "success": false, "message": "All fields not received and quantity should be a value greater than 0 . Try Again" });
+            return res.status(400).json({ "success": false, "message": "All fields not received and quantity should be a value greater than 0 . Try Again" });
 
-            return;
+
         }
 
 
@@ -41,16 +41,16 @@ const addToCartHandler = async (req, res, next) => {
 
         if (stock === 0) {
 
-            res.status(400).json({ "success": false, "message": " Product Out Of Stock" });
+            return res.status(400).json({ "success": false, "message": " Product Out Of Stock" });
 
-            return;
+
 
         } else if (stock < quantity) {
 
 
-            res.status(400).json({ "success": false, "message": `only ${stock} units left in stock.` });
+            return res.status(400).json({ "success": false, "message": `only ${stock} units left in stock.` });
 
-            return;
+
         }
 
 
@@ -71,9 +71,9 @@ const addToCartHandler = async (req, res, next) => {
 
             if (!userCartID) {
 
-                res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
+                return res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
 
-                return;
+
 
             }
         };
@@ -115,9 +115,9 @@ const addToCartHandler = async (req, res, next) => {
             if ((existingQuantityInCart + quantity) > stock) {
 
 
-                res.status(400).json({ "success": false, "message": `only ${stock} units left in stock and you already have ${existingQuantityInCart} of this in your cart ` });
+                return res.status(400).json({ "success": false, "message": `only ${stock} units left in stock and you already have ${existingQuantityInCart} of this in your cart ` });
 
-                return;
+
             }
 
 
@@ -125,14 +125,14 @@ const addToCartHandler = async (req, res, next) => {
             const QuantityIncrease = await CartItem.updateOne({ _id: ProductAlreadyInCart._id }, { $inc: { quantity: quantity } });
 
             if (!QuantityIncrease) {
-                res.status(500).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
+                return res.status(500).json({ "success": false, "message": " Server facing some issues relating to cart creation Try Again" });
 
-                return;
+
             }
 
-            res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
+            return res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
 
-            return;
+
 
 
         }
@@ -146,15 +146,15 @@ const addToCartHandler = async (req, res, next) => {
 
 
         if (!updatedCart) {
-            res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart updating Try Again" });
+            return res.status(400).json({ "success": false, "message": " Server facing some issues relating to cart updating Try Again" });
 
-            return;
+
         }
 
 
-        res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
+        return res.status(400).json({ "success": true, "message": " Item added successfully to cart" });
 
-        return;
+
 
 
     }
@@ -162,9 +162,8 @@ const addToCartHandler = async (req, res, next) => {
 
     catch (err) {
 
-        console.log(err);
 
-        res.status(500).json({ "success": false, "message": "failed try again Hint: server facing issues !" })
+        return res.status(500).json({ "success": false, "message": "failed try again Hint: server facing issues !" })
 
     }
 
@@ -184,9 +183,9 @@ const renderCartPage = async (req, res, next) => {
                 type: 'danger',
                 message: 'Login to view your cart '
             }
-            res.redirect('/');
+            return res.redirect('/');
 
-            return;
+
         }
 
         const userID = new mongoose.Types.ObjectId(req.session.userID);
@@ -321,9 +320,9 @@ const renderCartPage = async (req, res, next) => {
 
 
 
-        res.render('users/shoppingCart.ejs', { itemsInCart, grandTotal: totalPriceOfCart });
+        return res.render('users/shoppingCart.ejs', { itemsInCart, grandTotal: totalPriceOfCart });
 
-        return;
+
 
     }
     catch (err) {
@@ -342,12 +341,12 @@ const deleteItemFromCartHandler = async (req, res, next) => {
 
         if (!req.session.userID) {
 
-            res.status(401).json({
+            return res.status(401).json({
                 "success": false,
                 "message": "session timedOut login to remove item from cart"
             })
 
-            return;
+
         }
 
         const { cartItemID } = req.body;
@@ -356,25 +355,24 @@ const deleteItemFromCartHandler = async (req, res, next) => {
 
         if (!cartItemID || !userID) {
 
-            res.status(400).json({
+            return res.status(400).json({
                 "success": false,
                 "message": "server facing issues try again Hint failed to get cartItem data !"
             })
 
-            return;
+
         };
 
         const cartItem = await CartItem.findById(cartItemID);
 
-        console.log('\n\n\n' + cartItem);
 
         if (!cartItem) {
 
-            res.status(400).json({
+            return res.status(400).json({
                 "success": false,
                 "message": " Failed to deleted as item not found in cart !"
             });
-            return;
+
         };
 
         const CartId = cartItem.cartID;
@@ -384,16 +382,15 @@ const deleteItemFromCartHandler = async (req, res, next) => {
         const removedCartItemID = await Cart.findByIdAndUpdate(CartId, { $pull: { items: cartItemID } })
 
 
-        console.log('\n\n\n' + removedCartItemID);
 
         if (!removedCartItemID) {
 
-            res.status(500).json({
+            return res.status(500).json({
                 "success": false,
                 "message": " server facing some issues try again !"
             });
 
-            return;
+
 
         }
 
@@ -401,28 +398,27 @@ const deleteItemFromCartHandler = async (req, res, next) => {
 
         if (deletedCartItem) {
 
-            res.status(200).json({
+            return res.status(200).json({
                 "success": true,
                 "message": " Item Removed from cart"
             });
 
-            return;
+
         }
 
-        res.status(500).json({
+        return res.status(500).json({
             "success": false,
             "message": " server facing some issues try again !"
         });
 
-        return;
+
 
 
     }
     catch (err) {
 
-        console.log(err)
 
-        res.status(500).json({
+        return res.status(500).json({
             "success": false,
             "message": "server facing issues  try again"
         })
@@ -441,12 +437,12 @@ const reduceCartItemQuantityHandler = async (req, res, next) => {
 
         if (!req.session.userID) {
 
-            res.status(401).json({
+            return res.status(401).json({
                 "success": false,
                 "message": "session timedOut login to reduce item quantity from cart"
             })
 
-            return;
+
         }
 
         const { cartItemID } = req.body;
@@ -455,36 +451,35 @@ const reduceCartItemQuantityHandler = async (req, res, next) => {
 
         if (!cartItemID || !userID) {
 
-            res.status(400).json({
+            return res.status(400).json({
                 "success": false,
                 "message": "server facing issues try again Hint failed to get cartItem data !"
             })
 
-            return;
+
         };
 
         const cartItem = await CartItem.findById(cartItemID);
 
-        console.log('\n\n\n' + cartItem);
 
         if (!cartItem) {
 
-            res.status(400).json({
+            return res.status(400).json({
                 "success": false,
                 "message": " Failed to reduce quantity as item not found in cart !"
             });
-            return;
+
         };
 
 
         if (cartItem.quantity === 1) {
 
-            res.status(400).json({
+            return res.status(400).json({
                 "success": false,
                 "message": " There is only one more quantity in cart. If you wish to remove it press delete button !"
             });
 
-            return;
+
 
         }
 
@@ -492,7 +487,7 @@ const reduceCartItemQuantityHandler = async (req, res, next) => {
 
         if (updatedCartItem) {
 
-            res.status(200).json({
+            return res.status(200).json({
                 "success": true,
                 "message": " removed one item!"
             });
@@ -503,9 +498,8 @@ const reduceCartItemQuantityHandler = async (req, res, next) => {
     }
     catch (err) {
 
-        console.log(err)
 
-        res.status(500).json({
+        return res.status(500).json({
             "success": false,
             "message": "server facing issues  try again"
         })
@@ -524,9 +518,9 @@ const getTotalCartPrice = async (req, res, next) => {
 
         if (!req.session.userID) {
 
-            res.status(401).json({ "success": false, "message": " your session timeout login to get data !" })
+            return res.status(401).json({ "success": false, "message": " your session timeout login to get data !" })
 
-            return;
+
         }
 
         const userID = new mongoose.Types.ObjectId(req.session.userID);
@@ -599,19 +593,18 @@ const getTotalCartPrice = async (req, res, next) => {
 
         totalPriceOfCart = totalPriceOfCart[0].totalAmount;
 
-        console.log(totalPriceOfCart);
 
         if (totalPriceOfCart) {
-            res.status(200).json({ "success": true, "message": `${totalPriceOfCart}` });
+            return res.status(200).json({ "success": true, "message": `${totalPriceOfCart}` });
 
-            return;
+
         }
 
         else {
 
-            res.status(500).json({ "success": false, "message": " failed to get data !" })
+            return res.status(500).json({ "success": false, "message": " failed to get data !" })
 
-            return;
+
 
         }
 
@@ -621,7 +614,7 @@ const getTotalCartPrice = async (req, res, next) => {
     catch (err) {
 
 
-        res.status(500).json({ "success": false, "message": " failed to get data !" })
+        return res.status(500).json({ "success": false, "message": " failed to get data !" })
     }
 
 

@@ -22,98 +22,103 @@
 
 
         <main class="main my-5 ">
-            <div class="container d-flex justify-content-around">
 
-                <div id="usersList" class="d-flex flex-column justify-content-center align-items-center"
-                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(62, 15, 180, 0.377);">
+            <div class="d-column d-lg-flex justify-content-center m-0  ">
 
 
-                    <div style="font-size: 3rem; color: rgb(0, 0, 0);">
-                        <%=totalUsers%>
+                <div class="col-lg-6 d-flex  flex-column flex-sm-row justify-content-around mt-3">
+
+                    <div id="usersList" class="col-sm-5  d-flex flex-column justify-content-center align-items-center "
+                        style="  border-radius: 5px; height: 160px; background-color: rgba(62, 15, 180, 0.377);">
+
+
+                        <div style="font-size: 2rem; color: rgb(0, 0, 0);">
+                            <%=totalUsers%>
+                        </div>
+
+
+
+                        <div class="text-center mt-3 font-weight-bold"
+                            style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                            Total Users
+                        </div>
+
+
                     </div>
 
-                    <!-- <div>
-                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
-                    </div> -->
+
+                    <div id="productsList"
+                        class="col-sm-5 d-flex flex-column justify-content-center align-items-center "
+                        style="  border-radius: 5px; height: 160px; background-color: rgba(251, 144, 5, 0.377);">
+
+
+                        <div style="font-size: 2rem; color: rgb(0, 0, 0);">
+                            <%=totalProducts%>
+                        </div>
 
 
 
-                    <div class="text-center mt-3 font-weight-bold"
-                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
-                        Total Users
+
+                        <div class="text-center mt-3 font-weight-bold"
+                            style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                            Total Products
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="col-lg-6 d-flex flex-column flex-sm-row justify-content-around mt-3">
+
+
+                    <div id="ordersList" class="col-sm-5 d-flex flex-column justify-content-center align-items-center "
+                        style="  border-radius: 5px; height: 160px; background-color: rgba(15, 180, 89, 0.377);">
+
+
+                        <div style="font-size: 2rem; color: rgb(0, 0, 0);">
+                            <%=totalOrders%>
+                        </div>
+
+
+
+
+                        <div class="text-center mt-3 font-weight-bold"
+                            style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                            Total Orders
+                        </div>
+
+
+                    </div>
+
+                    <div id="salesList" class="col-sm-5 d-flex flex-column justify-content-center align-items-center "
+                        style="  border-radius: 5px; height: 160px; background-color: rgba(14, 125, 244, 0.377);">
+
+
+                        <div style="font-size: 2rem;">
+                            <%=totalRevenue%>
+
+                        </div>
+
+
+
+
+
+                        <div class="text-center mt-3 font-weight-bold"
+                            style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
+                            Total Revenue (rs)
+                        </div>
+
+
                     </div>
 
 
                 </div>
 
 
-                <div id="productsList" class="d-flex flex-column justify-content-center align-items-center"
-                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(251, 144, 5, 0.377);">
 
-
-                    <div style="font-size: 3rem; color: rgb(0, 0, 0);">
-                        <%=totalProducts%>
-                    </div>
-
-                    <!-- <div>
-                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
-                    </div> -->
-
-
-
-                    <div class="text-center mt-3 font-weight-bold"
-                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
-                        Total Products
-                    </div>
-
-
-                </div>
-
-
-                <div id="ordersList" class="d-flex flex-column justify-content-center align-items-center"
-                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(15, 180, 89, 0.377);">
-
-
-                    <div style="font-size: 3rem; color: rgb(0, 0, 0);">
-                        <%=totalOrders%>
-                    </div>
-
-                    <!-- <div>
-                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
-                    </div> -->
-
-
-
-                    <div class="text-center mt-3 font-weight-bold"
-                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
-                        Total Orders
-                    </div>
-
-
-                </div>
-
-                <div id="salesList" class="d-flex flex-column justify-content-center align-items-center"
-                    style="width: 250px ;  border-radius: 5px; height: 160px; background-color: rgba(14, 125, 244, 0.377);">
-
-
-                    <div style="font-size: 3rem;">
-                        <%=totalRevenue%>
-
-                    </div>
-
-                    <!-- <div>
-                        <i class="fa-solid fa-3x fa-user" style="color: #0c0c0d;"></i>
-                    </div> -->
-
-
-
-                    <div class="text-center mt-3 font-weight-bold"
-                        style="color: rgb(0, 0, 0); font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem;">
-                        Total Revenue (rs)
-                    </div>
-
-
-                </div>
 
 
 
@@ -121,12 +126,12 @@
 
             </div>
 
-            <div class="container d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
+            <div class=" d-flex flex-column align-items-center justify-content-center m-lg-5">
 
                 <h2 class="text-center font-weight-bold m-5"> Total Sales Revenue Chart </h2>
 
-                <div class="w-75 ">
-                    <canvas id="myChart"></canvas>
+                <div class="col-lg-10">
+                    <canvas class="w-100 h-auto" id="myChart"></canvas>
                 </div>
 
                 <div class="mt-5 d-flex font-weight-bold">
@@ -141,12 +146,12 @@
 
             </div>
 
-            <div class="container d-flex flex-column align-items-center justify-content-center m-5">
+            <div class=" d-flex flex-column align-items-center justify-content-center m-lg-5">
 
                 <h2 class="text-center font-weight-bold m-5"> Total Orders Placed Chart </h2>
 
-                <div class="w-75 ">
-                    <canvas id="myChartOrders"></canvas>
+                <div class="col-lg-10">
+                    <canvas class="w-100 h-auto" id="myChartOrders"></canvas>
                 </div>
 
                 <div class="mt-5 d-flex font-weight-bold">
@@ -160,12 +165,12 @@
 
             </div>
 
-            <div class="container d-flex flex-column align-items-center justify-content-center m-5">
+            <div class=" d-flex flex-column align-items-center justify-content-center m-5">
 
                 <h2 class="text-center font-weight-bold m-5"> Types Of Orders Chart </h2>
 
-                <div class="w-75 ">
-                    <canvas style="max-height: 450px;" id="myChartOrderType"></canvas>
+                <div class="col-md-7 col-lg-6 ">
+                    <canvas class="w-100 h-auto" id="myChartOrderType"></canvas>
                 </div>
 
                 <div class="mt-5 d-flex font-weight-bold">
@@ -180,12 +185,12 @@
             </div>
 
 
-            <div class="container d-flex flex-column align-items-center justify-content-center m-5">
+            <div class=" d-flex flex-column align-items-center justify-content-center m-5">
 
                 <h2 class="text-center font-weight-bold m-5"> Category Wise Sales </h2>
 
-                <div class="w-75 ">
-                    <canvas style="max-height: 450px;" id="myChartCategoryWiseSales"></canvas>
+                <div class="col-md-7 col-lg-6 ">
+                    <canvas class="w-100 h-auto" id="myChartCategoryWiseSales"></canvas>
                 </div>
 
                 <div class="mt-5 d-flex font-weight-bold">
@@ -219,6 +224,11 @@
                 document.getElementById('productsList').addEventListener('click', (e) => {
 
                     window.location.href = '/admin/productList'
+                })
+
+                document.getElementById('ordersList').addEventListener('click', (e) => {
+
+                    window.location.href = '/admin/orders'
                 })
 
                 document.getElementById('salesList').addEventListener('click', (e) => {

@@ -321,7 +321,7 @@ ol {
 
 .primary-btn {
 	display: inline-block;
-	font-size: 13px;
+	font-size: 11px;
 	font-weight: 700;
 	text-transform: uppercase;
 	padding: 14px 30px;
@@ -1319,7 +1319,7 @@ ol {
 }
 
 .shop__sidebar__search {
-	margin-bottom: 45px;
+	margin-bottom: 25px;
 }
 
 .shop__sidebar__search form {
@@ -4135,4 +4135,40 @@ ol {
 	.categories__text:before {
 		height: 250px;
 	}
+}
+
+.product__item1 {
+	background-size: cover;
+}
+
+@media only screen and (max-width: 576px) {
+	.product__item1 {
+		background-size: contain;
+
+	}
+
+	.product__filter {
+
+		justify-content: center;
+	}
+
+	.product__item__text {
+		text-align: center;
+	}
+
+	.product__text2 {
+		text-align: center;
+	}
+}
+
+.sortby {
+	background-color: white;
+
+	border: 1px solid #ccc;
+}
+
+.catSearch {
+	background-color: white;
+
+	border: 1px solid #ccc;
 }

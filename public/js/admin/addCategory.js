@@ -32,12 +32,37 @@ form.addEventListener('submit', function (event) {
 
                 console.log('success')
 
-                window.alert(data.message);
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('green');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('green');
+                }, 3000)
 
             } else {
 
-                const errorMessage = data.message;
-                alert(`Error: ${errorMessage}`);
+                notificationMessage.hidden = false;
+
+                messageLine.classList.add('red');
+
+                messageLine.innerText = data.message;
+
+                window.scrollTo(0, 0)
+
+
+                setTimeout(() => {
+
+                    notificationMessage.hidden = true;
+                    messageLine.classList.remove('red');
+                }, 3000)
             }
         })
         .catch(error => {

@@ -24,106 +24,104 @@
 
         <!-- Shop Section Begin -->
         <section class="shop spad" style="background-color: rgba(255, 255, 255, 0.557);">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="shop__sidebar">
-                            <div class="shop__sidebar__search">
+            <div class="mx-2 mx-md-3">
+                <div class="row ">
+                    <div class="col-md-3">
+                        <div class="shop__sidebar row pt-0">
+
+
+                            <div class="shop__sidebar__search col-4 col-md-12 ">
                                 <form action="#" id="searchBar">
-                                    <input type="text" placeholder="Search..." id="search">
-                                    <button type="submit"><span class="icon_search"></span></button>
+                                    <input style="font-size: .8rem; " type="text" placeholder="Search..." id="search">
+
+                                    <button type="submit"><span class="icon_search ml-1"></span></button>
                                 </form>
                             </div>
-                            <div class="shop__sidebar__accordion">
-                                <div class="accordion" id="accordionExample">
-
-
-
-                                    <div class="position-relative w-100">
-                                        <div class="custom-selected w-100">
-                                            <button
-                                                class="select-button font-weight-bold d-flex justify-content-around align-items-center w-100">
-                                                <span>Categories </span><i
-                                                    class="fa-solid fa-caret-down ml-3"></i></button>
-
-                                        </div>
-                                        <ul class="select-options position-relative w-100">
-
-
-                                            <% if(categories.length> 0){ %>
-
-
-                                                <% for(let i=0;i<categories.length;i++){ %>
-                                                    <li class="filter-item">
-
-                                                        <div class="custom-control custom-radio mb-1 dropdown">
-
-                                                            <input type="radio" name="category"
-                                                                value="<%= categories[i]._id %>"
-                                                                id="cat- <%= categories[i]._id %>-radio"
-                                                                class="custom-control-input category-radio"
-                                                                <%if(categories[i]._id.toString()===categoryID){%>checked
-                                                            <%}%>
-                                                                >
-                                                                <label class="custom-control-label"
-                                                                    for="cat- <%= categories[i]._id %>-radio">
-                                                                    <%= categories[i].name %>
-                                                                </label>
-                                                        </div>
-                                                    </li>
-                                                    <% } %>
-                                                        <% } %>
-                                        </ul>
-
-                                    </div>
 
 
 
 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-9">
-                        <div class="shop__product__option">
-                            <div class="row">
-                                <div class="col-lg-7 col-md-7 col-sm-7">
-                                    <div class="shop__product__option__left pt-1">
 
-                                        <p>Showing 1- <% if(count < 9) {%>
-                                                <%= count %>
-                                                    <%} else { %>
-                                                        <%=limit %>
-                                                            <%}%> of <%=count %> results</p>
-                                    </div>
-                                </div>
-                                <p class="col-lg-2 col-md-2 col-sm-2 p-1 text-right">Sort by Price:</p>
-                                <div class="col-lg-3 col-md-3 col-sm-3 mt-1 d-flex justify-content-start ">
 
-                                    <div class="shop__product__option__right  ">
+                            <div class="shop__sidebar__search col-4 col-md-12">
+                                <div class="w-100 d-flex justify-content-start ">
 
-                                        <select name="sortby" id="sortby" class="sortby">
+                                    <div class="shop__product__option__right w-100  pt-0">
 
-                                            <option value="" <% if (!sortBy) { %> selected <% } %> disabled>Select
+                                        <select name="sortby" id="sortby" class="sortby w-100" style="font-size: .7rem; font-weight: bold;padding: 10px; -webkit-appearance: none;
+                                            -moz-appearance: none;
+                                            text-indent: 1px;
+                                            text-overflow: '';
+                                            text-align: center;
+                                            min-height: 42px;">
+
+                                            <option value="" <% if (!sortBy) { %> selected <% } %> disabled>SORT BY
                                             </option>
                                             <option value="lowPrice" <% if (sortBy==='lowPrice' ) { %> selected <% } %>
-                                                    >Price Low to High
+                                                    >PRICE LOW TO HIGH
                                             </option>
                                             <option value="highPrice" <% if (sortBy==='highPrice' ) { %> selected <% }
-                                                    %>>Price High to Low
+                                                    %>>PRICE HIGHT TO LOW
                                             </option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+
+
+                            <div class="shop__sidebar__search col-4 col-md-12">
+                                <div class="w-100 d-flex justify-content-start ">
+
+                                    <div class="shop__product__option__right w-100  pt-0">
+
+                                        <select name="categories" id="categories" class="categories catSearch w-100"
+                                            style="font-size: .7rem; font-weight: bold;padding: 10px; -webkit-appearance: none;
+                                            -moz-appearance: none;
+                                            text-indent: 1px;
+                                            text-overflow: '';
+                                            text-align: center;
+                                            min-height: 42px;">
+
+                                            <option value="" <% if (!sortBy) { %> selected <% } %> disabled> CATEGORIES
+                                            </option>
+
+
+
+
+
+                                            <% for(let i=0;i<categories.length;i++){ %>
+
+                                                <option value="<%= categories[i]._id %>" <% if
+                                                    (categories[i]._id.toString()===categoryID ) { %> selected <% } %>
+                                                        ><%= categories[i].name %>
+                                                </option>
+
+
+
+
+                                                <% } %>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
                         </div>
-                        <div class="row">
+                    </div>
+                    <div class="col-md-9  mt-lg-0">
+
+
+
+                        <div class="row justify-content-center">
 
                             <% if(products.length>0){ %>
                                 <% for(let i=0; i < products.length ;i++) { %>
 
 
-                                    <div class="col-lg-4 col-md-4 col-sm-6 mx-1 pl-0" style="max-width: 262px;">
+                                    <div class="col-lg-4 col-md-4  m-0" style="max-width: 262px;">
 
                                         <div class="product__item">
                                             <div click-id="productDetailsLink" group-id="<%=products[i].groupingID%>"
@@ -138,11 +136,11 @@
                                                 <ul class="product__hover">
                                                     <li>
                                                         <button data-id="<%=products[i]._id%>"
-                                                            class="nav-link wishListBtn "><img src="img/icon/heart.png"
+                                                            class="nav-link wishListBtn "><img src="/img/icon/heart.png"
                                                                 alt=""></button>
 
                                                     </li>
-                                                    <li><a href="#"><img src="img/icon/compare.png" alt="">
+                                                    <li><a href="#"><img src="/img/icon/compare.png" alt="">
                                                             <span>Compare</span></a>
                                                     </li>
                                                     <!-- <li><a href="#"><img src="img/icon/search.png" alt=""></a></li> -->
@@ -165,25 +163,31 @@
                                                     <i class="fa fa-star-o"></i>
                                                 </div>
 
-                                                <div class="d-flex">
-                                                    <h5 class=" mr-3" <% if(products[i].onOffer &&
-                                                        products[i].rateOfDiscount>0){ %>
+                                                <div class="d-flex product__text2">
+                                                    <h5 class="  w-100">
+
+                                                        <span class="mr-3" <% if(products[i].onOffer &&
+                                                            products[i].rateOfDiscount>0){ %>
 
 
-                                                        style="color:grey;text-decoration: line-through;"
+                                                            style="color:grey;text-decoration: line-through;"
 
-                                                        <%}%>
+                                                            <%}%>
+                                                                >
+                                                                ₹ <%=products[i].price%>
+                                                        </span>
 
-                                                            >₹<%=products[i].price%>
+
+
+
+                                                        <% if(products[i].onOffer && products[i].rateOfDiscount>
+                                                            0){ %>
+
+
+                                                            ₹ <%=products[i].offerPrice%>
                                                     </h5>
 
-                                                    <% if(products[i].onOffer && products[i].rateOfDiscount>0){ %>
-
-                                                        <h5>
-                                                            ₹ <%=products[i].offerPrice%>
-                                                        </h5>
-
-                                                        <%}%>
+                                                    <%}%>
 
 
                                                 </div>

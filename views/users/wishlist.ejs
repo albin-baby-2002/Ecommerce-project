@@ -24,18 +24,9 @@
 
 
 
-            <div class="hero-wrap hero-bread ">
-                <div class="container">
-                    <div class="row no-gutters slider-text align-items-center justify-content-center">
-                        <div class="col-md-9 ftco-animate text-center fadeInUp ftco-animated">
 
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <section class="ftco-section ftco-cart h-100">
+            <section class="ftco-section ftco-cart mt-5 " style="min-height: 100vh;">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12 ftco-animate fadeInUp ftco-animated">
@@ -44,56 +35,55 @@
 
                                 <% if(products.length>0){ %>
 
-                                    <table class="table mt-4">
-                                        <thead class="thead-primary wishlist001">
-                                            <tr class="text-center">
-                                                <th></th>
-                                                <th>Image</th>
-                                                <th>Product</th>
-                                                <th>Price</th>
-                                                <th>size</th>
-                                                <th>Quanity needed</th>
-                                                <th>Options</th>
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
 
-                                            <% for(let i=0; i<products.length; i++) { %>
-
-                                                <tr data-id="<%= products[i]._id %>" class="text-center border-bottom">
-
-                                                    <td
-                                                        class="d-flex align-items-center justify-content-center td-height-wishlist ">
+                                    <% for(let i=0; i<products.length; i++) { %>
 
 
 
-                                                        <button class="nav-link"
-                                                            onclick="removeFromWishList('<%=products[i]._id %>')"><i
-                                                                class="fa-solid fa-2x fa-rectangle-xmark"
-                                                                style="color: #eac053;"></i></button>
+
+                                        <div class="card shadow-0 border mb-4" data-id="<%=products[i]._id %>">
+                                            <div class="card-body">
+                                                <div class="row">
+
+                                                    <div
+                                                        class="col-md-1 text-center d-flex justify-content-center align-items-center ">
+
+                                                        <button class="nav-link mb-3 d-md-block d-none"
+                                                            onclick="removeFromWishList('<%=products[i]._id %>')">
+                                                            <i class="fa-solid fa-2x fa-rectangle-xmark"
+                                                                style="color: #eac053;"></i>
+
+                                                        </button>
+                                                    </div>
 
 
+                                                    <div class="col-md-2 d-flex justify-content-center">
 
-                                                    </td>
-
-
-                                                    <td class="td-height-wishlist ">
                                                         <img src="/img/productImages/<%=products[i].images.find((img)=>{
-                                                    return img.toLowerCase().includes('mainimgthumbnail')
-                                                }) %>" alt="" class="img-thumbnail mt-2" style="height: 100px;">
-                                                    </td>
+                                                                    return img.toLowerCase().includes('mainimg')
+                                                                }) %>" alt="" class="img-thumbnail mb-3"
+                                                            style="height: 140px;">
 
-                                                    <td class=" td-height-wishlist ">
+                                                    </div>
+                                                    <div
+                                                        class="col-md-2 text-center d-flex justify-content-center align-items-center">
                                                         <p>
                                                             <%=products[i].name%>
                                                         </p>
+                                                    </div>
+                                                    <div
+                                                        class="col-md-1 text-center d-flex justify-content-center align-items-center">
+                                                        <p>
+                                                            <%=products[i].size%>
+                                                        </p>
+                                                    </div>
 
-                                                    </td>
 
-                                                    <td class="">
-
-                                                        <% if(products[i].onOffer && products[i].rateOfDiscount>0){ %>
+                                                    <div
+                                                        class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                        <% if(products[i].onOffer && products[i].rateOfDiscount>
+                                                            0){ %>
 
 
                                                             <p>
@@ -108,39 +98,58 @@
 
                                                                 <%}%>
 
+                                                    </div>
+                                                    <div
+                                                        class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                        <input data-id="quantity" value="1" type="Number" class="mb-3"
+                                                            style="max-width: 90px;">
+                                                    </div>
 
-                                                    </td>
+                                                    <div
+                                                        class="col-md-2 text-center d-flex justify-content-center align-items-center">
 
-                                                    <td class="">
-                                                        <p>
-                                                            <%=products[i].size%>
-                                                        </p>
-                                                    </td>
-
-                                                    <td class="">
-
-                                                        <input data-id="quantity" value="1" type="Number" class="mb-3">
-                                                    </td>
-
-                                                    <td class="">
                                                         <btn onclick="addToCart('<%=products[i]._id%>')"
-                                                            class="btn btn-outline-success">Add to Cart</btn>
-                                                    </td>
+                                                            class="btn btn-outline-success mb-3"
+                                                            style="font-size: .9rem;"><i
+                                                                class="fa-solid fa-1x fa-cart-plus"
+                                                                style="color: #000000;"></i> CART
+                                                        </btn>
 
 
-                                                </tr><!-- END TR-->
+                                                        <button class="btn btn-outline-danger mb-3 ml-2 d-md-none"
+                                                            onclick="removeFromWishList('<%=products[i]._id %>')"
+                                                            style="font-size: .9rem;"><i class="fa-solid fa-trash"
+                                                                style="color: #030407;"></i> DELETE</button>
 
-                                                <% } %>
 
 
-                                        </tbody>
-                                    </table>
 
-                                    <% } else{ %>
+                                                    </div>
 
-                                        <h3 class="mt-5 text-center">No Products In WishList</h3>
+
+                                                </div>
+
+
+
+                                            </div>
+                                        </div>
+
+
+
+
+
+
 
                                         <% } %>
+
+
+
+
+                                            <% } else{ %>
+
+                                                <h3 class="mt-5 text-center">WISHLIST IS EMPTY</h3>
+
+                                                <% } %>
 
                             </div>
                         </div>

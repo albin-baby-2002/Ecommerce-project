@@ -68,7 +68,7 @@ switch (performance.navigation.type) {
 async function resendOTP() {
     try {
         const response = await fetch("http://localhost:2500/user/resendOTP/", {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             }
