@@ -122,9 +122,10 @@ form.addEventListener('submit', function (event) {
     }
 
     console.log(formData);
+    const currentURL = window.location.origin;
 
 
-    fetch('http://localhost:2500/admin/banner', {
+    fetch(currentURL + '/admin/banner', {
         method: 'POST',
 
         body: formData,
@@ -212,8 +213,9 @@ activateButtons.forEach((btn) => {
         try {
 
             console.log(data);
+            const currentURL = window.location.origin;
 
-            const response = await fetch("http://localhost:2500/admin/bannerChange/" + data, {
+            const response = await fetch(currentURL + "/admin/bannerChange/" + data, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

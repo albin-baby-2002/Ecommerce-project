@@ -11,7 +11,9 @@ activateButtons.forEach((btn) => {
 
     btn.addEventListener('click', (e) => {
 
-        fetch('http://localhost:2500/admin/categoryOffer/activate', {
+        const currentURL = window.location.origin;
+
+        fetch(currentURL + '/admin/categoryOffer/activate', {
 
             method: 'PATCH',
             headers: {
@@ -112,8 +114,8 @@ deactivateButtons.forEach((btn) => {
     btn.addEventListener('click', (e) => {
 
 
-
-        fetch('http://localhost:2500/admin/categoryOffer/deactivate', {
+        const currentURL = window.location.origin;
+        fetch(currentURL + '/admin/categoryOffer/deactivate', {
 
             method: 'PATCH',
             headers: {

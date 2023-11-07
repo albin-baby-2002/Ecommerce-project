@@ -89,8 +89,8 @@ form.addEventListener("submit", function (event) {
 
     console.log(formData)
 
-
-    fetch('http://localhost:2500/user/profile/edit', {
+    const currentURL = window.location.origin;
+    fetch(currentURL + '/user/profile/edit', {
 
         method: 'POST',
 

@@ -18,8 +18,9 @@ form.addEventListener('submit', function (event) {
 
     console.log(formDataJSON);
 
+    const currentURL = window.location.origin;
 
-    fetch('http://localhost:2500/admin/editCoupon/' + couponID, {
+    fetch(currentURL + '/admin/editCoupon/' + couponID, {
 
         method: 'PATCH',
         headers: {

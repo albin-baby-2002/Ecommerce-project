@@ -14,9 +14,9 @@ form.addEventListener('submit', function (event) {
         formDataJSON[key] = value;
     });
 
+    const currentURL = window.location.origin;
 
-
-    fetch('http://localhost:2500/admin/addCategory', {
+    fetch(currentURL + '/admin/addCategory', {
 
         method: 'POST',
         headers: {

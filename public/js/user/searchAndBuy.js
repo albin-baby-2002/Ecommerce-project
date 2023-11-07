@@ -208,9 +208,11 @@ function addToCart(id) {
 
     let cartData = { productID, quantity };
 
-    console.log(cartData)
+    console.log(cartData);
 
-    fetch('http://localhost:2500/user/addToCart', {
+    const currentURL = window.location.origin;
+
+    fetch(currentURL + '/user/addToCart', {
 
         method: 'POST',
         headers: {
