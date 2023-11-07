@@ -112,9 +112,11 @@ function addToWishList(id) {
 
     let WishListData = { productID };
 
-    console.log(WishListData)
+    console.log(WishListData);
 
-    fetch('http://localhost:2500/user/addToWishList', {
+    const currentURL = window.location.origin;
+
+    fetch(currentURL + '/user/addToWishList', {
 
         method: 'POST',
         headers: {
