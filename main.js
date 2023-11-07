@@ -48,7 +48,7 @@ const logger = morgan('combined');
 
 //initialization of port for listening
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 2500;
 
 
 // session initialization
