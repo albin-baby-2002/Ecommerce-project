@@ -1,6 +1,9 @@
 async function block(data) {
     try {
-        const response = await fetch("http://localhost:2500/admin/blockUser", {
+
+        const currentURL = window.location.origin;
+
+        const response = await fetch(currentURL + "/admin/blockUser", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",

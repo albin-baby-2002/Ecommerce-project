@@ -25,9 +25,9 @@ form.addEventListener('submit', function (event) {
 
     if (confirmed) {
 
+        const currentURL = window.location.origin;
 
-
-        fetch('http://localhost:2500/admin/order/changeStatus/' + orderID, {
+        fetch(currentURL + '/admin/order/changeStatus/' + orderID, {
 
             method: 'PATCH',
             headers: {

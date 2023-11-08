@@ -57,17 +57,21 @@
 
                         <select class="w-100" id="orderStatus" name="orderStatus">
 
-                            <% for(i=0 ; i< orderStatusEnum.length; i++) {%>
-                                <option value="<%=orderStatusEnum[i]%>" <%
-                                    if(orderData[0].orderStatus===orderStatusEnum[i] ){%>
+                            <% if(orderStatusEnum && orderStatusEnum.length> 0){%>
+                                <% for(i=0 ; i< orderStatusEnum.length; i++) {%>
+                                    <option value="<%=orderStatusEnum[i]%>" <%
+                                        if(orderData[0].orderStatus===orderStatusEnum[i] ){%>
 
-                                    selected <%}%>
+                                        selected <%}%>
 
-                                        >
-                                        <%=orderStatusEnum[i]%>
-                                </option>
+                                            >
+                                            <%=orderStatusEnum[i]%>
+                                    </option>
 
-                                <%}%>
+                                    <%}%>
+                                        <%}%>
+
+
 
                         </select>
 

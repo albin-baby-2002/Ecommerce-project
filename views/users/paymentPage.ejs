@@ -102,31 +102,35 @@
 
 
 
+                                <% if(productsData && productsData.length> 0) {%>
 
+                                    <% for(let i=0; i < productsData.length ; i++){ %>
+                                        <li>
 
-                                <% for(let i=0; i < productsData.length ; i++){ %>
-                                    <li>
+                                            <div class="d-flex  ">
 
-                                        <div class="d-flex  ">
+                                                <div class="" style="width: 74%;">
 
-                                            <div class="" style="width: 74%;">
+                                                    <%=i+1%>. <%=productsData[i].productInfo.name%> (
+                                                            <%=productsData[i].quantity%> )
 
-                                                <%=i+1%>. <%=productsData[i].productInfo.name%> (
-                                                        <%=productsData[i].quantity%> )
+                                                </div>
+
+                                                <div style="width: 26%;" class="text-right d-inline-block">
+
+                                                    <%=productsData[i].totalPrice%>.0
+
+                                                </div>
 
                                             </div>
 
-                                            <div style="width: 26%;" class="text-right d-inline-block">
+                                        </li>
 
-                                                <%=productsData[i].totalPrice%>.0
+                                        <%}%>
+                                            <%}%>
 
-                                            </div>
 
-                                        </div>
 
-                                    </li>
-
-                                    <%}%>
 
 
                             </ul>

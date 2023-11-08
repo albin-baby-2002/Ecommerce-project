@@ -124,45 +124,49 @@
                             <ul class="checkout__total__products">
 
 
+                                <% if(productsData && productsData.length> 0) {%>
+
+
+                                    <% for(let i=0; i < productsData.length ; i++){ %>
+                                        <li>
+
+                                            <div class="d-flex  ">
+
+                                                <div class="" style="width: 74%;">
+
+                                                    <div>
+                                                        <%=i+1%> .
+                                                            <a style="color: black;"
+                                                                href="/user/productDetails/<%=productsData[i].productInfo.groupingID%>/?color=<%=productsData[i].productInfo.color%>">
+
+                                                                <%=productsData[i].productInfo.name%>
+                                                            </a>
+                                                            (
+                                                            <%=productsData[i].quantity%> )
+                                                    </div>
 
 
 
 
-                                <% for(let i=0; i < productsData.length ; i++){ %>
-                                    <li>
 
-                                        <div class="d-flex  ">
-
-                                            <div class="" style="width: 74%;">
-
-                                                <div>
-                                                    <%=i+1%> .
-                                                        <a style="color: black;"
-                                                            href="/user/productDetails/<%=productsData[i].productInfo.groupingID%>/?color=<%=productsData[i].productInfo.color%>">
-
-                                                            <%=productsData[i].productInfo.name%>
-                                                        </a>
-                                                        (
-                                                        <%=productsData[i].quantity%> )
                                                 </div>
 
+                                                <div style="width: 26%;" class="text-right d-inline-block">
 
+                                                    <%=productsData[i].totalPrice%>.0
 
-
-
-                                            </div>
-
-                                            <div style="width: 26%;" class="text-right d-inline-block">
-
-                                                <%=productsData[i].totalPrice%>.0
+                                                </div>
 
                                             </div>
 
-                                        </div>
+                                        </li>
 
-                                    </li>
+                                        <%}%>
 
-                                    <%}%>
+                                            <%}%>
+
+
+
 
 
                             </ul>

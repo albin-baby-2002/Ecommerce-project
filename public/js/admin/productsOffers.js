@@ -23,8 +23,8 @@ btn.addEventListener('click', function (event) {
 
 
 
-
-    fetch('http://localhost:2500/admin/productsOffers/' + productID, {
+    const currentURL = window.location.origin;
+    fetch(currentURL + '/admin/productsOffers/' + productID, {
 
         method: 'POST',
         headers: {
@@ -118,8 +118,9 @@ activateButtons.forEach((btn) => {
     const data = { productID };
 
     btn.addEventListener('click', (e) => {
+        const currentURL = window.location.origin;
 
-        fetch('http://localhost:2500/admin/productsOffer/activate', {
+        fetch(currentURL + '/admin/productsOffer/activate', {
 
             method: 'PATCH',
             headers: {
@@ -219,9 +220,9 @@ deactivateButtons.forEach((btn) => {
 
     btn.addEventListener('click', (e) => {
 
+        const currentURL = window.location.origin;
 
-
-        fetch('http://localhost:2500/admin/productsOffer/deactivate', {
+        fetch(currentURL + '/admin/productsOffer/deactivate', {
 
             method: 'PATCH',
             headers: {

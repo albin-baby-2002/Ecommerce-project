@@ -174,45 +174,51 @@
                                 </thead>
                                 <tbody style="border-color: black;padding-bottom: 1.4rem;">
 
-
-                                    <% for(let i=0; i < productsData.length ; i++){ %>
-
-
-                                        <tr class="text-center ">
-
-                                            <td style="background-color: #ffffff;">
-
-                                                <%=(i+1)%>
-
-                                            </td>
-
-                                            <td style="background-color: #ffffff;">
-
-
-                                                <%= productsData[i].productInfo.name %>
-
-                                            </td>
-
-                                            <td style="background-color: #ffffff;">
-                                                <%=productsData[i].quantity%>
-
-                                            </td>
-
-                                            <td style="background-color: #ffffff;">
-                                                <%=productsData[i].productInfo.price%>
-
-                                            </td>
-
-                                            <td style="background-color: #ffffff;">
-                                                <%=productsData[i].totalPrice%>
-                                            </td>
+                                    <% if(productsData && productsData.length> 0) {%>
 
 
 
 
+                                        <% for(let i=0; i < productsData.length ; i++){ %>
 
-                                        </tr><!-- END TR-->
-                                        <%}%>
+
+                                            <tr class="text-center ">
+
+                                                <td style="background-color: #ffffff;">
+
+                                                    <%=(i+1)%>
+
+                                                </td>
+
+                                                <td style="background-color: #ffffff;">
+
+
+                                                    <%= productsData[i].productInfo.name %>
+
+                                                </td>
+
+                                                <td style="background-color: #ffffff;">
+                                                    <%=productsData[i].quantity%>
+
+                                                </td>
+
+                                                <td style="background-color: #ffffff;">
+                                                    <%=productsData[i].productInfo.price%>
+
+                                                </td>
+
+                                                <td style="background-color: #ffffff;">
+                                                    <%=productsData[i].totalPrice%>
+                                                </td>
+
+
+
+
+
+                                            </tr><!-- END TR-->
+                                            <%}%>
+
+                                                <%}%>
 
 
 
