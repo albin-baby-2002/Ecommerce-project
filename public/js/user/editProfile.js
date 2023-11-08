@@ -69,21 +69,21 @@ form.addEventListener("submit", function (event) {
 
     console.log('yes from client');
 
-    let cropper = croppedDataUrl;
-
-
-
-    const blob = dataURLtoBlob(cropper);
-
-
-
     const formData = new FormData(form);
 
-    console.log(formData)
+    if (croppedDataUrl) {
 
-    formData.delete('profileImg');
+        let cropper = croppedDataUrl;
 
-    formData.append('profileImg', blob, 'cropped.jpg');
+        const blob = dataURLtoBlob(cropper);
+
+        formData.delete('profileImg');
+
+        formData.append('profileImg', blob, 'cropped.jpg');
+
+    }
+
+
 
 
 
