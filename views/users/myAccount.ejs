@@ -136,7 +136,16 @@
                         <h3 class="my-4 mb-5 mt-5 text-center font-weight-bold">Referral Details</h3>
 
 
-                        <input class="form-control" type="text" disabled value="<%-user.totalReferralReward%>">
+                        <input class="form-control" type="text" disabled value="<% if(user.totalReferralReward > 0 ) {%>
+                        <%-user.totalReferralReward%><%} else {%>0 
+                            
+                            <%}%>
+                        
+                        ">
+
+
+
+
                         <label for="">Total Referral Rewards</label>
 
 
