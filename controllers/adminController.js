@@ -1907,7 +1907,7 @@ const salesReportInPdf = async (req, res, next) => {
 
         let endingDate = req.query.endingDate;
 
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({ headless: 'new', args: ["--no-sandbox"] });
         const page = await browser.newPage();
 
 
