@@ -46,7 +46,7 @@
 
 
 
-                            <% if(Addresses.length> 0){%>
+                            <% if(Addresses && Addresses.length> 0){%>
 
 
                                 <div class=" w-100" style="margin-bottom: 2rem;">
@@ -222,7 +222,7 @@
                                 <div class="checkout__order__products">Product <span>Total</span></div>
                                 <ul class="checkout__total__products">
 
-                                    <% if(itemsInCart.length> 0 ) { %>
+                                    <% if(itemsInCart && itemsInCart.length> 0 ) { %>
 
                                         <% for(let i=0; i < itemsInCart.length ; i++){ %>
 

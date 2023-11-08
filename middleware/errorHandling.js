@@ -7,6 +7,7 @@ const userPageNotFound = (req, res, next) => {
 
 const userErrorHandler = (err, req, res, next) => {
 
+    console.log(err);
 
     res.render('users/error.ejs')
 

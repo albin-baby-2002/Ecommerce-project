@@ -141,11 +141,22 @@
 
 
                         <div class="form-control w-100" style="background-color: #e9ecef;">
-                            <% for(let i=0 ; i < user.successfulReferrals.length; i++ ){%>
-                                <%-user.successfulReferrals[i] %>
+
+                            <% if(user.successfulReferrals && user.successfulReferrals.length> 0){ %>
+
+                                <% for(let i=0 ; i < user.successfulReferrals.length; i++ ){%>
+                                    <%-user.successfulReferrals[i] %>
 
 
-                                    <%}%>
+                                        <%}%>
+
+
+
+                                            <%} else {%>
+
+                                                No Successful Referrals
+
+                                                <%}%>
 
 
 

@@ -57,7 +57,7 @@
 
                 </div>
 
-                <% if(orders.length>0) { %>
+                <% if(orders && orders.length>0) { %>
 
 
 
@@ -138,16 +138,21 @@
                                         <td style="max-width: 200px;" data-title="Email">
 
                                             <ul>
-                                                <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
 
-                                                    <li class="text-uppercase list-unstyled mt-3 ">
-                                                        <%=orders[i].orderedItems[j].productInfo[0].name%> (
-                                                            <%=orders[i].orderedItems[j].quantity%>
-                                                                )
-                                                    </li>
+                                                <% if(orders[i].orderedItems && orders[i].orderedItems.length>0) {%>
+                                                    <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
+
+                                                        <li class="text-uppercase list-unstyled mt-3 ">
+                                                            <%=orders[i].orderedItems[j].productInfo[0].name%> (
+                                                                <%=orders[i].orderedItems[j].quantity%>
+                                                                    )
+                                                        </li>
 
 
-                                                    <% }%>
+                                                        <% }%>
+                                                            <%}%>
+
+
 
                                             </ul>
 
@@ -220,7 +225,7 @@
 
                     <%} else{%>
 
-                        <div class=" text-danger">Products Not Found
+                        <div class=" text-danger">Orders Not Found
                         </div>
 
                         <%}%>

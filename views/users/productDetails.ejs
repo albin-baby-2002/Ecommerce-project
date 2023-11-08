@@ -150,24 +150,33 @@
                                                     <div class="product__details__option__size">
                                                         <span>Size:</span>
 
-                                                        <% for(let i=0; i < variants.length ;i++) { %>
+                                                        <% if(variants && variants.length>0) {%>
 
-                                                            <% if(variants[i].color.toLowerCase()===currentColor.toLowerCase()
-                                                                ) {%>
 
-                                                                <label
-                                                                    class="size-button <% if(variants[i].size.toLowerCase() === currentSize.toLowerCase()){%> border-dark selected <%}%> "
-                                                                    for="<%=variants[i].size %>"
-                                                                    data-size="<%=variants[i].size %>">
-                                                                    <%=variants[i].size %>
-                                                                        <input class="size-radio"
-                                                                            value="<%=variants[i].size %>" name="size"
-                                                                            type="radio" id="<%=variants[i].size %>">
-                                                                </label>
+                                                            <% for(let i=0; i < variants.length ;i++) { %>
 
-                                                                <% } %>
+                                                                <% if(variants[i].color.toLowerCase()===currentColor.toLowerCase()
+                                                                    ) {%>
 
-                                                                    <% }%>
+                                                                    <label
+                                                                        class="size-button <% if(variants[i].size.toLowerCase() === currentSize.toLowerCase()){%> border-dark selected <%}%> "
+                                                                        for="<%=variants[i].size %>"
+                                                                        data-size="<%=variants[i].size %>">
+                                                                        <%=variants[i].size %>
+                                                                            <input class="size-radio"
+                                                                                value="<%=variants[i].size %>"
+                                                                                name="size" type="radio"
+                                                                                id="<%=variants[i].size %>">
+                                                                    </label>
+
+                                                                    <% } %>
+
+                                                                        <% }%>
+
+
+                                                                            <%}%>
+
+
 
                                                     </div>
 
@@ -175,20 +184,26 @@
                                                         <span>Color:</span>
 
 
-                                                        <% for(let i=0; i < colorList.length ;i++) { %>
+                                                        <% if(colorList && colorList.length> 0 ) {%>
+
+                                                            <% for(let i=0; i < colorList.length ;i++) { %>
 
 
 
-                                                            <label
-                                                                class="color-button <% if(colorList[i].toLowerCase() === currentColor.toLowerCase()){%> border-dark selected <%}%> "
-                                                                for="<%=colorList[i]%>" data-color="<%=colorList[i]%>">
-                                                                <%=colorList[i]%>
-                                                                    <input class="color-radio" name="color"
-                                                                        value="<%=colorList[i]%>" type="radio"
-                                                                        id="<%=colorList[i]%>">
-                                                            </label>
+                                                                <label
+                                                                    class="color-button <% if(colorList[i].toLowerCase() === currentColor.toLowerCase()){%> border-dark selected <%}%> "
+                                                                    for="<%=colorList[i]%>"
+                                                                    data-color="<%=colorList[i]%>">
+                                                                    <%=colorList[i]%>
+                                                                        <input class="color-radio" name="color"
+                                                                            value="<%=colorList[i]%>" type="radio"
+                                                                            id="<%=colorList[i]%>">
+                                                                </label>
 
-                                                            <% } %>
+                                                                <% } %>
+                                                                    <%}%>
+
+
 
                                                     </div>
 

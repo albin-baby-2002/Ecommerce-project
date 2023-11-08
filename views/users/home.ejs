@@ -53,59 +53,55 @@
                 </div>
                 <div class="row product__filter">
 
-                    <% for(let i=0; i < products.length ;i++) { %>
+                    <% if(products && products.length> 0 ) {%>
 
-                        <div class="col-lg-3 col-md-6  col-sm-6 col-8 mix new-arrivals ">
-                            <div class="product__item">
+                        <% for(let i=0; i < products.length ;i++) { %>
 
-                                <div click-id="productDetailsLink " group-id="<%=products[i].groupingID%>"
-                                    color-id="<%=products[i].color%>"
-                                    class="product__item__pic product__item1 set-bg add-hover mt-1" data-id="bg-render"
-                                    data-for-bg="img/productImages/<%=products[i].images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
-                                    style="background-position: top;
+                            <div class="col-lg-3 col-md-6  col-sm-6 col-8 mix new-arrivals ">
+                                <div class="product__item">
+
+                                    <div click-id="productDetailsLink" group-id="<%=products[i].groupingID%>"
+                                        color-id="<%=products[i].color%>"
+                                        class="product__item__pic product__item1 set-bg add-hover mt-1"
+                                        data-id="bg-render"
+                                        data-for-bg="img/productImages/<%=products[i].images.find((img)=>img.toLowerCase().includes('mainimg')) %>"
+                                        style="background-position: top;
                                     background-repeat: no-repeat;">
 
 
 
-                                    <ul class="product__hover">
-                                        <li>
-                                            <button data-id="<%=products[i]._id%>" class="nav-link wishListBtn "><img
-                                                    src="img/icon/heart.png" alt=""></button>
 
-                                        </li>
-                                        <li><a href="#"><img src="img/icon/compare.png" alt="">
-                                                <span>Compare</span></a>
-                                        </li>
-
-                                    </ul>
-                                </div>
-                                <div class="product__item__text">
-                                    <h6>
-                                        <%=products[i].name%>
-                                    </h6>
-
-                                    <button class="nav-link" onclick="addToCart('<%=products[i]._id%>')"><a class="">+
-                                            Add to cart</a></button>
-
-                                    <div class="rating">
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
                                     </div>
-                                    <h5>Rs.<%=products[i].price%>
-                                    </h5>
+                                    <div class="product__item__text">
+                                        <h6>
+                                            <%=products[i].name%>
+                                        </h6>
+
+                                        <a>
+                                            <%=products[i].name%>
+                                        </a>
+
+                                        <div class="rating">
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                        </div>
+                                        <h5>Rs.<%=products[i].price%>
+                                        </h5>
 
 
+
+                                    </div>
 
                                 </div>
 
                             </div>
 
-                        </div>
+                            <%}%>
 
-                        <%}%>
+                                <%}%>
 
                 </div>
             </div>

@@ -24,7 +24,7 @@
         <main class="main my-5">
             <div class="container-lg">
 
-                <% if(orders.length>0) { %>
+                <% if(orders && orders.length>0) { %>
 
 
 
@@ -86,16 +86,21 @@
                                         <td data-title="Email">
 
                                             <ul>
-                                                <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
+                                                <%if(orders[i].orderedItems && orders[i].orderedItems.length> 0){%>
+                                                    <% for(let j=0 ; j< orders[i].orderedItems.length ; j++ ){%>
 
-                                                    <li class="text-uppercase list-unstyled mt-3 ">
-                                                        <%=orders[i].orderedItems[j].productInfo[0].name%> (
-                                                            <%=orders[i].orderedItems[j].quantity%>
-                                                                )
-                                                    </li>
+                                                        <li class="text-uppercase list-unstyled mt-3 ">
+                                                            <%=orders[i].orderedItems[j].productInfo[0].name%> (
+                                                                <%=orders[i].orderedItems[j].quantity%>
+                                                                    )
+                                                        </li>
 
 
-                                                    <% }%>
+                                                        <% }%>
+                                                            <%}%>
+
+
+
 
                                             </ul>
 

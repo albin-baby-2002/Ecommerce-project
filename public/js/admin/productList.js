@@ -17,10 +17,12 @@ deleteBtnS.forEach((btn) => {
 
 });
 
+const currentURL = window.location.origin;
+
 
 async function deleteProduct(data) {
     try {
-        const response = await fetch("http://localhost:2500/admin/deleteProduct/" + data, {
+        const response = await fetch(currentURL + "/admin/deleteProduct/" + data, {
             method: "delete",
             headers: {
                 "Content-Type": "application/json",

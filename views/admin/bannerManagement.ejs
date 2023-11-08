@@ -115,47 +115,54 @@
                     <tbody>
 
 
-                        <% for(let i=0; i < banners.length ;i++) { %>
+                        <%if(banners && banners.length> 0) {%>
+
+                            <% for(let i=0; i < banners.length ;i++) { %>
 
 
-                            <tr class="text-center" style="font-size: .8rem;">
+                                <tr class="text-center" style="font-size: .8rem;">
 
-                                <td data-title="Name" style="min-width: 140px;">
-                                    <%= banners[i].name %>
-                                </td>
+                                    <td data-title="Name" style="min-width: 140px;">
+                                        <%= banners[i].name %>
+                                    </td>
 
-                                <td data-title="Name" style="min-width: 160px;">
-                                    <img class="img-thumbnail" src="/img/hero/<%= banners[i].image %>" alt="">
+                                    <td data-title="Name" style="min-width: 160px;">
+                                        <img class="img-thumbnail" src="/img/hero/<%= banners[i].image %>" alt="">
 
-                                </td>
+                                    </td>
 
-                                <td data-title="Email" style="min-width: 140px;">
-                                    <%= banners[i].description %>
-                                </td>
+                                    <td data-title="Email" style="min-width: 140px;">
+                                        <%= banners[i].description %>
+                                    </td>
 
-                                <td>
-
-
-
-
-                                    <button <% if(banners[i].active===true) {%>
-                                        disabled
-                                        <%}%>
-                                            data-id=" <%=banners[i]._id %>" class=" activateBtn btn
-                                                btn-sm mx-4 btn-outline-dark">
-                                                Activate
-
-                                    </button>
-
-                                </td>
+                                    <td>
 
 
 
 
+                                        <button <% if(banners[i].active===true) {%>
+                                            disabled
+                                            <%}%>
+                                                data-id=" <%=banners[i]._id %>" class=" activateBtn btn
+                                                    btn-sm mx-4 btn-outline-dark">
+                                                    Activate
 
-                            </tr>
+                                        </button>
 
-                            <% } %>
+                                    </td>
+
+
+
+
+
+                                </tr>
+
+                                <% } %>
+                                    <%}%>
+
+
+
+
 
 
 
