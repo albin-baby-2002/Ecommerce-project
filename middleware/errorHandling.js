@@ -15,14 +15,14 @@ const userErrorHandler = (err, req, res, next) => {
 }
 const adminPageNotFound = (req, res, next) => {
 
-    console.log(err);
-
     res.render('admin/404.ejs');
 
 
 }
 
 const adminErrorHandler = (err, req, res, next) => {
+
+    console.log(err);
 
 
     res.render('admin/error.ejs')
