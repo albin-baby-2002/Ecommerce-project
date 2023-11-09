@@ -11,12 +11,17 @@ const CartItem = require('../models/cartItemModel');
 const Product = require('../models/productModel');
 const puppeteer = require('puppeteer');
 const path = require('path');
+let pdf = require("html-pdf");
+const ejs = require('ejs');
+
+const fs = require('fs');
 const userVerificationHelper = require('../helpers/userVerificationHelpers');
 const dotenv = require('dotenv').config()
 
 //! razorPay Instance
 
-const Razorpay = require('razorpay')
+const Razorpay = require('razorpay');
+const { log } = require('console');
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -815,6 +820,13 @@ const downloadInvoice = async (req, res, next) => {
 
 
         }
+
+
+
+
+
+
+
 
         let orderID = req.params.orderID;
 

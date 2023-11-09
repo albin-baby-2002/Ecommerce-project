@@ -277,55 +277,7 @@
 
 
 
-    <script>
 
-        function renderBg() {
-
-            const products = document.querySelectorAll('[data-id="bg-render"]');
-
-            products.forEach((product) => {
-
-                const imgUrl = product.getAttribute('data-for-bg');
-
-                product.style.backgroundImage = `url('${imgUrl}')`;
-
-            })
-
-        };
-
-
-
-        const clickable_Divs = document.querySelectorAll('[click-id="productDetailsLink"]');
-
-        clickable_Divs.forEach((clickableDiv) => {
-            const groupID = clickableDiv.getAttribute('group-id');
-            const colorID = clickableDiv.getAttribute('color-id');
-
-            clickableDiv.addEventListener('click', function () {
-
-                window.location.href = `/user/productDetails/${groupID}/?color=${colorID}`;
-            });
-        })
-
-
-
-
-        window.addEventListener('load', renderBg);
-
-
-        const notificationBtn = document.getElementById('notificationClose');
-        const notificationMessage = document.getElementById('notification-message');
-        const messageLine = document.getElementById('messageLine');
-
-        notificationBtn.addEventListener('click', (e) => {
-
-            notificationMessage.hidden = true
-        })
-
-
-
-
-    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
