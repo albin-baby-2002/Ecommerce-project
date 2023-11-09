@@ -11,7 +11,7 @@ const CartItem = require('../models/cartItemModel');
 const Product = require('../models/productModel');
 const puppeteer = require('puppeteer');
 const path = require('path');
-let pdf = require("html-pdf");
+const pdf = require('pdf-creator-node');
 const ejs = require('ejs');
 
 const fs = require('fs');
@@ -822,60 +822,211 @@ const downloadInvoice = async (req, res, next) => {
         }
 
 
+        const orderID = new mongoose.Types.ObjectId(req.params.orderID);
+
+        if (!orderID) {
+
+            req.session.message = {
+                type: 'danger',
+                message: 'Failed to Fetch order Details  !',
+
+            };
+
+            return res.redirect('/user/orders');
 
 
+        }
 
 
+        const orderData = await Order.findById(orderID);
 
 
-        let orderID = req.params.orderID;
+        let productsData = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'orderitems',
+                localField: 'orderItems',
+                foreignField: '_id',
+                as: 'orderedProducts',
+            }
+        }, {
+            $unwind: "$orderedProducts"
+        }, {
+            $replaceRoot: {
+                newRoot: "$orderedProducts"
+            }
+        }, {
+            $lookup: {
+                from: 'products',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'productInfo'
 
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-
-        await page.setViewport({
-            width: 1680,
-            height: 800,
-        });
-
-        await page.goto(`${req.protocol}://${req.get('host')}` + '/user/invoice/' + `${orderID}`, { waitUntil: 'networkidle2' });
-
-
-
-
-
-
-
-
-
-        const date = new Date();
-
-        const pdfn = await page.pdf({
-            path: `${path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf')}`,
-            printBackground: true,
-            format: "A4"
-        })
-
-        setTimeout(async () => {
-            await browser.close();
-
-
-            const pdfURL = path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf');
-
-
-
-
-            res.download(pdfURL, function (err) {
-
-                if (err) {
-                    console.log(err)
+            }
+        }, {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        { _id: "$_id", userID: "$userID", product: "$product", quantity: "$quantity", totalPrice: "$totalPrice", __v: "$__v" },
+                        { productInfo: { $arrayElemAt: ["$productInfo", 0] } }
+                    ]
                 }
-            })
+            }
+        }
+
+        ]).exec();
 
 
-        }, 1000);
+
+        let address = await Order.aggregate([{
+            $match: {
+                _id: orderID
+            }
+        }, {
+            $lookup: {
+                from: 'addresses',
+                localField: 'shippingAddress',
+                foreignField: '_id',
+                as: 'address',
+            }
+        }, {
+
+            $unwind: "$address"
+        }, {
+
+            $replaceRoot: {
+                newRoot: "$address"
+            }
+        }
+
+        ]).exec();
+
+
+        address = address[0];
+
+
+
+        if (orderData && productsData && address) {
+
+
+            const options = {
+                formate: 'A3',
+                orientation: 'portrait',
+                border: '2mm',
+                header: {
+                    height: '15mm',
+                    contents: '<h4 style=" color: red;font-size:20;font-weight:800;text-align:center;">CUSTOMER INVOICE</h4>'
+                },
+                footer: {
+                    height: '20mm',
+                    contents: {
+                        first: 'Cover page',
+                        2: 'Second page',
+                        default: '<span style="color: #444;">{{page}}</span>/<span>{{pages}}</span>',
+                        last: 'Last Page'
+                    }
+                }
+            }
+
+            const data = { orderData, productsData, address }
+
+            const html = ejs.render(fs.readFileSync(path.join(__dirname, '..', 'views', 'users', 'invoicePage.ejs'), 'utf-8'), data);
+
+
+            const filename = Math.random() + '_doc' + '.pdf';
+
+
+            const document = {
+                html: html,
+                data,
+                path: './docs/' + filename
+            }
+
+
+            pdf.create(document, options)
+                .then(re => {
+                    console.log(re);
+
+                    const filepath = path.join(__dirname, '..', 'docs', filename);
+
+
+
+
+
+                    res.download(filepath, function (err) {
+
+                        if (err) {
+                            console.log(err)
+                        }
+                    })
+
+                }).catch(error => {
+                    console.log(error);
+                });
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+        // let orderID = req.params.orderID;
+
+
+        // const browser = await puppeteer.launch();
+        // const page = await browser.newPage();
+
+
+        // await page.setViewport({
+        //     width: 1680,
+        //     height: 800,
+        // });
+
+        // await page.goto(`${req.protocol}://${req.get('host')}` + '/user/invoice/' + `${orderID}`, { waitUntil: 'networkidle2' });
+
+
+
+
+
+
+
+
+
+        // const date = new Date();
+
+        // const pdfn = await page.pdf({
+        //     path: `${path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf')}`,
+        //     printBackground: true,
+        //     format: "A4"
+        // })
+
+        // setTimeout(async () => {
+        //     await browser.close();
+
+
+        //     const pdfURL = path.join(__dirname, '../public/files/salesReport', date.getTime() + '.pdf');
+
+
+
+
+        //     res.download(pdfURL, function (err) {
+
+        //         if (err) {
+        //             console.log(err)
+        //         }
+        //     })
+
+
+        // }, 1000);
 
 
 
