@@ -425,7 +425,12 @@ const renderProductsPage = async (req, res, next) => {
                 __v: 1,
                 category: { $arrayElemAt: ['$categoryData.name', 0] }
             }
-        }
+        },
+        {
+            $sort: {
+                price: -1, // Sort by price in descending order
+            },
+        },
 
         ]);
 

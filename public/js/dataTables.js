@@ -1,1 +1,1 @@
-let table = new DataTable('#myTable');
+let table = new DataTable('#myTable', { pageLength: 20 });
