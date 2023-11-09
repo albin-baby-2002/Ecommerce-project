@@ -1983,7 +1983,7 @@ const renderProductOffersPage = async (req, res, next) => {
         }]);
 
 
-        return res.render('admin/ProductOffersPage.ejs', { products });
+        return res.render('admin/productOffersPage.ejs', { products });
 
 
 
