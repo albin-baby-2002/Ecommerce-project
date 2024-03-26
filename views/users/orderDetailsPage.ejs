@@ -137,12 +137,12 @@
                                                     <div>
                                                         <%=i+1%> .
                                                             <a style="color: black;"
-                                                                href="/user/productDetails/<%=productsData[i].productInfo.groupingID%>/?color=<%=productsData[i].productInfo.color%>">
+                                                                href="/user/productDetails/<%=productsData[i]?.productInfo?.groupingID?productsData[i].productInfo.groupingID:''%>/?color=<%=productsData[i]?.productInfo?.color%>">
 
-                                                                <%=productsData[i].productInfo.name%>
+                                                                <%=productsData[i]?.productInfo?.name%>
                                                             </a>
                                                             (
-                                                            <%=productsData[i].quantity%> )
+                                                            <%=productsData[i]?.quantity%> )
                                                     </div>
 
 
